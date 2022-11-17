@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE `users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` varchar(255) NOT NULL,
   `created_at` datetime(3),
   `updated_at` datetime(3),
   `deleted_at` datetime(3),
