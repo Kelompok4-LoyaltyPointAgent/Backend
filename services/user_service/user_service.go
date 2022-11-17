@@ -3,6 +3,7 @@ package user_service
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
+	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 )
@@ -14,6 +15,7 @@ type UserService interface {
 	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
 	Delete(id string) (response.UserResponse, error)
 	FindByEmail(email string) (response.UserResponse, error)
+	Login(email, password string) (response.LoginResponse, error)
 }
 
 type userService struct {
@@ -120,4 +122,25 @@ func (s *userService) FindByEmail(email string) (response.UserResponse, error) {
 		Email: user.Email,
 	}
 	return userResponse, nil
+}
+
+func (s *userService) Login(email, password string) (response.LoginResponse, error) {
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
+		return response.LoginResponse{}, err
+	}
+
+	if err := user.CheckPassword(password); err != nil {
+		return response.LoginResponse{}, err
+	}
+
+	token, err := helper.CreateToken(user.ID, user.Role)
+	if err != nil {
+		return response.LoginResponse{}, err
+	}
+
+	loginResponse := response.LoginResponse{
+		Token: token,
+	}
+	return loginResponse, nil
 }
