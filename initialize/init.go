@@ -1,31 +1,33 @@
 package initialize
 
 import (
-	userHandler "github.com/kelompok4-loyaltypointagent/backend/handler/user"
-	userRepo "github.com/kelompok4-loyaltypointagent/backend/repositories/user"
-	userService "github.com/kelompok4-loyaltypointagent/backend/services/user"
-	"gorm.io/gorm"
+	"github.com/kelompok4-loyaltypointagent/backend/db"
+	user_handler "github.com/kelompok4-loyaltypointagent/backend/handler/user"
+	user_repository "github.com/kelompok4-loyaltypointagent/backend/repositories/user"
+	user_service "github.com/kelompok4-loyaltypointagent/backend/services/user"
 )
 
-//User
-var user_repository userRepo.UserRepository
-var user_service userService.UserService
-var User_handler userHandler.UserHandler
+// User
+var userRepository user_repository.UserRepository
+var userService user_service.UserService
+var UserHandler user_handler.UserHandler
 
-func Init(db *gorm.DB) {
-	initRepositories(db)
+func Init() {
+	initRepositories()
 	initServices()
 	initHandlers()
 }
 
-func initRepositories(db *gorm.DB) {
-	user_repository = userRepo.NewUserRepository(db)
+func initRepositories() {
+	db := db.Init()
+
+	userRepository = user_repository.NewUserRepository(db)
 }
 
 func initServices() {
-	user_service = userService.NewUserService(user_repository)
+	userService = user_service.NewUserService(userRepository)
 }
 
 func initHandlers() {
-	User_handler = userHandler.NewUserHandler(user_service)
+	UserHandler = user_handler.NewUserHandler(userService)
 }
