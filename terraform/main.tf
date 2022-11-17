@@ -31,3 +31,11 @@ module "mysql" {
   region              = var.region
   mysql_root_password = var.mysql_root_password
 }
+
+module "cloudrun-staging" {
+  source = "./modules/cloudrun-staging"
+
+  project  = var.project
+  region   = var.region
+  env_vars = var.env_vars_staging
+}

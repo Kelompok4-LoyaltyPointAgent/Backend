@@ -6,15 +6,7 @@ variable "region" {
   type = string
 }
 
-variable "zone" {
-  type = string
-}
-
-variable "mysql_root_password" {
-  type = string
-}
-
-variable "env_vars_staging" {
+variable "env_vars" {
   type = list(object({
     value = string
     name  = string

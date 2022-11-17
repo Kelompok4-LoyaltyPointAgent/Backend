@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kelompok4-loyaltypointagent/backend/config"
-	"github.com/kelompok4-loyaltypointagent/backend/db"
+	"github.com/kelompok4-loyaltypointagent/backend/initialize"
 	"github.com/kelompok4-loyaltypointagent/backend/route"
 	"github.com/labstack/echo/v4"
 )
@@ -19,9 +19,10 @@ func main() {
 		}
 	}
 
+	initialize.Init()
+
 	app := echo.New()
-	db := db.Init()
-	route.Setup(app, db)
+	route.Setup(app)
 
 	httpConfig := config.LoadHTTPConfig()
 	app.Logger.Fatal(app.Start(":" + httpConfig.Port))
