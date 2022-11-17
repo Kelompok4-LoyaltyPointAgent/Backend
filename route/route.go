@@ -16,4 +16,5 @@ func Setup(app *echo.Echo) {
 
 	v1 := api.Group("/v1")
 	v1.POST("/register", initialize.UserHandler.CreateUser)
+	v1.POST("/login", initialize.UserHandler.Login)
 }
