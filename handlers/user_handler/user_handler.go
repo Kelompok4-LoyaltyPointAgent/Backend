@@ -1,4 +1,4 @@
-package user
+package user_handler
 
 import (
 	"net/http"
@@ -6,23 +6,22 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
-	userService "github.com/kelompok4-loyaltypointagent/backend/services/user"
+	"github.com/kelompok4-loyaltypointagent/backend/services/user_service"
 	"github.com/labstack/echo/v4"
 )
-
-var validate *validator.Validate
 
 type UserHandler interface {
 	CreateUser(c echo.Context) error
 }
 
 type userHandler struct {
-	service userService.UserService
+	validate *validator.Validate
+	service  user_service.UserService
 }
 
-func NewUserHandler(service userService.UserService) *userHandler {
-	validate = validator.New()
-	return &userHandler{service}
+func NewUserHandler(service user_service.UserService) UserHandler {
+	validate := validator.New()
+	return &userHandler{validate, service}
 }
 
 func (h *userHandler) CreateUser(c echo.Context) error {
@@ -33,7 +32,7 @@ func (h *userHandler) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, baseResponse)
 	}
 
-	if err := validate.Struct(&user); err != nil {
+	if err := h.validate.Struct(&user); err != nil {
 		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusBadRequest, response.EmptyObj{}, err.Error())
 		return c.JSON(http.StatusBadRequest, baseResponse)
 	}

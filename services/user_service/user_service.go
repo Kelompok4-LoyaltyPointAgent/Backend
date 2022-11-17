@@ -1,10 +1,10 @@
-package user
+package user_service
 
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
-	userModel "github.com/kelompok4-loyaltypointagent/backend/models/user"
-	userRepo "github.com/kelompok4-loyaltypointagent/backend/repositories/user"
+	"github.com/kelompok4-loyaltypointagent/backend/models"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 )
 
 type UserService interface {
@@ -17,10 +17,10 @@ type UserService interface {
 }
 
 type userService struct {
-	repository userRepo.UserRepository
+	repository user_repository.UserRepository
 }
 
-func NewUserService(repository userRepo.UserRepository) *userService {
+func NewUserService(repository user_repository.UserRepository) UserService {
 	return &userService{repository}
 }
 
@@ -38,7 +38,7 @@ func (s *userService) FindByID(id string) (response.UserResponse, error) {
 }
 
 func (s *userService) Create(payload payload.UserPayload) (response.UserResponse, error) {
-	user := userModel.User{
+	user := models.User{
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: payload.Password,
@@ -79,7 +79,7 @@ func (s *userService) FindAll() ([]response.UserResponse, error) {
 }
 
 func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error) {
-	userUpdate := userModel.User{
+	userUpdate := models.User{
 		Name:  payload.Name,
 		Email: payload.Email,
 	}
