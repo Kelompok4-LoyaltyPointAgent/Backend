@@ -15,7 +15,7 @@ type UserService interface {
 	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
 	Delete(id string) (response.UserResponse, error)
 	FindByEmail(email string) (response.UserResponse, error)
-	Login(email, password string) (response.LoginResponse, error)
+	Login(payload payload.LoginPayload) (response.LoginResponse, error)
 }
 
 type userService struct {
@@ -124,13 +124,13 @@ func (s *userService) FindByEmail(email string) (response.UserResponse, error) {
 	return userResponse, nil
 }
 
-func (s *userService) Login(email, password string) (response.LoginResponse, error) {
-	user, err := s.repository.FindByEmail(email)
+func (s *userService) Login(payload payload.LoginPayload) (response.LoginResponse, error) {
+	user, err := s.repository.FindByEmail(payload.Email)
 	if err != nil {
 		return response.LoginResponse{}, err
 	}
 
-	if err := user.CheckPassword(password); err != nil {
+	if err := user.CheckPassword(payload.Password); err != nil {
 		return response.LoginResponse{}, err
 	}
 

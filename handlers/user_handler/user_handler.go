@@ -1,6 +1,7 @@
 package user_handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -29,45 +30,32 @@ func (h *userHandler) CreateUser(c echo.Context) error {
 	var user payload.UserPayload
 
 	if err := c.Bind(&user); err != nil {
-		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusBadRequest, response.EmptyObj{}, err.Error())
-		return c.JSON(http.StatusBadRequest, baseResponse)
+		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
 	if err := h.validate.Struct(&user); err != nil {
-		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusBadRequest, response.EmptyObj{}, err.Error())
-		return c.JSON(http.StatusBadRequest, baseResponse)
+		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
 	userResponse, err := h.service.Create(user)
 	if err != nil {
-		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusInternalServerError, response.EmptyObj{}, err.Error())
-		return c.JSON(http.StatusInternalServerError, baseResponse)
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
 
-	baseResponse := response.ConvertToBaseResponse("success", http.StatusOK, userResponse)
-	return c.JSON(http.StatusOK, baseResponse)
+	return response.Success(c, "success", http.StatusOK, userResponse)
 }
 
 func (h *userHandler) Login(c echo.Context) error {
 	var payload payload.LoginPayload
 
 	if err := c.Bind(&payload); err != nil {
-		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusBadRequest, response.EmptyObj{}, err.Error())
-		return c.JSON(http.StatusBadRequest, baseResponse)
+		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
-	_, err := h.service.FindByEmail(payload.Email)
+	loginResponse, err := h.service.Login(payload)
 	if err != nil {
-		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusNotFound, response.EmptyObj{}, err.Error())
-		return c.JSON(http.StatusNotFound, baseResponse)
+		return response.Error(c, "failed", http.StatusBadRequest, errors.New("invalid email or password"))
 	}
 
-	loginResponse, err := h.service.Login(payload.Email, payload.Password)
-	if err != nil {
-		baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusBadRequest, response.EmptyObj{}, err.Error())
-		return c.JSON(http.StatusBadRequest, baseResponse)
-	}
-
-	baseResponse := response.ConvertToBaseResponse("success", http.StatusOK, loginResponse)
-	return c.JSON(http.StatusOK, baseResponse)
+	return response.Success(c, "success", http.StatusOK, loginResponse)
 }

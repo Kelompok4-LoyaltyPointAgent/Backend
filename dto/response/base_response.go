@@ -1,6 +1,10 @@
 package response
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/labstack/echo/v4"
+)
 
 type BaseResponse struct {
 	Message string      `json:"message"`
@@ -28,4 +32,14 @@ func ConvertErrorToBaseResponse(message string, status int, data interface{}, er
 		Status:  status,
 		Errors:  splittedError,
 	}
+}
+
+func Success(ctx echo.Context, message string, status int, data interface{}) error {
+	response := ConvertToBaseResponse(message, status, data)
+	return ctx.JSON(status, response)
+}
+
+func Error(ctx echo.Context, message string, status int, err error) error {
+	response := ConvertErrorToBaseResponse(message, status, EmptyObj{}, err.Error())
+	return ctx.JSON(status, response)
 }
