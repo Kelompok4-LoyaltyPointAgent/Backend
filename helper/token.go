@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/kelompok4-loyaltypointagent/backend/config"
+	"github.com/labstack/echo/v4"
 )
 
 type JWTCustomClaims struct {
@@ -32,4 +33,11 @@ func CreateToken(id uuid.UUID, role string) (string, error) {
 	}
 
 	return signed, nil
+}
+
+func GetTokenClaims(c echo.Context) *JWTCustomClaims {
+	token := c.Get("token").(*jwt.Token)
+	claims := token.Claims.(*JWTCustomClaims)
+
+	return claims
 }

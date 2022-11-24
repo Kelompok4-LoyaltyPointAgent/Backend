@@ -12,6 +12,7 @@ import (
 func Setup(app *echo.Echo) {
 	app.Use(middleware.Logger())
 	app.Use(middleware.Recover())
+	app.Use(middleware.CORS())
 
 	authConfig := config.LoadAuthConfig()
 	auth := middleware.JWTWithConfig(middleware.JWTConfig{
@@ -27,6 +28,17 @@ func Setup(app *echo.Echo) {
 	v1 := api.Group("/v1")
 	v1.POST("/register", initialize.UserHandler.CreateUser)
 	v1.POST("/login", initialize.UserHandler.Login)
+
+	user := v1.Group("/user", auth)
+	//User
+	user.GET("/me", initialize.UserHandler.FindUserByID) 
+	user.PUT("", initialize.UserHandler.UpdateUser)
+	user.PUT("/change-password", initialize.UserHandler.ChangePassword)
+	//Admin
+	user.GET("", initialize.UserHandler.FindAllUser, middlewares.AuthorizedRoles([]string{"Admin"}))
+	user.GET("/:id", initialize.UserHandler.FindUserByIDByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
+	user.PUT("/:id", initialize.UserHandler.UpdateUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
+	user.DELETE("/:id", initialize.UserHandler.DeleteUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
 
 	productV1 := v1.Group("/products", auth)
 	productV1.GET("/credits", initialize.ProductHandler.GetProductsWithCredits)

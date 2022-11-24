@@ -1,6 +1,8 @@
 package user_service
 
 import (
+	"errors"
+
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -10,12 +12,15 @@ import (
 
 type UserService interface {
 	FindByID(id string) (response.UserResponse, error)
-	Create(payload payload.UserPayload) (response.UserResponse, error)
-	FindAll() ([]response.UserResponse, error)
-	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
-	Delete(id string) (response.UserResponse, error)
+	FindByIDByAdmin(id string) (models.User, error)
 	FindByEmail(email string) (response.UserResponse, error)
+	FindAll() ([]response.UserResponse, error)
+	Create(payload payload.UserPayload) (response.UserResponse, error)
 	Login(payload payload.LoginPayload) (response.LoginResponse, error)
+	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
+	UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error)
+	ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error)
+	Delete(id string) (response.UserResponse, error)
 }
 
 type userService struct {
@@ -37,6 +42,14 @@ func (s *userService) FindByID(id string) (response.UserResponse, error) {
 		Email: user.Email,
 	}
 	return userResponse, nil
+}
+
+func (s *userService) FindByIDByAdmin(id string) (models.User, error) {
+	user, err := s.repository.FindByID(id)
+	if err != nil {
+		return models.User{}, err
+	}
+	return user, nil
 }
 
 func (s *userService) Create(payload payload.UserPayload) (response.UserResponse, error) {
@@ -68,28 +81,68 @@ func (s *userService) FindAll() ([]response.UserResponse, error) {
 	if err != nil {
 		return []response.UserResponse{}, err
 	}
-	var usersResponse []response.UserResponse
+
+	var usersResponses []response.UserResponse
 	for _, user := range users {
 		userResponse := response.UserResponse{
 			ID:    user.ID.String(),
 			Name:  user.Name,
 			Email: user.Email,
 		}
-		usersResponse = append(usersResponse, userResponse)
+		usersResponses = append(usersResponses, userResponse)
 	}
-	return usersResponse, nil
+	return usersResponses, nil
 }
 
 func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error) {
-	userUpdate := models.User{
+
+	modelUser := models.User{
 		Name:  payload.Name,
 		Email: payload.Email,
 	}
 
-	user, err := s.repository.Update(userUpdate, id)
+	_, err := s.repository.Update(modelUser, id)
 	if err != nil {
 		return response.UserResponse{}, err
 	}
+
+	user, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	userResponse := response.UserResponse{
+		ID:    user.ID.String(),
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return userResponse, nil
+}
+
+func (s *userService) UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error) {
+
+	userModel := models.User{
+		Name:     payload.Name,
+		Email:    payload.Email,
+		Password: payload.Password,
+	}
+
+	if payload.Password != "" {
+		if err := userModel.HashPassword(userModel.Password); err != nil {
+			return response.UserResponse{}, err
+		}
+	}
+
+	_, err := s.repository.Update(userModel, id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	user, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
 	userResponse := response.UserResponse{
 		ID:    user.ID.String(),
 		Name:  user.Name,
@@ -143,4 +196,38 @@ func (s *userService) Login(payload payload.LoginPayload) (response.LoginRespons
 		Token: token,
 	}
 	return loginResponse, nil
+}
+
+func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error) {
+
+	//Get User by ID
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	if err := getUser.CheckPassword(payload.OldPassword); err != nil {
+		return response.UserResponse{}, err
+	}
+
+	if payload.NewPassword != payload.ConfirmPassword {
+		return response.UserResponse{}, errors.New("New Password and Confirm Password not match")
+	}
+
+	getUser.Password = payload.NewPassword
+
+	if err := getUser.HashPassword(getUser.Password); err != nil {
+		return response.UserResponse{}, err
+	}
+
+	user, err := s.repository.Update(getUser, id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+	userResponse := response.UserResponse{
+		ID:    user.ID.String(),
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return userResponse, nil
 }

@@ -50,11 +50,11 @@ func (r *userRepository) FindAll() ([]models.User, error) {
 
 func (r *userRepository) Update(userUpdate models.User, id string) (models.User, error) {
 	var user models.User
-	err := r.db.Model(&user).Where("id = ?", id).Updates(&userUpdate).Error
+	err := r.db.Model(&user).Where("id = ?", id).Updates(userUpdate).Error
 	if err != nil {
 		return user, err
 	}
-	return r.FindByID(id)
+	return user, nil
 }
 
 func (r *userRepository) Delete(id string) (models.User, error) {
