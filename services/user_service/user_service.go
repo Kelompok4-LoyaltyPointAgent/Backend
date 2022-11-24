@@ -1,6 +1,8 @@
 package user_service
 
 import (
+	"errors"
+
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -16,6 +18,7 @@ type UserService interface {
 	Delete(id string) (response.UserResponse, error)
 	FindByEmail(email string) (response.UserResponse, error)
 	Login(payload payload.LoginPayload) (response.LoginResponse, error)
+	ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error)
 }
 
 type userService struct {
@@ -86,7 +89,16 @@ func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (res
 		Email: payload.Email,
 	}
 
-	user, err := s.repository.Update(userUpdate, id)
+	//Get User by ID
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	getUser.Name = userUpdate.Name
+	getUser.Email = userUpdate.Email
+
+	user, err := s.repository.Update(getUser)
 	if err != nil {
 		return response.UserResponse{}, err
 	}
@@ -143,4 +155,38 @@ func (s *userService) Login(payload payload.LoginPayload) (response.LoginRespons
 		Token: token,
 	}
 	return loginResponse, nil
+}
+
+func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error) {
+
+	//Get User by ID
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	if err := getUser.CheckPassword(payload.OldPassword); err != nil {
+		return response.UserResponse{}, err
+	}
+
+	if payload.NewPassword != payload.ConfirmPassword {
+		return response.UserResponse{}, errors.New("New Password and Confirm Password not match")
+	}
+
+	getUser.Password = payload.NewPassword
+
+	if err := getUser.HashPassword(getUser.Password); err != nil {
+		return response.UserResponse{}, err
+	}
+
+	user, err := s.repository.Update(getUser)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+	userResponse := response.UserResponse{
+		ID:    user.ID.String(),
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return userResponse, nil
 }

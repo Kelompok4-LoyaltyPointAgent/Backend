@@ -9,7 +9,7 @@ type UserRepository interface {
 	FindByID(id string) (models.User, error)
 	Create(user models.User) (models.User, error)
 	FindAll() ([]models.User, error)
-	Update(user models.User, id string) (models.User, error)
+	Update(user models.User) (models.User, error)
 	Delete(id string) (models.User, error)
 	FindByEmail(email string) (models.User, error)
 }
@@ -48,13 +48,13 @@ func (r *userRepository) FindAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (r *userRepository) Update(userUpdate models.User, id string) (models.User, error) {
+func (r *userRepository) Update(userUpdate models.User) (models.User, error) {
 	var user models.User
-	err := r.db.Model(&user).Where("id = ?", id).Updates(&userUpdate).Error
+	err := r.db.Save(&user).Error
 	if err != nil {
 		return user, err
 	}
-	return r.FindByID(id)
+	return user, nil
 }
 
 func (r *userRepository) Delete(id string) (models.User, error) {
