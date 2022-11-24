@@ -2,7 +2,6 @@ package payload
 
 type ProductPayload struct {
 	Name             string `json:"name" validate:"required"`
-	Type             string `json:"type" validate:"required"`
 	Provider         string `json:"provider" validate:"required"`
 	Price            uint   `json:"price" validate:"required"`
 	PricePoints      uint   `json:"price_points" validate:"required"`
@@ -12,7 +11,9 @@ type ProductPayload struct {
 	ProductPictureID string `json:"product_picture_id"`
 }
 
-type ProductCreditPayload struct {
+type ProductWithCreditPayload struct {
 	ProductPayload
-	CreditPayload
+	Description  string `json:"description"`
+	ActivePeriod int    `json:"active_period" validate:"required"`
+	Amount       int    `json:"amount" validate:"required"`
 }

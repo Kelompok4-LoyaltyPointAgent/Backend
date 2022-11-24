@@ -48,7 +48,7 @@ func initRepositories() {
 
 func initServices() {
 	userService = user_service.NewUserService(userRepository)
-	productService = product_service.NewProductService(productRepository)
+	productService = product_service.NewProductService(productRepository, creditRepository)
 	creditService = credit_service.NewCreditService(creditRepository)
 }
 

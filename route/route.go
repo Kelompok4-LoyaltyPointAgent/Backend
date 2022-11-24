@@ -29,10 +29,8 @@ func Setup(app *echo.Echo) {
 	v1.POST("/login", initialize.UserHandler.Login)
 
 	productV1 := v1.Group("/products", auth)
-	productV1.GET("", initialize.ProductHandler.GetProducts)
-	productV1.POST("", initialize.ProductHandler.CreateProduct, middlewares.AuthorizedRoles([]string{"Admin"}))
-
-	creditV1 := v1.Group("/credits", auth)
-	creditV1.GET("", initialize.CreditHandler.GetCredits)
-	creditV1.POST("", initialize.CreditHandler.CreateCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+	productV1.GET("/credits", initialize.ProductHandler.GetProductsWithCredits)
+	productV1.POST("/credits", initialize.ProductHandler.CreateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+	productV1.PUT("/credits/:id", initialize.ProductHandler.UpdateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+	productV1.DELETE("/credits/:id", initialize.ProductHandler.DeleteProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
 }

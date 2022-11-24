@@ -5,35 +5,48 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 )
 
 type ProductService interface {
-	FindAll() (*[]response.ProductResponse, error)
-	CreateProduct(payload payload.ProductPayload) (*response.ProductResponse, error)
+	FindAllWithCredits() (*[]response.ProductWithCreditResponse, error)
+	CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error)
+	UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error)
+	DeleteProductWithCredit(id any) error
 }
 
 type productService struct {
-	repository product_repository.ProductRepository
+	productRepository product_repository.ProductRepository
+	creditRepository  credit_repository.CreditRepository
 }
 
-func NewProductService(repository product_repository.ProductRepository) ProductService {
-	return &productService{repository}
+func NewProductService(productRepository product_repository.ProductRepository, creditRepository credit_repository.CreditRepository) ProductService {
+	return &productService{productRepository, creditRepository}
 }
 
-func (s *productService) FindAll() (*[]response.ProductResponse, error) {
-	products, err := s.repository.FindAll()
+func (s *productService) FindAllWithCredits() (*[]response.ProductWithCreditResponse, error) {
+	products, err := s.productRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewProductsResponse(products), nil
+	var credits []models.Credit
+	for _, product := range products {
+		credit, err := s.creditRepository.FindByProductID(product.ID)
+		if err != nil {
+			continue
+		}
+		credits = append(credits, credit)
+	}
+
+	return response.NewProductsWithCreditsResponse(products, credits), nil
 }
 
-func (s *productService) CreateProduct(payload payload.ProductPayload) (*response.ProductResponse, error) {
+func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
 	product := models.Product{
 		Name:         payload.Name,
-		Type:         payload.Type,
+		Type:         "Credit",
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
@@ -50,10 +63,69 @@ func (s *productService) CreateProduct(payload payload.ProductPayload) (*respons
 		product.ProductPictureID = &id
 	}
 
-	product, err := s.repository.Create(product)
+	product, err := s.productRepository.Create(product)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewProductResponse(product), nil
+	credit, err := s.creditRepository.Create(models.Credit{
+		ProductID:    &product.ID,
+		Description:  payload.Description,
+		ActivePeriod: payload.ActivePeriod,
+		Amount:       payload.Amount,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductWithCreditResponse(product, credit), nil
+}
+
+func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error) {
+	product := models.Product{
+		Name:         payload.Name,
+		Type:         "Credit",
+		Provider:     payload.Provider,
+		Price:        payload.Price,
+		PricePoints:  payload.PricePoints,
+		RewardPoints: payload.RewardPoints,
+		Stock:        payload.Stock,
+		Recommended:  payload.Recommended,
+	}
+
+	if payload.ProductPictureID != "" {
+		id, err := uuid.Parse(payload.ProductPictureID)
+		if err != nil {
+			return nil, err
+		}
+		product.ProductPictureID = &id
+	}
+
+	product, err := s.productRepository.Update(product, id)
+	if err != nil {
+		return nil, err
+	}
+
+	credit, err := s.creditRepository.UpdateByProductID(models.Credit{
+		Description:  payload.Description,
+		ActivePeriod: payload.ActivePeriod,
+		Amount:       payload.Amount,
+	}, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductWithCreditResponse(product, credit), nil
+}
+
+func (s *productService) DeleteProductWithCredit(id any) error {
+	if err := s.creditRepository.DeleteByProductID(id); err != nil {
+		return err
+	}
+
+	if err := s.productRepository.DeleteByID(id); err != nil {
+		return err
+	}
+
+	return nil
 }

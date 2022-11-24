@@ -7,7 +7,10 @@ import (
 
 type ProductRepository interface {
 	FindAll() ([]models.Product, error)
+	FindByID(id any) (models.Product, error)
 	Create(product models.Product) (models.Product, error)
+	Update(productUpdate models.Product, id any) (models.Product, error)
+	DeleteByID(id any) error
 }
 
 type productRepository struct {
@@ -24,7 +27,28 @@ func (r *productRepository) FindAll() ([]models.Product, error) {
 	return products, err
 }
 
+func (r *productRepository) FindByID(id any) (models.Product, error) {
+	var product models.Product
+	err := r.db.Where("id = ?", id).Find(&product).Error
+	return product, err
+}
+
 func (r *productRepository) Create(product models.Product) (models.Product, error) {
 	err := r.db.Create(&product).Error
 	return product, err
+}
+
+func (r *productRepository) Update(productUpdate models.Product, id any) (models.Product, error) {
+	var product models.Product
+	err := r.db.Model(&product).Where("id = ?", id).Updates(&productUpdate).Error
+	if err != nil {
+		return product, err
+	}
+	return r.FindByID(id)
+}
+
+func (r *productRepository) DeleteByID(id any) error {
+	var product models.Product
+	err := r.db.Where("id = ?", id).Delete(&product).Error
+	return err
 }

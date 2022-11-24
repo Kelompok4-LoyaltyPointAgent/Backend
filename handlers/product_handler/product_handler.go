@@ -11,8 +11,10 @@ import (
 )
 
 type ProductHandler interface {
-	GetProducts(c echo.Context) error
-	CreateProduct(c echo.Context) error
+	GetProductsWithCredits(c echo.Context) error
+	CreateProductWithCredit(c echo.Context) error
+	UpdateProductWithCredit(c echo.Context) error
+	DeleteProductWithCredit(c echo.Context) error
 }
 
 type productHandler struct {
@@ -25,17 +27,17 @@ func NewProductHandler(service product_service.ProductService) ProductHandler {
 	return &productHandler{validate, service}
 }
 
-func (h *productHandler) GetProducts(c echo.Context) error {
-	productsResponse, err := h.service.FindAll()
+func (h *productHandler) GetProductsWithCredits(c echo.Context) error {
+	productsWithCreditsResponse, err := h.service.FindAllWithCredits()
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
 
-	return response.Success(c, "success", http.StatusOK, productsResponse)
+	return response.Success(c, "success", http.StatusOK, productsWithCreditsResponse)
 }
 
-func (h *productHandler) CreateProduct(c echo.Context) error {
-	var payload payload.ProductPayload
+func (h *productHandler) CreateProductWithCredit(c echo.Context) error {
+	var payload payload.ProductWithCreditPayload
 
 	if err := c.Bind(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
@@ -45,10 +47,41 @@ func (h *productHandler) CreateProduct(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
-	productResponse, err := h.service.CreateProduct(payload)
+	productWithCreditResponse, err := h.service.CreateProductWithCredit(payload)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
 
-	return response.Success(c, "success", http.StatusOK, productResponse)
+	return response.Success(c, "success", http.StatusOK, productWithCreditResponse)
+}
+
+func (h *productHandler) UpdateProductWithCredit(c echo.Context) error {
+	var payload payload.ProductWithCreditPayload
+
+	if err := c.Bind(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	if err := h.validate.Struct(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	productWithCreditResponse, err := h.service.UpdateProductWithCredit(payload, c.Param("id"))
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, productWithCreditResponse)
+}
+
+func (h *productHandler) DeleteProductWithCredit(c echo.Context) error {
+	if err := h.service.DeleteProductWithCredit(c.Param("id")); err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, map[string]any{
+		"id":      c.Param("id"),
+		"kind":    "product",
+		"deleted": true,
+	})
 }

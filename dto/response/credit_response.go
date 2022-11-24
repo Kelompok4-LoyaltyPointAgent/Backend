@@ -7,7 +7,7 @@ import (
 
 type CreditResponse struct {
 	ID           uuid.UUID        `json:"id"`
-	ProductID    *uuid.UUID       `json:"product_id"`
+	ProductID    *uuid.UUID       `json:"product_id,omitempty"`
 	Product      *ProductResponse `json:"product,omitempty"`
 	Description  string           `json:"description"`
 	ActivePeriod int              `json:"active_period"`
@@ -15,14 +15,17 @@ type CreditResponse struct {
 }
 
 func NewCreditResponse(credit models.Credit) *CreditResponse {
-	return &CreditResponse{
+	response := &CreditResponse{
 		ID:           credit.ID,
 		ProductID:    credit.ProductID,
-		Product:      NewProductResponse(*credit.Product),
 		Description:  credit.Description,
 		ActivePeriod: credit.ActivePeriod,
 		Amount:       credit.Amount,
 	}
+	if credit.Product != nil {
+		response.Product = NewProductResponse(*credit.Product)
+	}
+	return response
 }
 
 func NewCreditsResponse(credits []models.Credit) *[]CreditResponse {
