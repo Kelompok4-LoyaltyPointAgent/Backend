@@ -12,6 +12,7 @@ import (
 
 type ProductHandler interface {
 	GetProductsWithCredits(c echo.Context) error
+	GetProductWithCredit(c echo.Context) error
 	CreateProductWithCredit(c echo.Context) error
 	UpdateProductWithCredit(c echo.Context) error
 	DeleteProductWithCredit(c echo.Context) error
@@ -34,6 +35,15 @@ func (h *productHandler) GetProductsWithCredits(c echo.Context) error {
 	}
 
 	return response.Success(c, "success", http.StatusOK, productsWithCreditsResponse)
+}
+
+func (h *productHandler) GetProductWithCredit(c echo.Context) error {
+	productWithCreditResponse, err := h.service.FindByIDWithCredit(c.Param("id"))
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, productWithCreditResponse)
 }
 
 func (h *productHandler) CreateProductWithCredit(c echo.Context) error {

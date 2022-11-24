@@ -11,6 +11,7 @@ import (
 
 type ProductService interface {
 	FindAllWithCredits() (*[]response.ProductWithCreditResponse, error)
+	FindByIDWithCredit(id any) (*response.ProductWithCreditResponse, error)
 	CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error)
 	UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error)
 	DeleteProductWithCredit(id any) error
@@ -41,6 +42,20 @@ func (s *productService) FindAllWithCredits() (*[]response.ProductWithCreditResp
 	}
 
 	return response.NewProductsWithCreditsResponse(products, credits), nil
+}
+
+func (s *productService) FindByIDWithCredit(id any) (*response.ProductWithCreditResponse, error) {
+	product, err := s.productRepository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	credit, err := s.creditRepository.FindByProductID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductWithCreditResponse(product, credit), nil
 }
 
 func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
