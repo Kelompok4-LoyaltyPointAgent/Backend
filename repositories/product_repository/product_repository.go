@@ -29,7 +29,7 @@ func (r *productRepository) FindAll() ([]models.Product, error) {
 
 func (r *productRepository) FindByID(id any) (models.Product, error) {
 	var product models.Product
-	err := r.db.Where("id = ?", id).Find(&product).Error
+	err := r.db.Where("id = ?", id).First(&product).Error
 	return product, err
 }
 
