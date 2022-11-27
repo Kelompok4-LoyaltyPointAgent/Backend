@@ -2,6 +2,7 @@ package otp_service
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
@@ -43,6 +44,7 @@ func (s *otpService) CreateOTP(payload payload.RequestOTPPayload) (*response.Req
 		UserID:    user.ID,
 		Pin:       pin,
 		ExpiredAt: time.Now().Add(5 * time.Minute),
+		IsUsed:    false,
 	})
 	if err != nil {
 		return nil, err
@@ -73,7 +75,10 @@ func (s *otpService) VerifyOTP(payload payload.VerifyOTPPayload) (*response.Veri
 		return nil, errors.New("otp expired")
 	}
 
-	s.otpRepository.DeleteByID(otp.ID)
+	if _, err := s.otpRepository.Update(models.OTP{IsUsed: true}, otp.ID); err != nil {
+		log.Printf("Error: %s", err)
+		return nil, errors.New("internal server error")
+	}
 
 	return response.NewVerifyOTPResponse(true), nil
 }

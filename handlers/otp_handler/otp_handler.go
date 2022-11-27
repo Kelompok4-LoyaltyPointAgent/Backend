@@ -57,6 +57,9 @@ func (h *otpHandler) VerifyOTP(c echo.Context) error {
 
 	otp, err := h.service.VerifyOTP(payload)
 	if err != nil {
+		if err.Error() == "internal server error" {
+			return response.Error(c, "failed", http.StatusInternalServerError, err)
+		}
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
