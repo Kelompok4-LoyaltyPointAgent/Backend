@@ -29,9 +29,13 @@ func Setup(app *echo.Echo) {
 	v1.POST("/register", initialize.UserHandler.CreateUser)
 	v1.POST("/login", initialize.UserHandler.Login)
 
+	otpV1 := v1.Group("/otp")
+	otpV1.POST("/request", initialize.OTPHandler.RequestOTP)
+	otpV1.POST("/verify", initialize.OTPHandler.VerifyOTP)
+
 	user := v1.Group("/user", auth)
 	//User
-	user.GET("/me", initialize.UserHandler.FindUserByID) 
+	user.GET("/me", initialize.UserHandler.FindUserByID)
 	user.PUT("", initialize.UserHandler.UpdateUser)
 	user.PUT("/change-password", initialize.UserHandler.ChangePassword)
 	//Admin
