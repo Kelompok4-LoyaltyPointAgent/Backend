@@ -4,15 +4,18 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/db"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/credit_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/hello_handler"
+	"github.com/kelompok4-loyaltypointagent/backend/handlers/otp_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/product_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/user_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/otp_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/packages_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_picture_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/services/credit_service"
+	"github.com/kelompok4-loyaltypointagent/backend/services/otp_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/packages_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/product_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/user_service"
@@ -25,6 +28,11 @@ var HelloHandler hello_handler.HelloHandler
 var userRepository user_repository.UserRepository
 var userService user_service.UserService
 var UserHandler user_handler.UserHandler
+
+// OTP
+var otpRepository otp_repository.OTPRepository
+var otpService otp_service.OTPService
+var OTPHandler otp_handler.OTPHandler
 
 // Product
 var productRepository product_repository.ProductRepository
@@ -58,6 +66,7 @@ func initRepositories() {
 	creditRepository = credit_repository.NewCreditRepository(db)
 	packagesRepository = packages_repository.NewPackagesRepository(db)
 	productPictureRepository = product_picture_repository.NewProductPictureRepository(db)
+	otpRepository = otp_repository.NewOTPRepository(db)
 }
 
 func initServices() {
@@ -65,6 +74,7 @@ func initServices() {
 	productService = product_service.NewProductService(productRepository, creditRepository, packagesRepository, productPictureRepository)
 	creditService = credit_service.NewCreditService(creditRepository)
 	packagesService = packages_service.NewPackagesService(packagesRepository)
+	otpService = otp_service.NewOTPService(otpRepository, userRepository)
 }
 
 func initHandlers() {
@@ -72,4 +82,5 @@ func initHandlers() {
 	UserHandler = user_handler.NewUserHandler(userService)
 	ProductHandler = product_handler.NewProductHandler(productService)
 	CreditHandler = credit_handler.NewCreditHandler(creditService)
+	OTPHandler = otp_handler.NewOTPHandler(otpService)
 }

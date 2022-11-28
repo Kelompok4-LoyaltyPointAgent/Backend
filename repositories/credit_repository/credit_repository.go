@@ -29,7 +29,7 @@ func (r *creditRepository) FindAll() ([]models.Credit, error) {
 
 func (r *creditRepository) FindByProductID(id any) (models.Credit, error) {
 	var credit models.Credit
-	err := r.db.Where("product_id = ?", id).Find(&credit).Error
+	err := r.db.Where("product_id = ?", id).First(&credit).Error
 	return credit, err
 }
 

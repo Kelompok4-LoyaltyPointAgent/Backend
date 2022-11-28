@@ -5,7 +5,6 @@ CREATE TABLE `credits` (
   `updated_at` datetime(3),
   `deleted_at` datetime(3),
   `product_id` varchar(255),
-  `description` text,
   `active_period` int,
   `amount` int,
   PRIMARY KEY (`id`),
