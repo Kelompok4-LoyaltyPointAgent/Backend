@@ -18,6 +18,7 @@ type ProductResponse struct {
 	ProductPictureID *uuid.UUID `json:"product_picture_id,omitempty"`
 }
 
+//Product With Credit Response
 type ProductWithCreditResponse struct {
 	ProductResponse
 	Credit CreditResponse `json:"credit,omitempty"`
@@ -36,6 +37,29 @@ func NewProductsWithCreditsResponse(products []models.Product, credits []models.
 	for i := range products {
 		credits[i].Product = nil
 		response = append(response, *NewProductWithCreditResponse(products[i], credits[i]))
+	}
+	return &response
+}
+
+//Product With Package Response
+type ProductWithPackagesResponse struct {
+	ProductResponse
+	Package PackagesResponse `json:"package,omitempty"`
+}
+
+func NewProductWithPackagesResponse(product models.Product, packages models.Packages) *ProductWithPackagesResponse {
+	packages.ProductID = nil
+	return &ProductWithPackagesResponse{
+		ProductResponse: *NewProductResponse(product),
+		Package:         *NewPackagesResponse(packages),
+	}
+}
+
+func NewProductsWithPackagesResponse(products []models.Product, packages []models.Packages) *[]ProductWithPackagesResponse {
+	var response []ProductWithPackagesResponse
+	for i := range products {
+		packages[i].Product = nil
+		response = append(response, *NewProductWithPackagesResponse(products[i], packages[i]))
 	}
 	return &response
 }

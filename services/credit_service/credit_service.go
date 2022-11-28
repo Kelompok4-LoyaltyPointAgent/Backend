@@ -32,7 +32,6 @@ func (s *creditService) FindAll() (*[]response.CreditResponse, error) {
 
 func (s *creditService) CreateCredit(payload payload.CreditPayload) (*response.CreditResponse, error) {
 	credit := models.Credit{
-		Description:  payload.Description,
 		ActivePeriod: payload.ActivePeriod,
 		Amount:       payload.Amount,
 	}

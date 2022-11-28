@@ -16,6 +16,8 @@ type Product struct {
 	RewardPoints     uint
 	Stock            uint
 	Recommended      bool
+	Description      string
+	TermsOfService   string
 	ProductPictureID *uuid.UUID
 }
 
