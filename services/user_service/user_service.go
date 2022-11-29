@@ -37,9 +37,10 @@ func (s *userService) FindByID(id string) (response.UserResponse, error) {
 		return response.UserResponse{}, err
 	}
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
@@ -58,6 +59,7 @@ func (s *userService) Create(payload payload.UserPayload) (response.UserResponse
 		Email:    payload.Email,
 		Password: payload.Password,
 		Role:     "User",
+		Points:   payload.Points,
 	}
 
 	if err := user.HashPassword(user.Password); err != nil {
@@ -69,9 +71,10 @@ func (s *userService) Create(payload payload.UserPayload) (response.UserResponse
 		return response.UserResponse{}, err
 	}
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
@@ -85,9 +88,10 @@ func (s *userService) FindAll() ([]response.UserResponse, error) {
 	var usersResponses []response.UserResponse
 	for _, user := range users {
 		userResponse := response.UserResponse{
-			ID:    user.ID.String(),
-			Name:  user.Name,
-			Email: user.Email,
+			ID:     user.ID.String(),
+			Name:   user.Name,
+			Email:  user.Email,
+			Points: user.Points,
 		}
 		usersResponses = append(usersResponses, userResponse)
 	}
@@ -112,9 +116,10 @@ func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (res
 	}
 
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
@@ -125,6 +130,7 @@ func (s *userService) UpdateUserByAdmin(payload payload.UserPayload, id string) 
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: payload.Password,
+		Points:   payload.Points,
 	}
 
 	if payload.Password != "" {
@@ -144,9 +150,10 @@ func (s *userService) UpdateUserByAdmin(payload payload.UserPayload, id string) 
 	}
 
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
@@ -157,9 +164,10 @@ func (s *userService) Delete(id string) (response.UserResponse, error) {
 		return response.UserResponse{}, err
 	}
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
@@ -170,9 +178,10 @@ func (s *userService) FindByEmail(email string) (response.UserResponse, error) {
 		return response.UserResponse{}, err
 	}
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
@@ -225,9 +234,10 @@ func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id s
 		return response.UserResponse{}, err
 	}
 	userResponse := response.UserResponse{
-		ID:    user.ID.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
 	}
 	return userResponse, nil
 }
