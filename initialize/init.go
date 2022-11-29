@@ -2,7 +2,6 @@ package initialize
 
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/db"
-	"github.com/kelompok4-loyaltypointagent/backend/handlers/credit_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/hello_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/otp_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/product_handler"
@@ -11,7 +10,6 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/otp_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
-	"github.com/kelompok4-loyaltypointagent/backend/services/credit_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/otp_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/product_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/user_service"
@@ -37,8 +35,6 @@ var ProductHandler product_handler.ProductHandler
 
 // Credit
 var creditRepository credit_repository.CreditRepository
-var creditService credit_service.CreditService
-var CreditHandler credit_handler.CreditHandler
 
 func Init() {
 	initRepositories()
@@ -58,7 +54,6 @@ func initRepositories() {
 func initServices() {
 	userService = user_service.NewUserService(userRepository)
 	productService = product_service.NewProductService(productRepository, creditRepository)
-	creditService = credit_service.NewCreditService(creditRepository)
 	otpService = otp_service.NewOTPService(otpRepository, userRepository)
 }
 
@@ -66,6 +61,5 @@ func initHandlers() {
 	HelloHandler = hello_handler.NewHelloHandler()
 	UserHandler = user_handler.NewUserHandler(userService)
 	ProductHandler = product_handler.NewProductHandler(productService)
-	CreditHandler = credit_handler.NewCreditHandler(creditService)
 	OTPHandler = otp_handler.NewOTPHandler(otpService)
 }
