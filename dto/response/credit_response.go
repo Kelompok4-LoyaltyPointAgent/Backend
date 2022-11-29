@@ -20,9 +20,6 @@ func NewCreditResponse(credit models.Credit) *CreditResponse {
 		ActivePeriod: credit.ActivePeriod,
 		Amount:       credit.Amount,
 	}
-	if credit.Product != nil {
-		response.Product = NewProductResponse(*credit.Product)
-	}
 	return response
 }
 

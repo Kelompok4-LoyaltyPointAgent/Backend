@@ -9,7 +9,7 @@ type Packages struct {
 	gorm.Model
 	ID           uuid.UUID
 	ProductID    *uuid.UUID
-	Product      *Product
+	Product      Product
 	ActivePeriod int
 	Internet     int
 	Call         int

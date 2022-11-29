@@ -23,6 +23,7 @@ type ProductWithCreditPayload struct {
 
 type ProductWithPackagesPayload struct {
 	ProductPayload
-	Internet int `form:"internet" validate:"required"`
-	Call     int `form:"call" validate:"required"`
+	ActivePeriod int `form:"active_period" validate:"required"`
+	Internet     int `form:"internet" validate:"required"`
+	Call         int `form:"call" validate:"required"`
 }

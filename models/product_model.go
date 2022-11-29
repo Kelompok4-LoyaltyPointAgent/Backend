@@ -19,6 +19,7 @@ type Product struct {
 	Description      string
 	TermsOfService   string
 	ProductPictureID *uuid.UUID
+	ProductPicture   *ProductPicture
 }
 
 func (product *Product) BeforeCreate(tx *gorm.DB) (err error) {

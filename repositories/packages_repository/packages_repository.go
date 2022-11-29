@@ -9,6 +9,7 @@ type PackagesRepository interface {
 	FindAll() ([]models.Packages, error)
 	Create(packages models.Packages) (models.Packages, error)
 	FindByProductID(id any) (models.Packages, error)
+	FindByProvider(provider string) ([]models.Packages, error)
 	UpdateByProductID(packagesUpdate models.Packages, productID any) (models.Packages, error)
 	DeleteByProductID(productID any) error
 }
@@ -23,7 +24,7 @@ func NewPackagesRepository(db *gorm.DB) *packagesRepository {
 
 func (r *packagesRepository) FindAll() ([]models.Packages, error) {
 	var packages []models.Packages
-	err := r.db.Preload("Product").Find(&packages).Error
+	err := r.db.Preload("Product").Preload("Product.ProductPicture").Find(&packages).Error
 	return packages, err
 }
 
@@ -34,7 +35,14 @@ func (r *packagesRepository) Create(packages models.Packages) (models.Packages, 
 
 func (r *packagesRepository) FindByProductID(id any) (models.Packages, error) {
 	var packages models.Packages
-	err := r.db.Where("product_id = ?", id).Find(&packages).Error
+	err := r.db.Where("product_id = ?", id).Preload("Product").Preload("Product.ProductPicture").Find(&packages).Error
+	return packages, err
+}
+
+func (r *packagesRepository) FindByProvider(provider string) ([]models.Packages, error) {
+	var packages []models.Packages
+	err := r.db.Preload("Product", "provider = ?", provider).Preload("Product.ProductPicture").Find(&packages).Error
+
 	return packages, err
 }
 

@@ -15,6 +15,7 @@ type ProductService interface {
 	//Credit
 	FindAllWithCredits() (*[]response.ProductWithCreditResponse, error)
 	FindByIDWithCredit(id any) (*response.ProductWithCreditResponse, error)
+	FindByProviderWithCredit(provider string) (*[]response.ProductWithCreditResponse, error)
 	CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error)
 	UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error)
 	DeleteProductWithCredit(id any) error
@@ -22,6 +23,7 @@ type ProductService interface {
 	//Packages
 	FindAllWithPackages() (*[]response.ProductWithPackagesResponse, error)
 	FindByIDWithPackages(id any) (*response.ProductWithPackagesResponse, error)
+	FindByProviderWithPackages(provider string) (*[]response.ProductWithPackagesResponse, error)
 	CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error)
 	UpdateProductWithPackages(payload payload.ProductWithPackagesPayload, id any) (*response.ProductWithPackagesResponse, error)
 	DeleteProductWithPackages(id any) error
@@ -39,35 +41,31 @@ func NewProductService(productRepository product_repository.ProductRepository, c
 }
 
 func (s *productService) FindAllWithCredits() (*[]response.ProductWithCreditResponse, error) {
-	products, err := s.productRepository.FindAll()
+	credits, err := s.creditRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	var credits []models.Credit
-	for _, product := range products {
-		credit, err := s.creditRepository.FindByProductID(product.ID)
-		if err != nil {
-			continue
-		}
-		credits = append(credits, credit)
-	}
-
-	return response.NewProductsWithCreditsResponse(products, credits), nil
+	return response.NewProductsWithCreditsResponse(credits), nil
 }
 
 func (s *productService) FindByIDWithCredit(id any) (*response.ProductWithCreditResponse, error) {
-	product, err := s.productRepository.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
 
 	credit, err := s.creditRepository.FindByProductID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewProductWithCreditResponse(product, credit), nil
+	return response.NewProductWithCreditResponse(credit.Product, credit), nil
+}
+
+func (s *productService) FindByProviderWithCredit(provider string) (*[]response.ProductWithCreditResponse, error) {
+	credits, err := s.creditRepository.FindByProvider(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductsWithCreditsResponse(credits), nil
 }
 
 func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
@@ -152,8 +150,10 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 				return nil, err
 			}
 			product.ProductPictureID = &createProductPicture.ID
+			product.ProductPicture = &createProductPicture
 		} else {
 			product.ProductPictureID = &productPicture.ID
+			product.ProductPicture = &productPicture
 		}
 	}
 
@@ -186,35 +186,31 @@ func (s *productService) DeleteProductWithCredit(id any) error {
 }
 
 func (s *productService) FindAllWithPackages() (*[]response.ProductWithPackagesResponse, error) {
-	products, err := s.productRepository.FindAll()
+	pack, err := s.packagesRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	var packages []models.Packages
-	for _, product := range products {
-		pack, err := s.packagesRepository.FindByProductID(product.ID)
-		if err != nil {
-			continue
-		}
-		packages = append(packages, pack)
-	}
-
-	return response.NewProductsWithPackagesResponse(products, packages), nil
+	return response.NewProductsWithPackagesResponse(pack), nil
 }
 
 func (s *productService) FindByIDWithPackages(id any) (*response.ProductWithPackagesResponse, error) {
-	product, err := s.productRepository.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
 
 	pack, err := s.packagesRepository.FindByProductID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewProductWithPackagesResponse(product, pack), nil
+	return response.NewProductWithPackagesResponse(pack.Product, pack), nil
+}
+
+func (s *productService) FindByProviderWithPackages(provider string) (*[]response.ProductWithPackagesResponse, error) {
+	packages, err := s.packagesRepository.FindByProvider(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductsWithPackagesResponse(packages), nil
 }
 
 func (s *productService) CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error) {
@@ -247,8 +243,10 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 				return nil, err
 			}
 			product.ProductPictureID = &createProductPicture.ID
+			product.ProductPicture = &createProductPicture
 		} else {
 			product.ProductPictureID = &productPicture.ID
+			product.ProductPicture = &productPicture
 		}
 	}
 
@@ -258,9 +256,10 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.Create(models.Packages{
-		ProductID: &product.ID,
-		Internet:  payload.Internet,
-		Call:      payload.Call,
+		ProductID:    &product.ID,
+		ActivePeriod: payload.ActivePeriod,
+		Internet:     payload.Internet,
+		Call:         payload.Call,
 	})
 	if err != nil {
 		return nil, err
@@ -310,8 +309,9 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.UpdateByProductID(models.Packages{
-		Internet: payload.Internet,
-		Call:     payload.Call,
+		ActivePeriod: payload.ActivePeriod,
+		Internet:     payload.Internet,
+		Call:         payload.Call,
 	}, id)
 	if err != nil {
 		return nil, err

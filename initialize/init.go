@@ -16,7 +16,6 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/services/credit_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/otp_service"
-	"github.com/kelompok4-loyaltypointagent/backend/services/packages_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/product_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/user_service"
 )
@@ -49,7 +48,6 @@ var CreditHandler credit_handler.CreditHandler
 
 // Packages
 var packagesRepository packages_repository.PackagesRepository
-var packagesService packages_service.PackagesService
 
 func Init() {
 	helper.InitAppFirebase()
@@ -73,7 +71,6 @@ func initServices() {
 	userService = user_service.NewUserService(userRepository)
 	productService = product_service.NewProductService(productRepository, creditRepository, packagesRepository, productPictureRepository)
 	creditService = credit_service.NewCreditService(creditRepository)
-	packagesService = packages_service.NewPackagesService(packagesRepository)
 	otpService = otp_service.NewOTPService(otpRepository, userRepository)
 }
 

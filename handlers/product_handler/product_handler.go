@@ -15,6 +15,7 @@ type ProductHandler interface {
 	//Product With Credits
 	GetProductsWithCredits(c echo.Context) error
 	GetProductWithCredit(c echo.Context) error
+	GetProductByProviderWithCredits(provider string, c echo.Context) error
 	CreateProductWithCredit(c echo.Context) error
 	UpdateProductWithCredit(c echo.Context) error
 	DeleteProductWithCredit(c echo.Context) error
@@ -22,6 +23,7 @@ type ProductHandler interface {
 	//Product With Packages
 	GetProductsWithPackages(c echo.Context) error
 	GetProductWithPackage(c echo.Context) error
+	GetProductByProviderWithPackages(provider string, c echo.Context) error
 	CreateProductWithPackage(c echo.Context) error
 	UpdateProductWithPackage(c echo.Context) error
 	DeleteProductWithPackage(c echo.Context) error
@@ -38,6 +40,11 @@ func NewProductHandler(service product_service.ProductService) ProductHandler {
 }
 
 func (h *productHandler) GetProductsWithCredits(c echo.Context) error {
+	provider := c.QueryParam("provider")
+	if provider != "" {
+		return h.GetProductByProviderWithCredits(provider, c)
+	}
+
 	productsWithCreditsResponse, err := h.service.FindAllWithCredits()
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
@@ -53,6 +60,15 @@ func (h *productHandler) GetProductWithCredit(c echo.Context) error {
 	}
 
 	return response.Success(c, "success", http.StatusOK, productWithCreditResponse)
+}
+
+func (h *productHandler) GetProductByProviderWithCredits(provider string, c echo.Context) error {
+	productsWithPackagesResponse, err := h.service.FindByProviderWithCredit(provider)
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, productsWithPackagesResponse)
 }
 
 func (h *productHandler) CreateProductWithCredit(c echo.Context) error {
@@ -93,11 +109,9 @@ func (h *productHandler) UpdateProductWithCredit(c echo.Context) error {
 	}
 
 	file, err := c.FormFile("product_picture")
-	if err != nil {
-		return response.Error(c, "failed", http.StatusBadRequest, err)
+	if err == nil {
+		payload.ProductPicture = file
 	}
-
-	payload.ProductPicture = file
 
 	productWithCreditResponse, err := h.service.UpdateProductWithCredit(payload, c.Param("id"))
 	if err != nil {
@@ -120,6 +134,11 @@ func (h *productHandler) DeleteProductWithCredit(c echo.Context) error {
 }
 
 func (h *productHandler) GetProductsWithPackages(c echo.Context) error {
+	provider := c.QueryParam("provider")
+	if provider != "" {
+		return h.GetProductByProviderWithPackages(provider, c)
+	}
+
 	productsWithPackagesResponse, err := h.service.FindAllWithPackages()
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
@@ -130,6 +149,15 @@ func (h *productHandler) GetProductsWithPackages(c echo.Context) error {
 
 func (h *productHandler) GetProductWithPackage(c echo.Context) error {
 	productWithPackageResponse, err := h.service.FindByIDWithPackages(c.Param("id"))
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, productWithPackageResponse)
+}
+
+func (h *productHandler) GetProductByProviderWithPackages(provider string, c echo.Context) error {
+	productWithPackageResponse, err := h.service.FindByProviderWithPackages(provider)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
@@ -172,11 +200,9 @@ func (h *productHandler) UpdateProductWithPackage(c echo.Context) error {
 	}
 
 	file, err := c.FormFile("product_picture")
-	if err != nil {
-		return response.Error(c, "failed", http.StatusBadRequest, err)
+	if err == nil {
+		payload.ProductPicture = file
 	}
-
-	payload.ProductPicture = file
 
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)

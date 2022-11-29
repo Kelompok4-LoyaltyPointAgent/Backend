@@ -51,7 +51,7 @@ func Setup(app *echo.Echo) {
 	productV1.PUT("/credits/:id", initialize.ProductHandler.UpdateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
 	productV1.DELETE("/credits/:id", initialize.ProductHandler.DeleteProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
 
-	productV1.GET("/package", initialize.ProductHandler.GetProductWithPackage)
+	productV1.GET("/package", initialize.ProductHandler.GetProductsWithPackages)
 	productV1.POST("/package", initialize.ProductHandler.CreateProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))
 	productV1.GET("/package/:id", initialize.ProductHandler.GetProductWithPackage)
 	productV1.PUT("/package/:id", initialize.ProductHandler.UpdateProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))

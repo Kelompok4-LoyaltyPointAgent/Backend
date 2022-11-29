@@ -22,9 +22,6 @@ func NewPackagesResponse(packages models.Packages) *PackagesResponse {
 		Internet:     packages.Internet,
 		Call:         packages.Call,
 	}
-	if packages.Product != nil {
-		response.Product = NewProductResponse(*packages.Product)
-	}
 	return response
 }
 

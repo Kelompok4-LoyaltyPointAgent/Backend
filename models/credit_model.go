@@ -9,7 +9,7 @@ type Credit struct {
 	gorm.Model
 	ID           uuid.UUID
 	ProductID    *uuid.UUID
-	Product      *Product
+	Product      Product
 	ActivePeriod int
 	Amount       int
 }
