@@ -33,7 +33,7 @@ func Setup(app *echo.Echo) {
 	otpV1.POST("/request", initialize.OTPHandler.RequestOTP)
 	otpV1.POST("/verify", initialize.OTPHandler.VerifyOTP)
 
-	user := v1.Group("/user", auth)
+	user := v1.Group("/users", auth)
 	//User
 	user.GET("/me", initialize.UserHandler.FindUserByID)
 	user.PUT("", initialize.UserHandler.UpdateUser)

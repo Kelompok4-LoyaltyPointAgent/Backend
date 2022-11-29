@@ -3,6 +3,7 @@ package product_handler
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
@@ -78,6 +79,10 @@ func (h *productHandler) CreateProductWithCredit(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
+	payload.Name = strings.TrimSpace(payload.Name)
+	payload.Description = strings.TrimSpace(payload.Description)
+	payload.Provider = strings.TrimSpace(payload.Provider)
+
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
@@ -103,6 +108,10 @@ func (h *productHandler) UpdateProductWithCredit(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
+
+	payload.Name = strings.TrimSpace(payload.Name)
+	payload.Description = strings.TrimSpace(payload.Description)
+	payload.Provider = strings.TrimSpace(payload.Provider)
 
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)

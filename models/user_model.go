@@ -13,6 +13,7 @@ type User struct {
 	Email    string
 	Password string
 	Role     string
+	Points   int
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
