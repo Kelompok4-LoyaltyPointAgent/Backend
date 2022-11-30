@@ -16,7 +16,10 @@ type Product struct {
 	RewardPoints     uint
 	Stock            uint
 	Recommended      bool
+	Description      string
+	TermsOfService   string
 	ProductPictureID *uuid.UUID
+	ProductPicture   *ProductPicture
 }
 
 func (product *Product) BeforeCreate(tx *gorm.DB) (err error) {

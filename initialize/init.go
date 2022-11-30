@@ -6,8 +6,11 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/otp_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/product_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/user_handler"
+	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/otp_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/packages_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_picture_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/services/otp_service"
@@ -33,10 +36,17 @@ var productRepository product_repository.ProductRepository
 var productService product_service.ProductService
 var ProductHandler product_handler.ProductHandler
 
+//Product Picture
+var productPictureRepository product_picture_repository.ProductPictureRepository
+
 // Credit
 var creditRepository credit_repository.CreditRepository
 
+// Packages
+var packagesRepository packages_repository.PackagesRepository
+
 func Init() {
+	helper.InitAppFirebase()
 	initRepositories()
 	initServices()
 	initHandlers()
@@ -48,12 +58,14 @@ func initRepositories() {
 	userRepository = user_repository.NewUserRepository(db)
 	productRepository = product_repository.NewProductRepository(db)
 	creditRepository = credit_repository.NewCreditRepository(db)
+	packagesRepository = packages_repository.NewPackagesRepository(db)
+	productPictureRepository = product_picture_repository.NewProductPictureRepository(db)
 	otpRepository = otp_repository.NewOTPRepository(db)
 }
 
 func initServices() {
 	userService = user_service.NewUserService(userRepository)
-	productService = product_service.NewProductService(productRepository, creditRepository)
+	productService = product_service.NewProductService(productRepository, creditRepository, packagesRepository, productPictureRepository)
 	otpService = otp_service.NewOTPService(otpRepository, userRepository)
 }
 
