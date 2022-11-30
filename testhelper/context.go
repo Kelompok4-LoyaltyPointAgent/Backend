@@ -19,13 +19,13 @@ func NewContext(testCase HTTPTestCase) (echo.Context, *httptest.ResponseRecorder
 		bodyReader = bytes.NewReader(body)
 	}
 
-	req := httptest.NewRequest(testCase.Request.Method, testCase.Request.URL, bodyReader)
+	req := httptest.NewRequest(testCase.Request.Method, testCase.Request.Path, bodyReader)
 	req.Header.Set("Content-Type", testCase.Request.ContentType)
 
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
-	ctx.SetPath(testCase.Request.URL)
+	ctx.SetPath(testCase.Request.Path)
 	if testCase.Request.PathParam != nil {
 		ctx.SetParamNames(testCase.Request.PathParam.Names...)
 		ctx.SetParamValues(testCase.Request.PathParam.Values...)

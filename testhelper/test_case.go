@@ -16,6 +16,6 @@ type PathParam struct {
 type Request struct {
 	Method      string
 	ContentType string
-	URL         string
+	Path        string
 	PathParam   *PathParam
 }
