@@ -77,7 +77,7 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 		PricePoints:    payload.PricePoints,
 		RewardPoints:   payload.RewardPoints,
 		Stock:          payload.Stock,
-		Recommended:    payload.Recommended,
+		Recommended:    *payload.Recommended,
 		Description:    payload.Description,
 		TermsOfService: payload.TermOfService,
 	}
@@ -129,9 +129,16 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 		PricePoints:    payload.PricePoints,
 		RewardPoints:   payload.RewardPoints,
 		Stock:          payload.Stock,
-		Recommended:    payload.Recommended,
 		Description:    payload.Description,
 		TermsOfService: payload.TermOfService,
+	}
+
+	if payload.Recommended != nil {
+		//Update Recommended
+		err := s.productRepository.SetBooleanRecommended(id, *payload.Recommended)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if payload.ProductPicture != nil {
@@ -222,7 +229,7 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		PricePoints:    payload.PricePoints,
 		RewardPoints:   payload.RewardPoints,
 		Stock:          payload.Stock,
-		Recommended:    payload.Recommended,
+		Recommended:    *payload.Recommended,
 		Description:    payload.Description,
 		TermsOfService: payload.TermOfService,
 	}
@@ -281,9 +288,16 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		PricePoints:    payload.PricePoints,
 		RewardPoints:   payload.RewardPoints,
 		Stock:          payload.Stock,
-		Recommended:    payload.Recommended,
 		Description:    payload.Description,
 		TermsOfService: payload.TermOfService,
+	}
+
+	if payload.Recommended != nil {
+		//Update Recommended
+		err := s.productRepository.SetBooleanRecommended(id, *payload.Recommended)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if payload.ProductPicture != nil {

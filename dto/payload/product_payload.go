@@ -9,7 +9,7 @@ type ProductPayload struct {
 	PricePoints    uint                  `form:"price_points" validate:"required"`
 	RewardPoints   uint                  `form:"reward_points" validate:"required"`
 	Stock          uint                  `form:"stock" validate:"required"`
-	Recommended    bool                  `form:"recommended"`
+	Recommended    *bool                  `form:"recommended"`
 	ProductPicture *multipart.FileHeader `form:"product_picture"`
 	Description    string                `form:"description" validate:"required"`
 	TermOfService  string                `form:"term_of_service" validate:"required"`
