@@ -38,7 +38,7 @@ func TestUserHandlerSuite(t *testing.T) {
 func (s *userSuite) TestCreateUser() {
 	request := testhelper.Request{
 		Method:      "post",
-		URL:         "/api/v1/users",
+		Path:        "/api/v1/users",
 		ContentType: "application/json",
 	}
 
