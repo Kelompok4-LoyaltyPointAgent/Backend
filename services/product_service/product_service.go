@@ -256,10 +256,14 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.Create(models.Packages{
-		ProductID:    &product.ID,
-		ActivePeriod: payload.ActivePeriod,
-		Internet:     payload.Internet,
-		Call:         payload.Call,
+		ProductID:     &product.ID,
+		ActivePeriod:  payload.ActivePeriod,
+		TotalInternet: payload.TotalInternet,
+		MainInternet:  payload.MainInternet,
+		NightInternet: payload.NightInternet,
+		SocialMedia:   payload.SocialMedia,
+		Call:          payload.Call,
+		SMS:           payload.SMS,
 	})
 	if err != nil {
 		return nil, err
@@ -309,9 +313,13 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.UpdateByProductID(models.Packages{
-		ActivePeriod: payload.ActivePeriod,
-		Internet:     payload.Internet,
-		Call:         payload.Call,
+		ActivePeriod:  payload.ActivePeriod,
+		TotalInternet: payload.TotalInternet,
+		MainInternet:  payload.MainInternet,
+		NightInternet: payload.NightInternet,
+		SocialMedia:   payload.SocialMedia,
+		Call:          payload.Call,
+		SMS:           payload.SMS,
 	}, id)
 	if err != nil {
 		return nil, err
