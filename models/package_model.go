@@ -5,16 +5,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type Credit struct {
+type Packages struct {
 	gorm.Model
 	ID           uuid.UUID
 	ProductID    *uuid.UUID
 	Product      Product
 	ActivePeriod int
-	Amount       int
+	Internet     int
+	Call         int
 }
 
-func (credit *Credit) BeforeCreate(tx *gorm.DB) (err error) {
-	credit.ID = uuid.New()
+func (packages *Packages) BeforeCreate(tx *gorm.DB) (err error) {
+	packages.ID = uuid.New()
 	return
 }

@@ -8,6 +8,7 @@ import (
 type CreditRepository interface {
 	FindAll() ([]models.Credit, error)
 	FindByProductID(id any) (models.Credit, error)
+	FindByProvider(provider string) ([]models.Credit, error)
 	Create(credit models.Credit) (models.Credit, error)
 	UpdateByProductID(creditUpdate models.Credit, productID any) (models.Credit, error)
 	DeleteByProductID(productID any) error
@@ -23,14 +24,20 @@ func NewCreditRepository(db *gorm.DB) CreditRepository {
 
 func (r *creditRepository) FindAll() ([]models.Credit, error) {
 	var credits []models.Credit
-	err := r.db.Preload("Product").Find(&credits).Error
+	err := r.db.Preload("Product").Preload("Product.ProductPicture").Find(&credits).Error
 	return credits, err
 }
 
 func (r *creditRepository) FindByProductID(id any) (models.Credit, error) {
 	var credit models.Credit
-	err := r.db.Where("product_id = ?", id).First(&credit).Error
+	err := r.db.Where("product_id = ?", id).Preload("Product").Preload("Product.ProductPicture").First(&credit).Error
 	return credit, err
+}
+
+func (r *creditRepository) FindByProvider(provider string) ([]models.Credit, error) {
+	var credits []models.Credit
+	err := r.db.Preload("Product", "provider = ?", provider).Preload("Product.ProductPicture").Find(&credits).Error
+	return credits, err
 }
 
 func (r *creditRepository) Create(credit models.Credit) (models.Credit, error) {

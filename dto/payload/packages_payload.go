@@ -1,7 +1,8 @@
 package payload
 
-type CreditPayload struct {
+type PackagesPayload struct {
 	ProductID    string `json:"product_id" validate:"required"`
 	ActivePeriod int    `json:"active_period" validate:"required"`
-	Amount       int    `json:"amount" validate:"required"`
+	Internet     int    `json:"internet" validate:"required"`
+	Call         int    `json:"call" validate:"required"`
 }
