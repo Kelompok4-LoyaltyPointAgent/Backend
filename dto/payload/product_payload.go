@@ -9,16 +9,18 @@ type ProductPayload struct {
 	PricePoints    uint                  `form:"price_points" validate:"required"`
 	RewardPoints   uint                  `form:"reward_points" validate:"required"`
 	Stock          uint                  `form:"stock" validate:"required"`
-	Recommended    *bool                  `form:"recommended"`
+	Recommended    *bool                 `form:"recommended"`
 	ProductPicture *multipart.FileHeader `form:"product_picture"`
 	Description    string                `form:"description" validate:"required"`
-	TermOfService  string                `form:"term_of_service" validate:"required"`
 }
 
 type ProductWithCreditPayload struct {
 	ProductPayload
-	ActivePeriod int `form:"active_period" validate:"required"`
-	Amount       int `form:"amount" validate:"required"`
+	ActivePeriod  int    `form:"active_period" validate:"required"`
+	Amount        int    `form:"amount" validate:"required"`
+	Call          int    `form:"call" validate:"required"`
+	SMS           int    `form:"sms" validate:"required"`
+	TermOfService string `form:"term_of_service" validate:"required"`
 }
 
 type ProductWithPackagesPayload struct {
@@ -30,4 +32,5 @@ type ProductWithPackagesPayload struct {
 	SocialMedia   float64 `form:"social_media" validate:"required"`
 	Call          int     `form:"call" validate:"required"`
 	SMS           int     `form:"sms" validate:"required"`
+	TermOfService string  `form:"term_of_service" validate:"required"`
 }

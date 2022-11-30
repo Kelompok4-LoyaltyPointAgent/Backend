@@ -10,6 +10,7 @@ type PackagesRepository interface {
 	Create(packages models.Packages) (models.Packages, error)
 	FindByProductID(id any) (models.Packages, error)
 	FindByProvider(provider string) ([]models.Packages, error)
+	FindByRecommended() ([]models.Packages, error)
 	UpdateByProductID(packagesUpdate models.Packages, productID any) (models.Packages, error)
 	DeleteByProductID(productID any) error
 }
@@ -43,6 +44,12 @@ func (r *packagesRepository) FindByProvider(provider string) ([]models.Packages,
 	var packages []models.Packages
 	err := r.db.Preload("Product", "provider = ?", provider).Preload("Product.ProductPicture").Find(&packages).Error
 
+	return packages, err
+}
+
+func (r *packagesRepository) FindByRecommended() ([]models.Packages, error) {
+	var packages []models.Packages
+	err := r.db.Preload("Product", "recommended = ?", true).Preload("Product.ProductPicture").Find(&packages).Error
 	return packages, err
 }
 

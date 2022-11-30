@@ -16,6 +16,7 @@ type ProductService interface {
 	FindAllWithCredits() (*[]response.ProductWithCreditResponse, error)
 	FindByIDWithCredit(id any) (*response.ProductWithCreditResponse, error)
 	FindByProviderWithCredit(provider string) (*[]response.ProductWithCreditResponse, error)
+	FindByRecommendedWithCredit() (*[]response.ProductWithCreditResponse, error)
 	CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error)
 	UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error)
 	DeleteProductWithCredit(id any) error
@@ -24,6 +25,7 @@ type ProductService interface {
 	FindAllWithPackages() (*[]response.ProductWithPackagesResponse, error)
 	FindByIDWithPackages(id any) (*response.ProductWithPackagesResponse, error)
 	FindByProviderWithPackages(provider string) (*[]response.ProductWithPackagesResponse, error)
+	FindByRecommendedWithPackages() (*[]response.ProductWithPackagesResponse, error)
 	CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error)
 	UpdateProductWithPackages(payload payload.ProductWithPackagesPayload, id any) (*response.ProductWithPackagesResponse, error)
 	DeleteProductWithPackages(id any) error
@@ -68,18 +70,29 @@ func (s *productService) FindByProviderWithCredit(provider string) (*[]response.
 	return response.NewProductsWithCreditsResponse(credits), nil
 }
 
+func (s *productService) FindByRecommendedWithCredit() (*[]response.ProductWithCreditResponse, error) {
+	credits, err := s.creditRepository.FindByRecommended()
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductsWithCreditsResponse(credits), nil
+}
+
 func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
 	product := models.Product{
-		Name:           payload.Name,
-		Type:           "Credit",
-		Provider:       payload.Provider,
-		Price:          payload.Price,
-		PricePoints:    payload.PricePoints,
-		RewardPoints:   payload.RewardPoints,
-		Stock:          payload.Stock,
-		Recommended:    *payload.Recommended,
-		Description:    payload.Description,
-		TermsOfService: payload.TermOfService,
+		Name:         payload.Name,
+		Type:         "Credit",
+		Provider:     payload.Provider,
+		Price:        payload.Price,
+		PricePoints:  payload.PricePoints,
+		RewardPoints: payload.RewardPoints,
+		Stock:        payload.Stock,
+		Description:  payload.Description,
+	}
+
+	if payload.Recommended != nil {
+		product.Recommended = *payload.Recommended
 	}
 
 	if payload.ProductPicture != nil {
@@ -112,6 +125,8 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 		ProductID:    &product.ID,
 		ActivePeriod: payload.ActivePeriod,
 		Amount:       payload.Amount,
+		Call:         payload.Call,
+		SMS:          payload.SMS,
 	})
 	if err != nil {
 		return nil, err
@@ -122,15 +137,14 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 
 func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error) {
 	product := models.Product{
-		Name:           payload.Name,
-		Type:           "Credit",
-		Provider:       payload.Provider,
-		Price:          payload.Price,
-		PricePoints:    payload.PricePoints,
-		RewardPoints:   payload.RewardPoints,
-		Stock:          payload.Stock,
-		Description:    payload.Description,
-		TermsOfService: payload.TermOfService,
+		Name:         payload.Name,
+		Type:         "Credit",
+		Provider:     payload.Provider,
+		Price:        payload.Price,
+		PricePoints:  payload.PricePoints,
+		RewardPoints: payload.RewardPoints,
+		Stock:        payload.Stock,
+		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -172,6 +186,8 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 	credit, err := s.creditRepository.UpdateByProductID(models.Credit{
 		ActivePeriod: payload.ActivePeriod,
 		Amount:       payload.Amount,
+		Call:         payload.Call,
+		SMS:          payload.SMS,
 	}, id)
 	if err != nil {
 		return nil, err
@@ -220,18 +236,29 @@ func (s *productService) FindByProviderWithPackages(provider string) (*[]respons
 	return response.NewProductsWithPackagesResponse(packages), nil
 }
 
+func (s *productService) FindByRecommendedWithPackages() (*[]response.ProductWithPackagesResponse, error) {
+	packages, err := s.packagesRepository.FindByRecommended()
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewProductsWithPackagesResponse(packages), nil
+}
+
 func (s *productService) CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error) {
 	product := models.Product{
-		Name:           payload.Name,
-		Type:           "Packages",
-		Provider:       payload.Provider,
-		Price:          payload.Price,
-		PricePoints:    payload.PricePoints,
-		RewardPoints:   payload.RewardPoints,
-		Stock:          payload.Stock,
-		Recommended:    *payload.Recommended,
-		Description:    payload.Description,
-		TermsOfService: payload.TermOfService,
+		Name:         payload.Name,
+		Type:         "Packages",
+		Provider:     payload.Provider,
+		Price:        payload.Price,
+		PricePoints:  payload.PricePoints,
+		RewardPoints: payload.RewardPoints,
+		Stock:        payload.Stock,
+		Description:  payload.Description,
+	}
+
+	if payload.Recommended != nil {
+		product.Recommended = *payload.Recommended
 	}
 
 	if payload.ProductPicture != nil {
@@ -263,14 +290,15 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.Create(models.Packages{
-		ProductID:     &product.ID,
-		ActivePeriod:  payload.ActivePeriod,
-		TotalInternet: payload.TotalInternet,
-		MainInternet:  payload.MainInternet,
-		NightInternet: payload.NightInternet,
-		SocialMedia:   payload.SocialMedia,
-		Call:          payload.Call,
-		SMS:           payload.SMS,
+		ProductID:      &product.ID,
+		ActivePeriod:   payload.ActivePeriod,
+		TotalInternet:  payload.TotalInternet,
+		MainInternet:   payload.MainInternet,
+		NightInternet:  payload.NightInternet,
+		SocialMedia:    payload.SocialMedia,
+		Call:           payload.Call,
+		SMS:            payload.SMS,
+		TermsOfService: payload.TermOfService,
 	})
 	if err != nil {
 		return nil, err
@@ -281,15 +309,14 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 
 func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPackagesPayload, id any) (*response.ProductWithPackagesResponse, error) {
 	product := models.Product{
-		Name:           payload.Name,
-		Type:           "Packages",
-		Provider:       payload.Provider,
-		Price:          payload.Price,
-		PricePoints:    payload.PricePoints,
-		RewardPoints:   payload.RewardPoints,
-		Stock:          payload.Stock,
-		Description:    payload.Description,
-		TermsOfService: payload.TermOfService,
+		Name:         payload.Name,
+		Type:         "Packages",
+		Provider:     payload.Provider,
+		Price:        payload.Price,
+		PricePoints:  payload.PricePoints,
+		RewardPoints: payload.RewardPoints,
+		Stock:        payload.Stock,
+		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -327,13 +354,14 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.UpdateByProductID(models.Packages{
-		ActivePeriod:  payload.ActivePeriod,
-		TotalInternet: payload.TotalInternet,
-		MainInternet:  payload.MainInternet,
-		NightInternet: payload.NightInternet,
-		SocialMedia:   payload.SocialMedia,
-		Call:          payload.Call,
-		SMS:           payload.SMS,
+		ActivePeriod:   payload.ActivePeriod,
+		TotalInternet:  payload.TotalInternet,
+		MainInternet:   payload.MainInternet,
+		NightInternet:  payload.NightInternet,
+		SocialMedia:    payload.SocialMedia,
+		Call:           payload.Call,
+		SMS:            payload.SMS,
+		TermsOfService: payload.TermOfService,
 	}, id)
 	if err != nil {
 		return nil, err

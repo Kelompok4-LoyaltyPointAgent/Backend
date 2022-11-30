@@ -12,6 +12,8 @@ type Credit struct {
 	Product      Product
 	ActivePeriod int
 	Amount       int
+	Call         int
+	SMS          int
 }
 
 func (credit *Credit) BeforeCreate(tx *gorm.DB) (err error) {
