@@ -57,4 +57,12 @@ func Setup(app *echo.Echo) {
 	productV1.PUT("/package/:id", initialize.ProductHandler.UpdateProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))
 	productV1.DELETE("/package/:id", initialize.ProductHandler.DeleteProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))
 
+	transactionV1 := v1.Group("/transactions", auth)
+	transactionV1.GET("", initialize.TransactionHandler.GetTransactions)
+	transactionV1.POST("", initialize.TransactionHandler.CreateTransaction)
+	transactionV1.GET("/:id", initialize.TransactionHandler.GetTransaction)
+	transactionV1.PUT("/:id", initialize.TransactionHandler.UpdateTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
+	transactionV1.DELETE("/:id", initialize.TransactionHandler.DeleteTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
+	transactionV1.POST("/cancel/:id", initialize.TransactionHandler.CancelTransaction)
+	// v1.POST("/transactions/webhook", initialize.TransactionHandler.TransactionWebhook)
 }
