@@ -17,8 +17,7 @@ type TransactionResponse struct {
 	PhoneNumber   string                                `json:"phone_number"`
 	Email         string                                `json:"email"`
 	Status        constant.TransactionStatusEnum        `json:"status"`
-	// Status        constant.MidtransStatusEnum  `json:"status"`
-	Type constant.TransactionTypeEnum `json:"type"`
+	Type          constant.TransactionTypeEnum          `json:"type"`
 }
 
 func NewTransactionResponse(transaction models.Transaction) *TransactionResponse {
