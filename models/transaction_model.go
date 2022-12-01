@@ -17,7 +17,7 @@ type Transaction struct {
 	PaymentMethod constant.TransactionPaymentMethodEnum
 	PhoneNumber   string
 	Email         string
-	Status        constant.XenditStatusEnum
+	Status        constant.TransactionStatusEnum
 	Type          constant.TransactionTypeEnum
 }
 

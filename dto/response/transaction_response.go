@@ -16,7 +16,7 @@ type TransactionResponse struct {
 	PaymentMethod constant.TransactionPaymentMethodEnum `json:"payment_method"`
 	PhoneNumber   string                                `json:"phone_number"`
 	Email         string                                `json:"email"`
-	Status        constant.XenditStatusEnum             `json:"status"`
+	Status        constant.TransactionStatusEnum        `json:"status"`
 	// Status        constant.MidtransStatusEnum  `json:"status"`
 	Type constant.TransactionTypeEnum `json:"type"`
 }

@@ -71,6 +71,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload) (*respon
 		if payload.Type == constant.TransactionTypePurchase {
 			var adminFee float64 = 1000
 			amount = float64(product.Price) + adminFee
+			payload.Status = constant.TransactionStatusPending
 		} else if payload.Type == constant.TransactionTypeRedeem {
 			amount = float64(product.PricePoints)
 
@@ -82,6 +83,16 @@ func (s *transactionService) Create(payload payload.TransactionPayload) (*respon
 			if user.Points < product.PricePoints {
 				return nil, errors.New("user has not enough points")
 			}
+
+			updates := models.User{
+				Points: user.Points - product.PricePoints,
+			}
+			// TODO: make sure user points can be updated to 0
+			if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+				return nil, err
+			}
+
+			payload.Status = constant.TransactionStatusSuccess
 		}
 	} else {
 		amount = payload.Amount
@@ -141,7 +152,7 @@ func (s *transactionService) Delete(id any) error {
 
 func (s *transactionService) Cancel(id any) (*response.TransactionResponse, error) {
 	transaction, err := s.transactionRepository.Update(models.Transaction{
-		Status: constant.XenditStatusVoided,
+		Status: constant.TransactionStatusFailed,
 	}, id)
 	if err != nil {
 		return nil, err

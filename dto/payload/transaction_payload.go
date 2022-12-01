@@ -9,7 +9,6 @@ type TransactionPayload struct {
 	PaymentMethod constant.TransactionPaymentMethodEnum `json:"payment_method" validate:"required"`
 	PhoneNumber   string                                `json:"phone_number" validate:"required"`
 	Email         string                                `json:"email" validate:"required,email"`
-	Status        constant.XenditStatusEnum             `json:"status"`
-	// Status        constant.MidtransStatusEnum  `json:"status"`
-	Type constant.TransactionTypeEnum `json:"type" validate:"required"`
+	Status        constant.TransactionStatusEnum        `json:"status"`
+	Type          constant.TransactionTypeEnum          `json:"type" validate:"required"`
 }
