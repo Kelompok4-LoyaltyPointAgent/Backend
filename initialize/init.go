@@ -76,7 +76,7 @@ func initServices() {
 	userService = user_service.NewUserService(userRepository)
 	productService = product_service.NewProductService(productRepository, creditRepository, packagesRepository, productPictureRepository)
 	otpService = otp_service.NewOTPService(otpRepository, userRepository)
-	transactionService = transaction_service.NewTransactionService(transactionRepository, productRepository)
+	transactionService = transaction_service.NewTransactionService(transactionRepository, productRepository, userRepository)
 }
 
 func initHandlers() {

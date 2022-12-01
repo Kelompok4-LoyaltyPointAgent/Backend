@@ -1,6 +1,8 @@
 package transaction_service
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
@@ -8,6 +10,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/transaction_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 )
 
 type TransactionService interface {
@@ -22,13 +25,15 @@ type TransactionService interface {
 type transactionService struct {
 	transactionRepository transaction_repository.TransactionRepository
 	productRepository     product_repository.ProductRepository
+	userRepository        user_repository.UserRepository
 }
 
 func NewTransactionService(
 	transactionRepository transaction_repository.TransactionRepository,
 	productRepository product_repository.ProductRepository,
+	userRepository user_repository.UserRepository,
 ) TransactionService {
-	return &transactionService{transactionRepository, productRepository}
+	return &transactionService{transactionRepository, productRepository, userRepository}
 }
 
 func (s *transactionService) FindAll(query any, args ...any) (*[]response.TransactionResponse, error) {
@@ -68,6 +73,15 @@ func (s *transactionService) Create(payload payload.TransactionPayload) (*respon
 			amount = float64(product.Price) + adminFee
 		} else if payload.Type == constant.TransactionTypeRedeem {
 			amount = float64(product.PricePoints)
+
+			user, err := s.userRepository.FindByID(payload.UserID)
+			if err != nil {
+				return nil, err
+			}
+
+			if user.Points < product.PricePoints {
+				return nil, errors.New("user has not enough points")
+			}
 		}
 	} else {
 		amount = payload.Amount
