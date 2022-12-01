@@ -7,6 +7,8 @@ CREATE TABLE `credits` (
   `product_id` varchar(255),
   `active_period` int,
   `amount` int,
+  `call` int,
+  `sms` int,
   PRIMARY KEY (`id`),
   KEY `idx_credits_deleted_at` (`deleted_at`),
   KEY `fk_credits_product` (`product_id`),

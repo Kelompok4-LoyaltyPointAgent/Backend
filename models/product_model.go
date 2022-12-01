@@ -17,7 +17,6 @@ type Product struct {
 	Stock            uint
 	Recommended      bool
 	Description      string
-	TermsOfService   string
 	ProductPictureID *uuid.UUID
 	ProductPicture   *ProductPicture
 }

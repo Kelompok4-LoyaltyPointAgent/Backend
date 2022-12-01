@@ -9,6 +9,7 @@ type CreditRepository interface {
 	FindAll() ([]models.Credit, error)
 	FindByProductID(id any) (models.Credit, error)
 	FindByProvider(provider string) ([]models.Credit, error)
+	FindByRecommended() ([]models.Credit, error)
 	Create(credit models.Credit) (models.Credit, error)
 	UpdateByProductID(creditUpdate models.Credit, productID any) (models.Credit, error)
 	DeleteByProductID(productID any) error
@@ -37,6 +38,12 @@ func (r *creditRepository) FindByProductID(id any) (models.Credit, error) {
 func (r *creditRepository) FindByProvider(provider string) ([]models.Credit, error) {
 	var credits []models.Credit
 	err := r.db.Preload("Product", "provider = ?", provider).Preload("Product.ProductPicture").Find(&credits).Error
+	return credits, err
+}
+
+func (r *creditRepository) FindByRecommended() ([]models.Credit, error) {
+	var credits []models.Credit
+	err := r.db.Preload("Product", "recommended = ?", true).Preload("Product.ProductPicture").Where("recommended = ?", true).Find(&credits).Error
 	return credits, err
 }
 

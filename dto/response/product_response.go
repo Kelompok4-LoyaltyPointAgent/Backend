@@ -15,6 +15,7 @@ type ProductResponse struct {
 	RewardPoints   uint           `json:"reward_points"`
 	Stock          uint           `json:"stock"`
 	Recommended    bool           `json:"recommended"`
+	Description    string         `json:"description"`
 	ProductPicture ProductPicture `json:"product_picture,omitempty"`
 }
 

@@ -1,6 +1,7 @@
 package product_handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strings"
@@ -17,6 +18,7 @@ type ProductHandler interface {
 	GetProductsWithCredits(c echo.Context) error
 	GetProductWithCredit(c echo.Context) error
 	GetProductByProviderWithCredits(provider string, c echo.Context) error
+	GetProductByRecommendedWithCredits(c echo.Context) error
 	CreateProductWithCredit(c echo.Context) error
 	UpdateProductWithCredit(c echo.Context) error
 	DeleteProductWithCredit(c echo.Context) error
@@ -25,6 +27,7 @@ type ProductHandler interface {
 	GetProductsWithPackages(c echo.Context) error
 	GetProductWithPackage(c echo.Context) error
 	GetProductByProviderWithPackages(provider string, c echo.Context) error
+	GetProductByRecommendedWithPackages(c echo.Context) error
 	CreateProductWithPackage(c echo.Context) error
 	UpdateProductWithPackage(c echo.Context) error
 	DeleteProductWithPackage(c echo.Context) error
@@ -42,7 +45,13 @@ func NewProductHandler(service product_service.ProductService) ProductHandler {
 
 func (h *productHandler) GetProductsWithCredits(c echo.Context) error {
 	provider := c.QueryParam("provider")
-	if provider != "" {
+	recommended := c.QueryParam("recommended")
+
+	if provider != "" && recommended != "" {
+		return response.Error(c, "failed", http.StatusBadRequest, errors.New("provider and recommended cannot be used at the same time"))
+	} else if recommended == "true" {
+		return h.GetProductByRecommendedWithCredits(c)
+	} else if provider != "" {
 		return h.GetProductByProviderWithCredits(provider, c)
 	}
 
@@ -65,6 +74,15 @@ func (h *productHandler) GetProductWithCredit(c echo.Context) error {
 
 func (h *productHandler) GetProductByProviderWithCredits(provider string, c echo.Context) error {
 	productsWithPackagesResponse, err := h.service.FindByProviderWithCredit(provider)
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, productsWithPackagesResponse)
+}
+
+func (h *productHandler) GetProductByRecommendedWithCredits(c echo.Context) error {
+	productsWithPackagesResponse, err := h.service.FindByRecommendedWithCredit()
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
@@ -144,7 +162,13 @@ func (h *productHandler) DeleteProductWithCredit(c echo.Context) error {
 
 func (h *productHandler) GetProductsWithPackages(c echo.Context) error {
 	provider := c.QueryParam("provider")
-	if provider != "" {
+	recommended := c.QueryParam("recommended")
+
+	if provider != "" && recommended != "" {
+		return response.Error(c, "failed", http.StatusBadRequest, errors.New("provider and recommended cannot be used at the same time"))
+	} else if recommended == "true" {
+		return h.GetProductByRecommendedWithPackages(c)
+	} else if provider != "" {
 		return h.GetProductByProviderWithPackages(provider, c)
 	}
 
@@ -167,6 +191,15 @@ func (h *productHandler) GetProductWithPackage(c echo.Context) error {
 
 func (h *productHandler) GetProductByProviderWithPackages(provider string, c echo.Context) error {
 	productWithPackageResponse, err := h.service.FindByProviderWithPackages(provider)
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, productWithPackageResponse)
+}
+
+func (h *productHandler) GetProductByRecommendedWithPackages(c echo.Context) error {
+	productWithPackageResponse, err := h.service.FindByRecommendedWithPackages()
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
