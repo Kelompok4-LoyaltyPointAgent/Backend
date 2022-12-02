@@ -8,17 +8,28 @@ import (
 
 type Transaction struct {
 	gorm.Model
+	ID                 uuid.UUID
+	UserID             uuid.UUID
+	User               *User
+	ProductID          uuid.UUID
+	Product            *Product
+	Amount             float64
+	PaymentMethod      string
+	Status             constant.TransactionStatusEnum
+	Type               constant.TransactionTypeEnum
+}
+
+type TransactionDetail struct {
+	gorm.Model
 	ID            uuid.UUID
-	UserID        uuid.UUID
-	User          *User
-	ProductID     uuid.UUID
-	Product       *Product
-	Amount        float64
-	PaymentMethod constant.TransactionPaymentMethodEnum
-	PhoneNumber   string
+	TransactionID uuid.UUID
+	Number        string
 	Email         string
-	Status        constant.TransactionStatusEnum
-	Type          constant.TransactionTypeEnum
+}
+
+func (transactionDetail *TransactionDetail) BeforeCreate(tx *gorm.DB) (err error) {
+	transactionDetail.ID = uuid.New()
+	return
 }
 
 func (transaction *Transaction) BeforeCreate(tx *gorm.DB) (err error) {

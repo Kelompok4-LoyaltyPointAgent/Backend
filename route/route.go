@@ -28,6 +28,7 @@ func Setup(app *echo.Echo) {
 	v1 := api.Group("/v1")
 	v1.POST("/register", initialize.UserHandler.CreateUser)
 	v1.POST("/login", initialize.UserHandler.Login)
+	v1.POST("/transactions/webhook", initialize.TransactionHandler.TransactionWebhook)
 
 	otpV1 := v1.Group("/otp")
 	otpV1.POST("/request", initialize.OTPHandler.RequestOTP)
@@ -64,5 +65,4 @@ func Setup(app *echo.Echo) {
 	transactionV1.PUT("/:id", initialize.TransactionHandler.UpdateTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
 	transactionV1.DELETE("/:id", initialize.TransactionHandler.DeleteTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
 	transactionV1.POST("/cancel/:id", initialize.TransactionHandler.CancelTransaction)
-	// v1.POST("/transactions/webhook", initialize.TransactionHandler.TransactionWebhook)
 }

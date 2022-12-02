@@ -14,11 +14,3 @@ const (
 	TransactionStatusPending TransactionStatusEnum = "Pending"
 	TransactionStatusFailed  TransactionStatusEnum = "Failed"
 )
-
-type TransactionPaymentMethodEnum string
-
-const (
-	TransactionPaymentMethodGopay TransactionPaymentMethodEnum = "Gopay"
-	TransactionPaymentMethodQris  TransactionPaymentMethodEnum = "QRIS"
-	TransactionPaymentMethodBank  TransactionPaymentMethodEnum = "Bank"
-)

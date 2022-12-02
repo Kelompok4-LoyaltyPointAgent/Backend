@@ -7,6 +7,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
+	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/transaction_repository"
@@ -16,10 +17,11 @@ import (
 type TransactionService interface {
 	FindAll(query any, args ...any) (*[]response.TransactionResponse, error)
 	FindByID(id any) (*response.TransactionResponse, error)
-	Create(payload payload.TransactionPayload) (*response.TransactionResponse, error)
+	Create(payload payload.TransactionPayload, role string) (*response.TransactionResponse, error)
 	Update(payload payload.TransactionPayload, id any) (*response.TransactionResponse, error)
 	Delete(id any) error
 	Cancel(id any) (*response.TransactionResponse, error)
+	CallbackXendit(payload map[string]interface{}) (bool, error)
 }
 
 type transactionService struct {
@@ -51,10 +53,10 @@ func (s *transactionService) FindByID(id any) (*response.TransactionResponse, er
 		return nil, err
 	}
 
-	return response.NewTransactionResponse(transaction), nil
+	return response.NewTransactionResponse(transaction, ""), nil
 }
 
-func (s *transactionService) Create(payload payload.TransactionPayload) (*response.TransactionResponse, error) {
+func (s *transactionService) Create(payload payload.TransactionPayload, role string) (*response.TransactionResponse, error) {
 	userID, err := uuid.Parse(payload.UserID)
 	if err != nil {
 		return nil, err
@@ -65,20 +67,23 @@ func (s *transactionService) Create(payload payload.TransactionPayload) (*respon
 		return nil, err
 	}
 
+	user, err := s.userRepository.FindByID(payload.UserID)
+	if err != nil {
+		return nil, err
+	}
+
 	var amount float64
 	// Blank status indicates transaction made by customer.
 	if payload.Status == "" {
+		if payload.Email == "" {
+			payload.Email = user.Email
+		}
 		if payload.Type == constant.TransactionTypePurchase {
 			var adminFee float64 = 1000
 			amount = float64(product.Price) + adminFee
 			payload.Status = constant.TransactionStatusPending
 		} else if payload.Type == constant.TransactionTypeRedeem {
 			amount = float64(product.PricePoints)
-
-			user, err := s.userRepository.FindByID(payload.UserID)
-			if err != nil {
-				return nil, err
-			}
 
 			if user.Points < product.PricePoints {
 				return nil, errors.New("user has not enough points")
@@ -99,24 +104,26 @@ func (s *transactionService) Create(payload payload.TransactionPayload) (*respon
 	}
 
 	transaction, err := s.transactionRepository.Create(models.Transaction{
-		UserID:        userID,
-		ProductID:     product.ID,
-		Amount:        amount,
-		PaymentMethod: payload.PaymentMethod,
-		PhoneNumber:   payload.PhoneNumber,
-		Email:         payload.Email,
-		Status:        payload.Status,
-		Type:          payload.Type,
+		UserID:    userID,
+		ProductID: product.ID,
+		Amount:    amount,
+		Status:    payload.Status,
+		Type:      payload.Type,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	// if transaction.Status == "" {
-	// 	// TODO: send bill via payment gateway
-	// }
+	if transaction.Status == constant.TransactionStatusPending && role != "Admin" {
+		// TODO: send bill via payment gateway
+		resp, err := helper.CreateInvoiceXendit(transaction, user)
+		if err != nil {
+			return nil, err
+		}
+		return response.NewTransactionResponse(transaction, resp.InvoiceURL), nil
+	}
 
-	return response.NewTransactionResponse(transaction), nil
+	return response.NewTransactionResponse(transaction, ""), nil
 }
 
 func (s *transactionService) Update(payload payload.TransactionPayload, id any) (*response.TransactionResponse, error) {
@@ -143,7 +150,7 @@ func (s *transactionService) Update(payload payload.TransactionPayload, id any) 
 		return nil, err
 	}
 
-	return response.NewTransactionResponse(transaction), nil
+	return response.NewTransactionResponse(transaction, ""), nil
 }
 
 func (s *transactionService) Delete(id any) error {
@@ -160,5 +167,29 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 
 	// TODO: cancel pending transaction via payment gateway
 
-	return response.NewTransactionResponse(transaction), nil
+	return response.NewTransactionResponse(transaction, ""), nil
+}
+
+func (s *transactionService) CallbackXendit(payload map[string]interface{}) (bool, error) {
+	transaction, err := s.transactionRepository.FindByID(payload["external_id"])
+	if err != nil {
+		return false, err
+	}
+
+	if transaction.Status == constant.TransactionStatusSuccess {
+		return false, nil
+	}
+
+	if payload["status"] == constant.XenditStatusPaid {
+		transaction.Status = constant.TransactionStatusSuccess
+		transaction.PaymentMethod = payload["payment_method"].(string)
+	} else if payload["status"] == constant.XenditStatusExpired {
+		transaction.Status = constant.TransactionStatusFailed
+	}
+
+	if _, err := s.transactionRepository.Update(transaction, transaction.ID.String()); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

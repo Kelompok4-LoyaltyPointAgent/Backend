@@ -2,6 +2,7 @@ package transaction_handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -81,7 +82,7 @@ func (h *transactionHandler) CreateTransaction(c echo.Context) error {
 		payload.Status = ""
 	}
 
-	transaction, err := h.service.Create(payload)
+	transaction, err := h.service.Create(payload, claims.Role)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
@@ -127,6 +128,18 @@ func (h *transactionHandler) CancelTransaction(c echo.Context) error {
 
 func (h *transactionHandler) TransactionWebhook(c echo.Context) error {
 	// TODO: handle payment gateway request
+	var payload map[string]interface{}
+	if err := c.Bind(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	log.Println("--------------------")
+	log.Println("payload", payload)
+
+	_, err := h.service.CallbackXendit(payload)
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
 
 	return response.Success(c, "success", http.StatusOK, nil)
 }
