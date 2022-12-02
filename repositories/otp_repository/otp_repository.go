@@ -11,7 +11,7 @@ type OTPRepository interface {
 	FindByPinAndUserID(pin any, userID any) (models.OTP, error)
 	Create(otp models.OTP) (models.OTP, error)
 	Update(updates models.OTP, id any) (models.OTP, error)
-	DeleteByID(id any) error
+	Delete(id any) error
 }
 
 type otpRepository struct {
@@ -54,7 +54,7 @@ func (r *otpRepository) Update(updates models.OTP, id any) (models.OTP, error) {
 	return r.FindByID(id)
 }
 
-func (r *otpRepository) DeleteByID(id any) error {
+func (r *otpRepository) Delete(id any) error {
 	var otp models.OTP
 	err := r.db.Where("id = ?", id).Delete(&otp).Error
 	return err

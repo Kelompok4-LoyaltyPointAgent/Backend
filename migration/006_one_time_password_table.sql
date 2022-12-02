@@ -7,7 +7,6 @@ CREATE TABLE `one_time_passwords` (
   `user_id` varchar(255),
   `pin` varchar(255),
   `expired_at` datetime(3),
-  `is_used` boolean,
   PRIMARY KEY (`id`),
   KEY `idx_one_time_passwords_deleted_at` (`deleted_at`),
   KEY `fk_one_time_passwords_user` (`user_id`),
