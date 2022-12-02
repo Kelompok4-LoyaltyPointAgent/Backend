@@ -7,11 +7,9 @@ CREATE TABLE `transactions` (
   `user_id` varchar(255),
   `product_id` varchar(255),
   `amount` double,
-  `payment_method` varchar(255),
-  `phone_number` varchar(255),
-  `email` varchar(255),
-  `status` varchar(255),
   `type` varchar(255),
+  `status` varchar(255),
+  `payment_method` varchar(255),
   PRIMARY KEY (`id`),
   KEY `idx_transactions_deleted_at` (`deleted_at`),
   KEY `fk_transactions_user` (`user_id`),
@@ -20,5 +18,22 @@ CREATE TABLE `transactions` (
   CONSTRAINT `fk_transactions_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+CREATE TABLE `transaction_details` (
+  `id` varchar(255) NOT NULL,
+  `created_at` datetime(3),
+  `updated_at` datetime(3),
+  `deleted_at` datetime(3),
+  `transaction_id` varchar(255),
+  `number` varchar(255),
+  `email` varchar(255),
+  PRIMARY KEY (`id`),
+  KEY `idx_transaction_details_deleted_at` (`deleted_at`),
+  KEY `fk_transaction_details_transaction` (`transaction_id`),
+  CONSTRAINT `fk_transaction_details_transaction` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 -- +goose Down
 DROP TABLE IF EXISTS `transactions`;
+DROP TABLE IF EXISTS `transaction_details`;
