@@ -9,7 +9,7 @@ CREATE TABLE `transactions` (
   `amount` double,
   `type` varchar(255),
   `status` varchar(255),
-  `payment_method` varchar(255),
+  `method` varchar(255),
   PRIMARY KEY (`id`),
   KEY `idx_transactions_deleted_at` (`deleted_at`),
   KEY `fk_transactions_user` (`user_id`),
@@ -35,5 +35,5 @@ CREATE TABLE `transaction_details` (
 
 
 -- +goose Down
-DROP TABLE IF EXISTS `transactions`;
 DROP TABLE IF EXISTS `transaction_details`;
+DROP TABLE IF EXISTS `transactions`;
