@@ -8,3 +8,7 @@ const (
 	XenditStatusSettled XenditStatusEnum = "SETTLED"
 	XenditStatusExpired XenditStatusEnum = "EXPIRED"
 )
+
+func (x XenditStatusEnum) String() string {
+	return string(x)
+}

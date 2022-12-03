@@ -6,17 +6,17 @@ import (
 )
 
 type ProductResponse struct {
-	ID             uuid.UUID      `json:"id"`
-	Name           string         `json:"name"`
-	Type           string         `json:"type"`
-	Provider       string         `json:"provider"`
-	Price          uint           `json:"price"`
-	PricePoints    uint           `json:"price_points"`
-	RewardPoints   uint           `json:"reward_points"`
-	Stock          uint           `json:"stock"`
-	Recommended    bool           `json:"recommended"`
-	Description    string         `json:"description"`
-	ProductPicture ProductPicture `json:"product_picture,omitempty"`
+	ID             uuid.UUID       `json:"id"`
+	Name           string          `json:"name"`
+	Type           string          `json:"type"`
+	Provider       string          `json:"provider"`
+	Price          uint            `json:"price"`
+	PricePoints    uint            `json:"price_points"`
+	RewardPoints   uint            `json:"reward_points"`
+	Stock          uint            `json:"stock"`
+	Recommended    bool            `json:"recommended"`
+	Description    string          `json:"description"`
+	ProductPicture *ProductPicture `json:"product_picture,omitempty"`
 }
 
 type ProductPicture struct {
@@ -83,18 +83,23 @@ func NewProductResponse(product models.Product) *ProductResponse {
 		}
 	}
 
-	return &ProductResponse{
-		ID:             product.ID,
-		Name:           product.Name,
-		Type:           product.Type,
-		Provider:       product.Provider,
-		Price:          product.Price,
-		PricePoints:    product.PricePoints,
-		RewardPoints:   product.RewardPoints,
-		Stock:          product.Stock,
-		Recommended:    product.Recommended,
-		ProductPicture: productPicture,
+	productResponse := ProductResponse{
+		ID:           product.ID,
+		Name:         product.Name,
+		Type:         product.Type,
+		Provider:     product.Provider,
+		Price:        product.Price,
+		PricePoints:  product.PricePoints,
+		RewardPoints: product.RewardPoints,
+		Stock:        product.Stock,
+		Recommended:  product.Recommended,
 	}
+
+	if product.ProductPicture != nil {
+		productResponse.ProductPicture = &productPicture
+	}
+
+	return &productResponse
 }
 
 func NewProductsResponse(products []models.Product) *[]ProductResponse {

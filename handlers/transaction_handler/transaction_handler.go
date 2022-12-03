@@ -2,7 +2,6 @@ package transaction_handler
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -34,16 +33,18 @@ func NewTransactionHandler(service transaction_service.TransactionService) Trans
 }
 
 func (h *transactionHandler) GetTransactions(c echo.Context) error {
-	claims := helper.GetTokenClaims(c)
+	filter := ""
 
-	var query string
-	var args []any
-	if claims.Role != "Admin" {
-		query = "user_id = ?"
-		args = append(args, claims.ID)
+	filterParam := c.QueryParam("type")
+	if filterParam == "Purchase" || filterParam == "Redeem" {
+		filter = filterParam
+	} else {
+		return response.Error(c, "failed", http.StatusBadRequest, errors.New("invalid type"))
 	}
 
-	transactions, err := h.service.FindAll(query, args...)
+	claims := helper.GetTokenClaims(c)
+
+	transactions, err := h.service.FindAllDetail(claims, filter)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
@@ -52,14 +53,14 @@ func (h *transactionHandler) GetTransactions(c echo.Context) error {
 }
 
 func (h *transactionHandler) GetTransaction(c echo.Context) error {
-	transaction, err := h.service.FindByID(c.Param("id"))
-	if err != nil {
-		return response.Error(c, "failed", http.StatusNotFound, errors.New("not found"))
-	}
-
 	claims := helper.GetTokenClaims(c)
-	if transaction.UserID != claims.ID {
-		return response.Error(c, "failed", http.StatusForbidden, errors.New("forbidden"))
+
+	transaction, err := h.service.FindByID(c.Param("id"), claims)
+	if err != nil {
+		if err.Error() == "forbidden" {
+			return response.Error(c, "failed", http.StatusUnauthorized, err)
+		}
+		return response.Error(c, "failed", http.StatusNotFound, errors.New("not found"))
 	}
 
 	return response.Success(c, "success", http.StatusOK, transaction)
@@ -77,12 +78,8 @@ func (h *transactionHandler) CreateTransaction(c echo.Context) error {
 	}
 
 	claims := helper.GetTokenClaims(c)
-	if claims.Role != "Admin" {
-		payload.UserID = claims.ID.String()
-		payload.Status = ""
-	}
 
-	transaction, err := h.service.Create(payload, claims.Role)
+	transaction, err := h.service.Create(payload, claims)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
@@ -132,9 +129,6 @@ func (h *transactionHandler) TransactionWebhook(c echo.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
-
-	log.Println("--------------------")
-	log.Println("payload", payload)
 
 	_, err := h.service.CallbackXendit(payload)
 	if err != nil {

@@ -8,15 +8,16 @@ import (
 
 type Transaction struct {
 	gorm.Model
-	ID                 uuid.UUID
-	UserID             uuid.UUID
-	User               *User
-	ProductID          uuid.UUID
-	Product            *Product
-	Amount             float64
-	PaymentMethod      string
-	Status             constant.TransactionStatusEnum
-	Type               constant.TransactionTypeEnum
+	ID                uuid.UUID
+	UserID            uuid.UUID
+	User              *User
+	ProductID         uuid.UUID
+	Product           *Product
+	Amount            float64
+	Method            string
+	Status            constant.TransactionStatusEnum
+	Type              constant.TransactionTypeEnum
+	TransactionDetail *TransactionDetail
 }
 
 type TransactionDetail struct {

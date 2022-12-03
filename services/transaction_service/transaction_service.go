@@ -15,9 +15,9 @@ import (
 )
 
 type TransactionService interface {
-	FindAll(query any, args ...any) (*[]response.TransactionResponse, error)
-	FindByID(id any) (*response.TransactionResponse, error)
-	Create(payload payload.TransactionPayload, role string) (*response.TransactionResponse, error)
+	FindAllDetail(claims *helper.JWTCustomClaims, filter any) (*[]response.TransactionResponse, error)
+	FindByID(id any, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error)
+	Create(payload payload.TransactionPayload, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error)
 	Update(payload payload.TransactionPayload, id any) (*response.TransactionResponse, error)
 	Delete(id any) error
 	Cancel(id any) (*response.TransactionResponse, error)
@@ -38,28 +38,63 @@ func NewTransactionService(
 	return &transactionService{transactionRepository, productRepository, userRepository}
 }
 
-func (s *transactionService) FindAll(query any, args ...any) (*[]response.TransactionResponse, error) {
-	transactions, err := s.transactionRepository.FindAll(query, args...)
-	if err != nil {
-		return nil, err
+func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filter any) (*[]response.TransactionResponse, error) {
+
+	var transactions []models.Transaction
+	var err error
+	if claims.Role == "Admin" {
+		transactions, err = s.transactionRepository.FindAll("", "")
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var args []any
+		args = append(args, claims.ID.String())
+		var query string
+		if filter == constant.TransactionTypePurchase.String() {
+			args = append(args, filter)
+			query = "user_id = ? AND type = ?"
+		} else if filter == constant.TransactionTypeRedeem.String() {
+			args = append(args, filter)
+			query = "user_id = ? AND type = ? OR type = 'Cashout'"
+		} else {
+			query = "user_id = ?"
+		}
+
+		transactions, err = s.transactionRepository.FindAll(query, args...)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return response.NewTransactionsResponse(transactions), nil
+	return response.NewTransactionsResponse(transactions), err
 }
 
-func (s *transactionService) FindByID(id any) (*response.TransactionResponse, error) {
-	transaction, err := s.transactionRepository.FindByID(id)
-	if err != nil {
-		return nil, err
+func (s *transactionService) FindByID(id any, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error) {
+	var transaction models.Transaction
+	var err error
+	if claims.Role == "Admin" {
+		transaction, err = s.transactionRepository.FindByID(id)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		transaction, err = s.transactionRepository.FindByID(id)
+		if err != nil {
+			return nil, err
+		}
+		if transaction.UserID.String() != claims.ID.String() {
+			return nil, errors.New("forbidden")
+		}
 	}
 
-	return response.NewTransactionResponse(transaction, ""), nil
+	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
-func (s *transactionService) Create(payload payload.TransactionPayload, role string) (*response.TransactionResponse, error) {
-	userID, err := uuid.Parse(payload.UserID)
-	if err != nil {
-		return nil, err
+func (s *transactionService) Create(payload payload.TransactionPayload, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error) {
+	if claims.Role != "Admin" {
+		payload.UserID = claims.ID.String()
+		payload.Status = ""
 	}
 
 	product, err := s.productRepository.FindByID(payload.ProductID)
@@ -82,6 +117,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, role str
 			var adminFee float64 = 1000
 			amount = float64(product.Price) + adminFee
 			payload.Status = constant.TransactionStatusPending
+
 		} else if payload.Type == constant.TransactionTypeRedeem {
 			amount = float64(product.PricePoints)
 
@@ -104,26 +140,34 @@ func (s *transactionService) Create(payload payload.TransactionPayload, role str
 	}
 
 	transaction, err := s.transactionRepository.Create(models.Transaction{
-		UserID:    userID,
+		UserID:    user.ID,
 		ProductID: product.ID,
 		Amount:    amount,
 		Status:    payload.Status,
 		Type:      payload.Type,
 	})
+
+	transactionDetail, err := s.transactionRepository.CreateDetail(models.TransactionDetail{
+		TransactionID: transaction.ID,
+		Email:         payload.Email,
+		Number:        payload.Number,
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	if transaction.Status == constant.TransactionStatusPending && role != "Admin" {
+	if transaction.Status == constant.TransactionStatusPending && claims.Role != "Admin" {
 		// TODO: send bill via payment gateway
-		resp, err := helper.CreateInvoiceXendit(transaction, user)
+		resp, err := helper.CreateInvoiceXendit(transaction, transactionDetail, user)
 		if err != nil {
 			return nil, err
 		}
-		return response.NewTransactionResponse(transaction, resp.InvoiceURL), nil
+
+		return response.NewTransactionResponse(transaction, transactionDetail, resp.InvoiceURL), nil
 	}
 
-	return response.NewTransactionResponse(transaction, ""), nil
+	return response.NewTransactionResponse(transaction, transactionDetail, ""), nil
 }
 
 func (s *transactionService) Update(payload payload.TransactionPayload, id any) (*response.TransactionResponse, error) {
@@ -138,19 +182,22 @@ func (s *transactionService) Update(payload payload.TransactionPayload, id any) 
 	}
 
 	transaction, err := s.transactionRepository.Update(models.Transaction{
-		UserID:      userID,
-		ProductID:   product.ID,
-		PhoneNumber: payload.PhoneNumber,
-		Amount:      payload.Amount,
-		Email:       payload.Email,
-		Status:      payload.Status,
-		Type:        payload.Type,
+		UserID:    userID,
+		ProductID: product.ID,
+		Amount:    payload.Amount,
+		Status:    payload.Status,
+		Type:      payload.Type,
 	}, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.NewTransactionResponse(transaction, ""), nil
+	transaction, err = s.transactionRepository.FindByID(transaction.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
 func (s *transactionService) Delete(id any) error {
@@ -165,9 +212,14 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 		return nil, err
 	}
 
+	transaction, err = s.transactionRepository.FindByID(transaction.ID.String())
+	if err != nil {
+		return nil, err
+	}
+
 	// TODO: cancel pending transaction via payment gateway
 
-	return response.NewTransactionResponse(transaction, ""), nil
+	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
 func (s *transactionService) CallbackXendit(payload map[string]interface{}) (bool, error) {
@@ -180,9 +232,31 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 		return false, nil
 	}
 
-	if payload["status"] == constant.XenditStatusPaid {
+	if payload["status"].(string) == constant.XenditStatusPaid.String() {
 		transaction.Status = constant.TransactionStatusSuccess
-		transaction.PaymentMethod = payload["payment_method"].(string)
+		transaction.Method = payload["payment_channel"].(string)
+
+		// Find User ID
+		user, err := s.userRepository.FindByID(transaction.UserID.String())
+		if err != nil {
+			return false, err
+		}
+
+		// Find Product ID
+		product, err := s.productRepository.FindByID(transaction.ProductID.String())
+		if err != nil {
+			return false, err
+		}
+
+		// Update User Points
+		updates := models.User{
+			Points: user.Points + product.PricePoints,
+		}
+
+		if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+			return false, err
+		}
+
 	} else if payload["status"] == constant.XenditStatusExpired {
 		transaction.Status = constant.TransactionStatusFailed
 	}
