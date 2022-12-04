@@ -35,8 +35,8 @@ func (s *otpService) CreateOTP(payload payload.RequestOTPPayload) (*response.Req
 
 	pin := helper.CreatePin(5)
 
-	if _, err := s.otpRepository.FindByPin(pin); err == nil {
-		return nil, errors.New("pin already exists")
+	if _, err := s.otpRepository.FindByPinAndUserID(pin, user.ID); err == nil {
+		return nil, errors.New("failed creating otp")
 	}
 
 	otp, err := s.otpRepository.Create(models.OTP{
