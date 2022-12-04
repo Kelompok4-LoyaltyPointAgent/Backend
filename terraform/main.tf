@@ -27,9 +27,8 @@ resource "google_storage_bucket" "bucket" {
 module "mysql" {
   source = "./modules/mysql"
 
-  project             = var.project
-  region              = var.region
-  mysql_root_password = var.mysql_root_password
+  project = var.project
+  region  = var.region
 }
 
 module "cloudrun-staging" {
