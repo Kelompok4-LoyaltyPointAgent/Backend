@@ -33,6 +33,10 @@ func Setup(app *echo.Echo) {
 	otpV1.POST("/request", initialize.OTPHandler.RequestOTP)
 	otpV1.POST("/verify", initialize.OTPHandler.VerifyOTP)
 
+	forgotPasswordV1 := v1.Group("/forgot-password")
+	forgotPasswordV1.POST("/request", initialize.ForgotPasswordHandler.RequestForgotPassword)
+	forgotPasswordV1.POST("/submit", initialize.ForgotPasswordHandler.SubmitForgotPassword)
+
 	user := v1.Group("/users", auth)
 	//User
 	user.GET("/me", initialize.UserHandler.FindUserByID)

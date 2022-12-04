@@ -2,17 +2,20 @@ package initialize
 
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/db"
+	"github.com/kelompok4-loyaltypointagent/backend/handlers/forgot_password_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/hello_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/otp_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/product_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/user_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/forgot_password_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/otp_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/packages_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_picture_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/services/forgot_password_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/otp_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/product_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/user_service"
@@ -31,12 +34,17 @@ var otpRepository otp_repository.OTPRepository
 var otpService otp_service.OTPService
 var OTPHandler otp_handler.OTPHandler
 
+// Forgot Password
+var forgotPasswordRepository forgot_password_repository.ForgotPasswordRepository
+var forgotPasswordService forgot_password_service.ForgotPasswordService
+var ForgotPasswordHandler forgot_password_handler.ForgotPasswordHandler
+
 // Product
 var productRepository product_repository.ProductRepository
 var productService product_service.ProductService
 var ProductHandler product_handler.ProductHandler
 
-//Product Picture
+// Product Picture
 var productPictureRepository product_picture_repository.ProductPictureRepository
 
 // Credit
@@ -61,12 +69,14 @@ func initRepositories() {
 	packagesRepository = packages_repository.NewPackagesRepository(db)
 	productPictureRepository = product_picture_repository.NewProductPictureRepository(db)
 	otpRepository = otp_repository.NewOTPRepository(db)
+	forgotPasswordRepository = forgot_password_repository.NewForgotPasswordRepository(db)
 }
 
 func initServices() {
 	userService = user_service.NewUserService(userRepository)
 	productService = product_service.NewProductService(productRepository, creditRepository, packagesRepository, productPictureRepository)
 	otpService = otp_service.NewOTPService(otpRepository, userRepository)
+	forgotPasswordService = forgot_password_service.NewForgotPasswordService(forgotPasswordRepository, userRepository)
 }
 
 func initHandlers() {
@@ -74,4 +84,5 @@ func initHandlers() {
 	UserHandler = user_handler.NewUserHandler(userService)
 	ProductHandler = product_handler.NewProductHandler(productService)
 	OTPHandler = otp_handler.NewOTPHandler(otpService)
+	ForgotPasswordHandler = forgot_password_handler.NewForgotPasswordHandler(forgotPasswordService)
 }
