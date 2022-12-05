@@ -88,7 +88,6 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -144,7 +143,6 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -254,7 +252,6 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -298,7 +295,8 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:    payload.SocialMedia,
 		Call:           payload.Call,
 		SMS:            payload.SMS,
-		TermsOfService: payload.TermOfService,
+		Description:    payload.Description,
+		TermsOfService: payload.TermsOfService,
 	})
 	if err != nil {
 		return nil, err
@@ -316,7 +314,6 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -361,7 +358,8 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:    payload.SocialMedia,
 		Call:           payload.Call,
 		SMS:            payload.SMS,
-		TermsOfService: payload.TermOfService,
+		Description:    payload.Description,
+		TermsOfService: payload.TermsOfService,
 	}, id)
 	if err != nil {
 		return nil, err

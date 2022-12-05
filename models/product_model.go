@@ -16,7 +16,6 @@ type Product struct {
 	RewardPoints     uint
 	Stock            uint
 	Recommended      bool
-	Description      string
 	ProductPictureID *uuid.UUID
 	ProductPicture   *ProductPicture
 }
