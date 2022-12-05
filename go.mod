@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/labstack/echo/v4 v4.9.1
+	github.com/mailjet/mailjet-apiv3-go v0.0.0-20201009050126-c24bc15a9394
 	github.com/stretchr/testify v1.8.1
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	google.golang.org/api v0.96.0

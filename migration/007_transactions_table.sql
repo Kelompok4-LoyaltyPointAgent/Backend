@@ -5,7 +5,7 @@ CREATE TABLE `transactions` (
   `updated_at` datetime(3),
   `deleted_at` datetime(3),
   `user_id` varchar(255),
-  `product_id` varchar(255),
+  `product_id` varchar(255) NULL,
   `amount` double,
   `type` varchar(255),
   `status` varchar(255),

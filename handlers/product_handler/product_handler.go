@@ -98,7 +98,6 @@ func (h *productHandler) CreateProductWithCredit(c echo.Context) error {
 	}
 
 	payload.Name = strings.TrimSpace(payload.Name)
-	payload.Description = strings.TrimSpace(payload.Description)
 	payload.Provider = strings.TrimSpace(payload.Provider)
 
 	if err := h.validate.Struct(&payload); err != nil {
@@ -128,7 +127,6 @@ func (h *productHandler) UpdateProductWithCredit(c echo.Context) error {
 	}
 
 	payload.Name = strings.TrimSpace(payload.Name)
-	payload.Description = strings.TrimSpace(payload.Description)
 	payload.Provider = strings.TrimSpace(payload.Provider)
 
 	if err := h.validate.Struct(&payload); err != nil {
@@ -215,6 +213,11 @@ func (h *productHandler) CreateProductWithPackage(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
+	payload.Name = strings.TrimSpace(payload.Name)
+	payload.TermsOfService = strings.TrimSpace(payload.TermsOfService)
+	payload.Description = strings.TrimSpace(payload.Description)
+	payload.Provider = strings.TrimSpace(payload.Provider)
+
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
@@ -245,6 +248,11 @@ func (h *productHandler) UpdateProductWithPackage(c echo.Context) error {
 	if err == nil {
 		payload.ProductPicture = file
 	}
+
+	payload.Name = strings.TrimSpace(payload.Name)
+	payload.TermsOfService = strings.TrimSpace(payload.TermsOfService)
+	payload.Description = strings.TrimSpace(payload.Description)
+	payload.Provider = strings.TrimSpace(payload.Provider)
 
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)

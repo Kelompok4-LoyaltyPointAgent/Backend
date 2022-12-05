@@ -6,17 +6,16 @@ import (
 )
 
 type ProductResponse struct {
-	ID             uuid.UUID       `json:"id"`
-	Name           string          `json:"name"`
-	Type           string          `json:"type"`
-	Provider       string          `json:"provider"`
-	Price          uint            `json:"price"`
-	PricePoints    uint            `json:"price_points"`
-	RewardPoints   uint            `json:"reward_points"`
-	Stock          uint            `json:"stock"`
-	Recommended    bool            `json:"recommended"`
-	Description    string          `json:"description"`
-	ProductPicture *ProductPicture `json:"product_picture,omitempty"`
+	ID             uuid.UUID      `json:"id"`
+	Name           string         `json:"name"`
+	Type           string         `json:"type"`
+	Provider       string         `json:"provider"`
+	Price          uint           `json:"price"`
+	PricePoints    uint           `json:"price_points"`
+	RewardPoints   uint           `json:"reward_points"`
+	Stock          uint           `json:"stock"`
+	Recommended    bool           `json:"recommended"`
+	ProductPicture ProductPicture `json:"product_picture,omitempty"`
 }
 
 type ProductPicture struct {
@@ -25,7 +24,7 @@ type ProductPicture struct {
 	Url  string    `json:"url"`
 }
 
-//Product With Credit Response
+// Product With Credit Response
 type ProductWithCreditResponse struct {
 	ProductResponse
 	Credit CreditResponse `json:"credit,omitempty"`
@@ -49,7 +48,7 @@ func NewProductsWithCreditsResponse(credits []models.Credit) *[]ProductWithCredi
 	return &response
 }
 
-//Product With Package Response
+// Product With Package Response
 type ProductWithPackagesResponse struct {
 	ProductResponse
 	Package PackagesResponse `json:"package,omitempty"`
@@ -96,7 +95,7 @@ func NewProductResponse(product models.Product) *ProductResponse {
 	}
 
 	if product.ProductPicture != nil {
-		productResponse.ProductPicture = &productPicture
+		productResponse.ProductPicture = productPicture
 	}
 
 	return &productResponse

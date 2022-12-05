@@ -41,7 +41,6 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 	response := &TransactionResponse{
 		ID:                transaction.ID,
 		UserID:            transaction.UserID,
-		ProductID:         transaction.ProductID,
 		Amount:            transaction.Amount,
 		Method:            transaction.Method,
 		Status:            transaction.Status,
@@ -54,6 +53,7 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 	}
 
 	if transaction.Product != nil {
+		response.ProductID = *transaction.ProductID
 		response.Product = NewProductResponse(*transaction.Product)
 	}
 

@@ -4,7 +4,7 @@ type UserPayload struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
-	Points   uint   `json:"points" validate:"required"`
+	Points   uint   `json:"points"`
 }
 
 type LoginPayload struct {

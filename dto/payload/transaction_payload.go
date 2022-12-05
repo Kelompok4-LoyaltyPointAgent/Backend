@@ -4,7 +4,7 @@ import "github.com/kelompok4-loyaltypointagent/backend/constant"
 
 type TransactionPayload struct {
 	UserID    string                         `json:"user_id"`
-	ProductID string                         `json:"product_id" validate:"required"`
+	ProductID string                         `json:"product_id"`
 	Amount    float64                        `json:"amount"`
 	Method    string                         `json:"method"`
 	Number    string                         `json:"number" validate:"required"`

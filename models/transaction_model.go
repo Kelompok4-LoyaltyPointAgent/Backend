@@ -11,7 +11,7 @@ type Transaction struct {
 	ID                uuid.UUID
 	UserID            uuid.UUID
 	User              *User
-	ProductID         uuid.UUID
+	ProductID         *uuid.UUID
 	Product           *Product
 	Amount            float64
 	Method            string
