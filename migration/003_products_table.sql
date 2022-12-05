@@ -11,7 +11,7 @@ CREATE TABLE `products` (
   `price_points` int unsigned,
   `reward_points` int unsigned,
   `stock` int unsigned,
-  `recommended` boolean,
+  `recommended` boolean DEFAULT false,
   `product_picture_id` varchar(255),
   PRIMARY KEY (`id`),
   KEY `idx_products_deleted_at` (`deleted_at`),

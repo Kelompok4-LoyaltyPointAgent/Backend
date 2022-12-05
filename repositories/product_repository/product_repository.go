@@ -11,6 +11,7 @@ type ProductRepository interface {
 	Create(product models.Product) (models.Product, error)
 	Update(productUpdate models.Product, id any) (models.Product, error)
 	DeleteByID(id any) error
+	SetBooleanRecommended(id any, recommended bool) error
 }
 
 type productRepository struct {
@@ -23,13 +24,13 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 
 func (r *productRepository) FindAll() ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Find(&products).Error
+	err := r.db.Preload("ProductPicture").Find(&products).Error
 	return products, err
 }
 
 func (r *productRepository) FindByID(id any) (models.Product, error) {
 	var product models.Product
-	err := r.db.Where("id = ?", id).Find(&product).Error
+	err := r.db.Where("id = ?", id).Preload("ProductPicture").First(&product).Error
 	return product, err
 }
 
@@ -50,5 +51,11 @@ func (r *productRepository) Update(productUpdate models.Product, id any) (models
 func (r *productRepository) DeleteByID(id any) error {
 	var product models.Product
 	err := r.db.Where("id = ?", id).Delete(&product).Error
+	return err
+}
+
+func (r *productRepository) SetBooleanRecommended(id any, recommended bool) error {
+	var product models.Product
+	err := r.db.Model(&product).Where("id = ?", id).Update("recommended", recommended).Error
 	return err
 }

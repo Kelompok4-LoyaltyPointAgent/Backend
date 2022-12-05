@@ -17,6 +17,7 @@ type Product struct {
 	Stock            uint
 	Recommended      bool
 	ProductPictureID *uuid.UUID
+	ProductPicture   *ProductPicture
 }
 
 func (product *Product) BeforeCreate(tx *gorm.DB) (err error) {

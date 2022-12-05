@@ -3,6 +3,7 @@ package user_handler
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
@@ -42,6 +43,8 @@ func (h *userHandler) CreateUser(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
+	user.Name = strings.TrimSpace(user.Name)
+
 	if err := h.validate.Struct(&user); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
@@ -73,6 +76,12 @@ func (h *userHandler) UpdateUser(c echo.Context) error {
 	var userPayload payload.UserPayload
 
 	if err := c.Bind(&userPayload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	userPayload.Name = strings.TrimSpace(userPayload.Name)
+
+	if err := h.validate.Struct(&userPayload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
@@ -149,6 +158,12 @@ func (h *userHandler) UpdateUserByAdmin(c echo.Context) error {
 	var userPayload payload.UserPayload
 
 	if err := c.Bind(&userPayload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	userPayload.Name = strings.TrimSpace(userPayload.Name)
+
+	if err := h.validate.Struct(&userPayload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 

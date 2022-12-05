@@ -29,9 +29,13 @@ func Setup(app *echo.Echo) {
 	v1.POST("/register", initialize.UserHandler.CreateUser)
 	v1.POST("/login", initialize.UserHandler.Login)
 
-	user := v1.Group("/user", auth)
+	otpV1 := v1.Group("/otp")
+	otpV1.POST("/request", initialize.OTPHandler.RequestOTP)
+	otpV1.POST("/verify", initialize.OTPHandler.VerifyOTP)
+
+	user := v1.Group("/users", auth)
 	//User
-	user.GET("/me", initialize.UserHandler.FindUserByID) 
+	user.GET("/me", initialize.UserHandler.FindUserByID)
 	user.PUT("", initialize.UserHandler.UpdateUser)
 	user.PUT("/change-password", initialize.UserHandler.ChangePassword)
 	//Admin
@@ -46,4 +50,11 @@ func Setup(app *echo.Echo) {
 	productV1.GET("/credits/:id", initialize.ProductHandler.GetProductWithCredit)
 	productV1.PUT("/credits/:id", initialize.ProductHandler.UpdateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
 	productV1.DELETE("/credits/:id", initialize.ProductHandler.DeleteProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+
+	productV1.GET("/package", initialize.ProductHandler.GetProductsWithPackages)
+	productV1.POST("/package", initialize.ProductHandler.CreateProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))
+	productV1.GET("/package/:id", initialize.ProductHandler.GetProductWithPackage)
+	productV1.PUT("/package/:id", initialize.ProductHandler.UpdateProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))
+	productV1.DELETE("/package/:id", initialize.ProductHandler.DeleteProductWithPackage, middlewares.AuthorizedRoles([]string{"Admin"}))
+
 }
