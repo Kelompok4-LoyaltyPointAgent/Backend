@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"gorm.io/gorm"
 )
 
@@ -10,7 +11,7 @@ type ProductPicture struct {
 	ID   uuid.UUID
 	Name string
 	Url  string
-	Type string
+	Type constant.ProductPictureTypeEnum
 }
 
 func (productPicture *ProductPicture) BeforeCreate(tx *gorm.DB) (err error) {

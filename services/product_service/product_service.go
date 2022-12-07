@@ -1,6 +1,7 @@
 package product_service
 
 import (
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -83,7 +84,7 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
-		Type:         "Credit",
+		Type:         constant.ProductTypeCredit,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
@@ -139,7 +140,7 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
-		Type:         "Credit",
+		Type:         constant.ProductTypeCredit,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
@@ -249,7 +250,7 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
-		Type:         "Packages",
+		Type:         constant.ProductTypePackage,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
@@ -311,7 +312,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
-		Type:         "Packages",
+		Type:         constant.ProductTypePackage,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
