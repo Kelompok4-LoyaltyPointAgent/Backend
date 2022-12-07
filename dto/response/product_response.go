@@ -8,6 +8,7 @@ import (
 type ProductResponse struct {
 	ID             uuid.UUID      `json:"id"`
 	Name           string         `json:"name"`
+	Description    string         `json:"description"`
 	Type           string         `json:"type"`
 	Provider       string         `json:"provider"`
 	Price          uint           `json:"price"`
@@ -85,6 +86,7 @@ func NewProductResponse(product models.Product) *ProductResponse {
 	return &ProductResponse{
 		ID:             product.ID,
 		Name:           product.Name,
+		Description:    product.Description,
 		Type:           product.Type,
 		Provider:       product.Provider,
 		Price:          product.Price,

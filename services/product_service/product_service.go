@@ -82,6 +82,7 @@ func (s *productService) FindByRecommendedWithCredit() (*[]response.ProductWithC
 func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
 	product := models.Product{
 		Name:         payload.Name,
+		Description:  payload.Description,
 		Type:         "Credit",
 		Provider:     payload.Provider,
 		Price:        payload.Price,
@@ -137,6 +138,7 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error) {
 	product := models.Product{
 		Name:         payload.Name,
+		Description:  payload.Description,
 		Type:         "Credit",
 		Provider:     payload.Provider,
 		Price:        payload.Price,
@@ -246,6 +248,7 @@ func (s *productService) FindByRecommendedWithPackages() (*[]response.ProductWit
 func (s *productService) CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error) {
 	product := models.Product{
 		Name:         payload.Name,
+		Description:  payload.Description,
 		Type:         "Packages",
 		Provider:     payload.Provider,
 		Price:        payload.Price,
@@ -287,16 +290,15 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.Create(models.Packages{
-		ProductID:      &product.ID,
-		ActivePeriod:   payload.ActivePeriod,
-		TotalInternet:  payload.TotalInternet,
-		MainInternet:   payload.MainInternet,
-		NightInternet:  payload.NightInternet,
-		SocialMedia:    payload.SocialMedia,
-		Call:           payload.Call,
-		SMS:            payload.SMS,
-		Description:    payload.Description,
-		TermsOfService: payload.TermsOfService,
+		ProductID:     &product.ID,
+		ActivePeriod:  payload.ActivePeriod,
+		TotalInternet: payload.TotalInternet,
+		MainInternet:  payload.MainInternet,
+		NightInternet: payload.NightInternet,
+		SocialMedia:   payload.SocialMedia,
+		Call:          payload.Call,
+		SMS:           payload.SMS,
+		Description:   payload.Description,
 	})
 	if err != nil {
 		return nil, err
@@ -308,6 +310,7 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPackagesPayload, id any) (*response.ProductWithPackagesResponse, error) {
 	product := models.Product{
 		Name:         payload.Name,
+		Description:  payload.Description,
 		Type:         "Packages",
 		Provider:     payload.Provider,
 		Price:        payload.Price,
@@ -351,15 +354,14 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.UpdateByProductID(models.Packages{
-		ActivePeriod:   payload.ActivePeriod,
-		TotalInternet:  payload.TotalInternet,
-		MainInternet:   payload.MainInternet,
-		NightInternet:  payload.NightInternet,
-		SocialMedia:    payload.SocialMedia,
-		Call:           payload.Call,
-		SMS:            payload.SMS,
-		Description:    payload.Description,
-		TermsOfService: payload.TermsOfService,
+		ActivePeriod:  payload.ActivePeriod,
+		TotalInternet: payload.TotalInternet,
+		MainInternet:  payload.MainInternet,
+		NightInternet: payload.NightInternet,
+		SocialMedia:   payload.SocialMedia,
+		Call:          payload.Call,
+		SMS:           payload.SMS,
+		Description:   payload.Description,
 	}, id)
 	if err != nil {
 		return nil, err

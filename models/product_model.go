@@ -9,6 +9,7 @@ type Product struct {
 	gorm.Model
 	ID               uuid.UUID
 	Name             string
+	Description      string
 	Type             string
 	Provider         string
 	Price            uint
