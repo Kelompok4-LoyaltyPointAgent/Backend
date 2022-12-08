@@ -2,26 +2,29 @@ package response
 
 import (
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 )
 
 type ProductResponse struct {
-	ID             uuid.UUID      `json:"id"`
-	Name           string         `json:"name"`
-	Type           string         `json:"type"`
-	Provider       string         `json:"provider"`
-	Price          uint           `json:"price"`
-	PricePoints    uint           `json:"price_points"`
-	RewardPoints   uint           `json:"reward_points"`
-	Stock          uint           `json:"stock"`
-	Recommended    bool           `json:"recommended"`
-	ProductPicture ProductPicture `json:"product_picture,omitempty"`
+	ID             uuid.UUID                `json:"id"`
+	Name           string                   `json:"name"`
+	Description    string                   `json:"description"`
+	Type           constant.ProductTypeEnum `json:"type"`
+	Provider       string                   `json:"provider"`
+	Price          uint                     `json:"price"`
+	PricePoints    uint                     `json:"price_points"`
+	RewardPoints   uint                     `json:"reward_points"`
+	Stock          uint                     `json:"stock"`
+	Recommended    bool                     `json:"recommended"`
+	ProductPicture ProductPicture           `json:"product_picture,omitempty"`
 }
 
 type ProductPicture struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-	Url  string    `json:"url"`
+	ID   uuid.UUID                       `json:"id"`
+	Name string                          `json:"name"`
+	Url  string                          `json:"url"`
+	Type constant.ProductPictureTypeEnum `json:"type"`
 }
 
 // Product With Credit Response
@@ -85,6 +88,7 @@ func NewProductResponse(product models.Product) *ProductResponse {
 	return &ProductResponse{
 		ID:             product.ID,
 		Name:           product.Name,
+		Description:    product.Description,
 		Type:           product.Type,
 		Provider:       product.Provider,
 		Price:          product.Price,

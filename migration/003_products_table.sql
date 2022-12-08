@@ -5,6 +5,7 @@ CREATE TABLE `products` (
   `updated_at` datetime(3),
   `deleted_at` datetime(3),
   `name` varchar(255),
+  `description` text,
   `type` varchar(255),
   `provider` varchar(255),
   `price` int unsigned,
