@@ -50,9 +50,9 @@ func Setup(app *echo.Echo) {
 	users.DELETE("/:id", initialize.UserHandler.DeleteUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
 
 	faqs := v1.Group("/faqs", auth)
-	faqs.GET("", initialize.FAQHandler.GetFAQ)
+	faqs.GET("", initialize.FAQHandler.GetFAQs)
 	faqs.POST("", initialize.FAQHandler.UpdateFAQ, middlewares.AuthorizedRoles([]string{"Admin"}))
-	faqs.GET("/:id", initialize.FAQHandler.GetFAQs)
+	faqs.GET("/:id", initialize.FAQHandler.GetFAQ)
 	faqs.PUT("/:id", initialize.FAQHandler.UpdateFAQ, middlewares.AuthorizedRoles([]string{"Admin"}))
 	faqs.DELETE("/:id", initialize.FAQHandler.DeleteFAQ, middlewares.AuthorizedRoles([]string{"Admin"}))
 
