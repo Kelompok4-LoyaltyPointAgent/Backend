@@ -4,7 +4,6 @@ resource "google_sql_database_instance" "default" {
   database_version    = "MYSQL_8_0"
   region              = var.region
   deletion_protection = false
-  root_password       = var.mysql_root_password
 
   settings {
     tier              = "db-f1-micro"

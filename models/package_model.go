@@ -17,6 +17,7 @@ type Packages struct {
 	SocialMedia    float64
 	Call           int
 	SMS            int
+	Description    string
 	TermsOfService string
 }
 

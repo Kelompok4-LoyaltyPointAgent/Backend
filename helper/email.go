@@ -65,7 +65,9 @@ func SendOTP(to string, data OTPEmailData) error {
 		return err
 	}
 
-	Mailjet(to, "OTP Verification", body)
+	if err := Mailjet(to, "OTP Verification", body); err != nil {
+		return err
+	}
 
 	return nil
 }
