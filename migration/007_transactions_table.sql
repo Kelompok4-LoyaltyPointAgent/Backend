@@ -28,6 +28,7 @@ CREATE TABLE `transaction_details` (
   `number` varchar(255),
   `email` varchar(255),
   PRIMARY KEY (`id`),
+  UNIQUE KEY (`transaction_id`),
   KEY `idx_transaction_details_deleted_at` (`deleted_at`),
   KEY `fk_transaction_details_transaction` (`transaction_id`),
   CONSTRAINT `fk_transaction_details_transaction` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`)
