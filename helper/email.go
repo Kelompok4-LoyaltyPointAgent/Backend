@@ -71,3 +71,21 @@ func SendOTP(to string, data OTPEmailData) error {
 
 	return nil
 }
+
+func SendAccessKey(to string, data AccessKeyEmailData) error {
+	wd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	body, err := ParseTemplate(path.Join(wd, "html", "email", "forgot_password.html"), data)
+	if err != nil {
+		return err
+	}
+
+	if err := Mailjet(to, "Change your password!", body); err != nil {
+		return err
+	}
+
+	return nil
+}

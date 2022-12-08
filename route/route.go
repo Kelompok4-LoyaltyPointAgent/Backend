@@ -34,6 +34,10 @@ func Setup(app *echo.Echo) {
 	otp.POST("/request", initialize.OTPHandler.RequestOTP)
 	otp.POST("/verify", initialize.OTPHandler.VerifyOTP)
 
+	forgotPasswordV1 := v1.Group("/forgot-password")
+	forgotPasswordV1.POST("/request", initialize.ForgotPasswordHandler.RequestForgotPassword)
+	forgotPasswordV1.POST("/submit", initialize.ForgotPasswordHandler.SubmitForgotPassword)
+
 	users := v1.Group("/users", auth)
 	//User
 	users.GET("/me", initialize.UserHandler.FindUserByID)
@@ -44,6 +48,13 @@ func Setup(app *echo.Echo) {
 	users.GET("/:id", initialize.UserHandler.FindUserByIDByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
 	users.PUT("/:id", initialize.UserHandler.UpdateUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
 	users.DELETE("/:id", initialize.UserHandler.DeleteUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
+
+	faqs := v1.Group("/faqs", auth)
+	faqs.GET("", initialize.ProductHandler.GetProductsWithCredits)
+	faqs.POST("", initialize.ProductHandler.CreateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+	faqs.GET("/:id", initialize.ProductHandler.GetProductWithCredit)
+	faqs.PUT("/:id", initialize.ProductHandler.UpdateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+	faqs.DELETE("/:id", initialize.ProductHandler.DeleteProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
 
 	products := v1.Group("/products")
 
