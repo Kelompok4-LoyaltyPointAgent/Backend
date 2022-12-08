@@ -83,7 +83,9 @@ func SendAccessKey(to string, data AccessKeyEmailData) error {
 		return err
 	}
 
-	Mailjet(to, "Change your password!", body)
+	if err := Mailjet(to, "Change your password!", body); err != nil {
+		return err
+	}
 
 	return nil
 }

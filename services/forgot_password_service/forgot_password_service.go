@@ -71,7 +71,9 @@ func (s *forgotPasswordService) SubmitForgotPassword(payload payload.SubmitForgo
 	}
 
 	updates := models.User{}
-	updates.HashPassword(payload.NewPassword)
+	if err := updates.HashPassword(payload.NewPassword); err != nil {
+		return err
+	}
 	if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
 		return err
 	}
