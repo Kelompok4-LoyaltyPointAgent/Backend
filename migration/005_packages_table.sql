@@ -11,7 +11,6 @@ CREATE TABLE `packages` (
   `night_internet` double,
   `social_media` double,
   `description` text,
-  `terms_of_service` text,
   `call` int,
   `sms` int,
   PRIMARY KEY (`id`),

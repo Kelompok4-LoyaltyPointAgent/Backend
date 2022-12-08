@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"gorm.io/gorm"
 )
 
@@ -9,7 +10,8 @@ type Product struct {
 	gorm.Model
 	ID               uuid.UUID
 	Name             string
-	Type             string
+	Description      string
+	Type             constant.ProductTypeEnum
 	Provider         string
 	Price            uint
 	PricePoints      uint
