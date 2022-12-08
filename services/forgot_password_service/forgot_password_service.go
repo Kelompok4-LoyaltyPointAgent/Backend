@@ -45,10 +45,12 @@ func (s *forgotPasswordService) RequestForgotPassword(payload payload.RequestFor
 		return err
 	}
 
-	helper.SendAccessKey(user.Email, helper.AccessKeyEmailData{
+	if err := helper.SendAccessKey(user.Email, helper.AccessKeyEmailData{
 		AccessKey: accessKey,
 		FormURL:   "http://localhost/reset-password/" + accessKey,
-	})
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }
