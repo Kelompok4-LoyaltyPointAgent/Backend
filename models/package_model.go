@@ -7,18 +7,17 @@ import (
 
 type Packages struct {
 	gorm.Model
-	ID             uuid.UUID
-	ProductID      *uuid.UUID
-	Product        Product
-	ActivePeriod   int
-	TotalInternet  float64
-	MainInternet   float64
-	NightInternet  float64
-	SocialMedia    float64
-	Call           int
-	SMS            int
-	Description    string
-	TermsOfService string
+	ID            uuid.UUID
+	ProductID     *uuid.UUID
+	Product       Product
+	ActivePeriod  int
+	TotalInternet float64
+	MainInternet  float64
+	NightInternet float64
+	SocialMedia   float64
+	Call          int
+	SMS           int
+	Description   string
 }
 
 func (packages *Packages) BeforeCreate(tx *gorm.DB) (err error) {
