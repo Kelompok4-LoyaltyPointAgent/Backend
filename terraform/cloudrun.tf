@@ -1,4 +1,4 @@
-module "cloud_run" {
+module "cloudrun_staging" {
   source  = "GoogleCloudPlatform/cloud-run/google"
   version = "~> 0.2.0"
 
@@ -9,16 +9,17 @@ module "cloud_run" {
 
   ports = {
     "name" : "http1",
-    "port" : var.env_vars[index(var.env_vars.*.name, "HTTP_PORT")].value
+    "port" : var.env_vars_staging[index(var.env_vars_staging.*.name, "HTTP_PORT")].value
   }
 
-  env_vars = var.env_vars
+  env_vars = var.env_vars_staging
 
   members = ["allUsers"]
 
   template_annotations = {
     "autoscaling.knative.dev/minScale" : 0,
     "autoscaling.knative.dev/maxScale" : 1,
+    "run.googleapis.com/cloudsql-instances" : google_sql_database_instance.mysql.connection_name
   }
 
   requests = {

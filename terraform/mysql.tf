@@ -1,4 +1,4 @@
-resource "google_sql_database_instance" "default" {
+resource "google_sql_database_instance" "mysql" {
   project             = var.project
   name                = "mysql-f1"
   database_version    = "MYSQL_8_0"
@@ -13,7 +13,7 @@ resource "google_sql_database_instance" "default" {
     ip_configuration {
       ipv4_enabled       = true
       allocated_ip_range = "default-ip-range"
-      private_network    = "projects/loyaltypointagent/global/networks/default"
+      private_network    = google_compute_network.default.id
 
       authorized_networks {
         name  = "any"

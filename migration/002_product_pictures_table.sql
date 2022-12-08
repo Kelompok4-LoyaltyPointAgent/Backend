@@ -6,6 +6,7 @@ CREATE TABLE `product_pictures` (
   `deleted_at` datetime(3),
   `url` text,
   `name` varchar(255),
+  `type` varchar(255),
   PRIMARY KEY (`id`),
   KEY `idx_product_pictures_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
