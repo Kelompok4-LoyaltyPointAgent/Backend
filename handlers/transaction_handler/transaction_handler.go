@@ -36,7 +36,7 @@ func (h *transactionHandler) GetTransactions(c echo.Context) error {
 	filter := ""
 
 	filterParam := c.QueryParam("type")
-	if filterParam == "Purchase" || filterParam == "Redeem" {
+	if filterParam == "Purchase" || filterParam == "Redeem" || filterParam == "" {
 		filter = filterParam
 	} else {
 		return response.Error(c, "failed", http.StatusBadRequest, errors.New("invalid type"))
@@ -88,7 +88,7 @@ func (h *transactionHandler) CreateTransaction(c echo.Context) error {
 }
 
 func (h *transactionHandler) UpdateTransaction(c echo.Context) error {
-	var payload payload.TransactionPayload
+	var payload payload.TransactionUpdatePayload
 
 	if err := c.Bind(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)

@@ -14,6 +14,7 @@ type TransactionRepository interface {
 
 	//Transaction Detail
 	CreateDetail(transactionDetail models.TransactionDetail) (models.TransactionDetail, error)
+	DeleteDetailByTransactionID(id any) error
 }
 
 type transactionRepository struct {
@@ -35,7 +36,7 @@ func (r *transactionRepository) FindAll(query any, args ...any) ([]models.Transa
 
 	var err error
 
-	if query != nil {
+	if query != "" {
 		err = r.db.Where(query, args...).Preload("TransactionDetail").Preload("Product").Find(&transaction).Error
 	} else {
 		err = r.db.Preload("TransactionDetail").Find(&transaction).Error
@@ -67,4 +68,10 @@ func (r *transactionRepository) Delete(id any) error {
 func (r *transactionRepository) CreateDetail(transactionDetail models.TransactionDetail) (models.TransactionDetail, error) {
 	err := r.db.Create(&transactionDetail).Error
 	return transactionDetail, err
+}
+
+func (r *transactionRepository) DeleteDetailByTransactionID(id any) error {
+	var transactionDetail models.TransactionDetail
+	err := r.db.Where("transaction_id = ?", id).Delete(&transactionDetail).Error
+	return err
 }

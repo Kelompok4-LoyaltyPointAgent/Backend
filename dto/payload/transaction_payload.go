@@ -8,7 +8,13 @@ type TransactionPayload struct {
 	Amount    float64                        `json:"amount"`
 	Method    string                         `json:"method"`
 	Number    string                         `json:"number" validate:"required"`
-	Email     string                         `json:"email" validate:"required,email"`
+	Email     string                         `json:"email" validate:"email"`
 	Status    constant.TransactionStatusEnum `json:"status"`
 	Type      constant.TransactionTypeEnum   `json:"type" validate:"required,eq=Redeem|eq=Purchase|eq=Cashout"`
+}
+
+type TransactionUpdatePayload struct {
+	Amount float64                        `json:"amount" validate:"required"`
+	Status constant.TransactionStatusEnum `json:"status" validate:"required,eq=Pending|eq=Success|eq=Failed"`
+	Type   constant.TransactionTypeEnum   `json:"type" validate:"required,eq=Redeem|eq=Purchase|eq=Cashout"`
 }

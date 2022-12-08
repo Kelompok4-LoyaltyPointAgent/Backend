@@ -16,7 +16,7 @@ type TransactionResponse struct {
 	Method            string                         `json:"method"`
 	Status            constant.TransactionStatusEnum `json:"status"`
 	Type              constant.TransactionTypeEnum   `json:"type"`
-	InvoiceURL        string                         `json:"payout_url,omitempty"`
+	InvoiceURL        string                         `json:"invoice_url,omitempty"`
 	TransactionDetail *TransactionDetailResponse     `json:"transaction_detail,omitempty"`
 }
 

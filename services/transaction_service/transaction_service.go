@@ -18,7 +18,7 @@ type TransactionService interface {
 	FindAllDetail(claims *helper.JWTCustomClaims, filter any) (*[]response.TransactionResponse, error)
 	FindByID(id any, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error)
 	Create(payload payload.TransactionPayload, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error)
-	Update(payload payload.TransactionPayload, id any) (*response.TransactionResponse, error)
+	Update(payload payload.TransactionUpdatePayload, id any) (*response.TransactionResponse, error)
 	Delete(id any) error
 	Cancel(id any) (*response.TransactionResponse, error)
 	CallbackXendit(payload map[string]interface{}) (bool, error)
@@ -115,6 +115,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 	var amount float64
 	// Blank status indicates transaction made by customer.
 	if payload.Status == "" {
+
 		if payload.Email == "" {
 			payload.Email = user.Email
 		}
@@ -200,23 +201,12 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
-func (s *transactionService) Update(payload payload.TransactionPayload, id any) (*response.TransactionResponse, error) {
-	userID, err := uuid.Parse(payload.UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	product, err := s.productRepository.FindByID(payload.ProductID)
-	if err != nil {
-		return nil, err
-	}
+func (s *transactionService) Update(payload payload.TransactionUpdatePayload, id any) (*response.TransactionResponse, error) {
 
 	transaction, err := s.transactionRepository.Update(models.Transaction{
-		UserID:    userID,
-		ProductID: &product.ID,
-		Amount:    payload.Amount,
-		Status:    payload.Status,
-		Type:      payload.Type,
+		Amount: payload.Amount,
+		Status: payload.Status,
+		Type:   payload.Type,
 	}, id)
 	if err != nil {
 		return nil, err
@@ -231,18 +221,32 @@ func (s *transactionService) Update(payload payload.TransactionPayload, id any) 
 }
 
 func (s *transactionService) Delete(id any) error {
-	return s.transactionRepository.Delete(id)
+	err := s.transactionRepository.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.transactionRepository.DeleteDetailByTransactionID(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *transactionService) Cancel(id any) (*response.TransactionResponse, error) {
-	transaction, err := s.transactionRepository.Update(models.Transaction{
-		Status: constant.TransactionStatusFailed,
-	}, id)
+	transaction, err := s.transactionRepository.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	transaction, err = s.transactionRepository.FindByID(transaction.ID.String())
+	if transaction.Status == constant.TransactionStatusSuccess {
+		return nil, errors.New("transaction already success")
+	}
+
+	transaction, err = s.transactionRepository.Update(models.Transaction{
+		Status: constant.TransactionStatusFailed,
+	}, id)
 	if err != nil {
 		return nil, err
 	}
