@@ -1,6 +1,10 @@
 package product_service
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
@@ -30,6 +34,8 @@ type ProductService interface {
 	CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error)
 	UpdateProductWithPackages(payload payload.ProductWithPackagesPayload, id any) (*response.ProductWithPackagesResponse, error)
 	DeleteProductWithPackages(id any) error
+
+	FindIconByProvider(provider string) (models.ProductPicture, error)
 }
 
 type productService struct {
@@ -81,6 +87,8 @@ func (s *productService) FindByRecommendedWithCredit() (*[]response.ProductWithC
 }
 
 func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
+	var productPictures *models.ProductPicture
+
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
@@ -96,6 +104,13 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 		product.Recommended = *payload.Recommended
 	}
 
+	icon, err := s.FindIconByProvider(payload.Provider)
+	if err != nil {
+		return nil, err
+	}
+
+	product.IconID = &icon.ID
+
 	if payload.ProductPicture != nil {
 		fileName, buf, err := helper.OpenFileFromMultipartForm(payload.ProductPicture)
 		if err != nil {
@@ -107,20 +122,26 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
 			}
 			product.ProductPictureID = &createProductPicture.ID
+			productPictures = &createProductPicture
 		} else {
 			product.ProductPictureID = &productPicture.ID
+			productPictures = &productPicture
 		}
 	}
 
-	product, err := s.productRepository.Create(product)
+	product, err = s.productRepository.Create(product)
 	if err != nil {
 		return nil, err
 	}
+
+	product.Icon = &icon
+	product.ProductPicture = productPictures
 
 	credit, err := s.creditRepository.Create(models.Credit{
 		ProductID:    &product.ID,
@@ -137,6 +158,12 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 }
 
 func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCreditPayload, id any) (*response.ProductWithCreditResponse, error) {
+
+	getProduct, err := s.productRepository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
@@ -146,6 +173,14 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
+	}
+
+	if strings.EqualFold(getProduct.Provider, payload.Provider) {
+		icon, err := s.FindIconByProvider(payload.Provider)
+		if err != nil {
+			return nil, err
+		}
+		product.IconID = &icon.ID
 	}
 
 	if payload.Recommended != nil {
@@ -167,6 +202,7 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
@@ -179,7 +215,7 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 		}
 	}
 
-	product, err := s.productRepository.Update(product, id)
+	product, err = s.productRepository.Update(product, id)
 	if err != nil {
 		return nil, err
 	}
@@ -247,6 +283,8 @@ func (s *productService) FindByRecommendedWithPackages() (*[]response.ProductWit
 }
 
 func (s *productService) CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error) {
+	var productPictures *models.ProductPicture
+
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
@@ -262,6 +300,13 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		product.Recommended = *payload.Recommended
 	}
 
+	icon, err := s.FindIconByProvider(payload.Provider)
+	if err != nil {
+		return nil, err
+	}
+
+	product.IconID = &icon.ID
+
 	if payload.ProductPicture != nil {
 		fileName, buf, err := helper.OpenFileFromMultipartForm(payload.ProductPicture)
 		if err != nil {
@@ -273,22 +318,26 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
 			}
 			product.ProductPictureID = &createProductPicture.ID
-			product.ProductPicture = &createProductPicture
+			productPictures = &createProductPicture
 		} else {
 			product.ProductPictureID = &productPicture.ID
-			product.ProductPicture = &productPicture
+			productPictures = &productPicture
 		}
 	}
 
-	product, err := s.productRepository.Create(product)
+	product, err = s.productRepository.Create(product)
 	if err != nil {
 		return nil, err
 	}
+
+	product.Icon = &icon
+	product.ProductPicture = productPictures
 
 	pack, err := s.packagesRepository.Create(models.Packages{
 		ProductID:     &product.ID,
@@ -299,7 +348,6 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:   payload.SocialMedia,
 		Call:          payload.Call,
 		SMS:           payload.SMS,
-		Description:   payload.Description,
 	})
 	if err != nil {
 		return nil, err
@@ -309,6 +357,11 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 }
 
 func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPackagesPayload, id any) (*response.ProductWithPackagesResponse, error) {
+	getProduct, err := s.productRepository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
 	product := models.Product{
 		Name:         payload.Name,
 		Description:  payload.Description,
@@ -318,6 +371,14 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
+	}
+
+	if strings.EqualFold(getProduct.Provider, payload.Provider) {
+		icon, err := s.FindIconByProvider(payload.Provider)
+		if err != nil {
+			return nil, err
+		}
+		product.IconID = &icon.ID
 	}
 
 	if payload.Recommended != nil {
@@ -339,6 +400,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
@@ -349,7 +411,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		}
 	}
 
-	product, err := s.productRepository.Update(product, id)
+	product, err = s.productRepository.Update(product, id)
 	if err != nil {
 		return nil, err
 	}
@@ -362,7 +424,6 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:   payload.SocialMedia,
 		Call:          payload.Call,
 		SMS:           payload.SMS,
-		Description:   payload.Description,
 	}, id)
 	if err != nil {
 		return nil, err
@@ -381,4 +442,15 @@ func (s *productService) DeleteProductWithPackages(id any) error {
 	}
 
 	return nil
+}
+
+func (s *productService) FindIconByProvider(provider string) (models.ProductPicture, error) {
+	iconName := fmt.Sprintf("%s-icon", strings.ToLower(provider))
+	icons, err := s.productPictureRepository.FindByName(iconName)
+	if err != nil {
+		return models.ProductPicture{}, errors.New("Icon of the Provider Not Found")
+	}
+
+	return icons, nil
+
 }

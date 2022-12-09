@@ -17,7 +17,6 @@ type Packages struct {
 	SocialMedia   float64
 	Call          int
 	SMS           int
-	Description   string
 }
 
 func (packages *Packages) BeforeCreate(tx *gorm.DB) (err error) {

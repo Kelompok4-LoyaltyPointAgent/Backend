@@ -9,7 +9,6 @@ import (
 type ProductResponse struct {
 	ID             uuid.UUID                `json:"id"`
 	Name           string                   `json:"name"`
-	Description    string                   `json:"description"`
 	Type           constant.ProductTypeEnum `json:"type"`
 	Provider       string                   `json:"provider"`
 	Price          uint                     `json:"price"`
@@ -17,7 +16,9 @@ type ProductResponse struct {
 	RewardPoints   uint                     `json:"reward_points"`
 	Stock          uint                     `json:"stock"`
 	Recommended    bool                     `json:"recommended"`
+	Description    string                   `json:"description"`
 	ProductPicture ProductPicture           `json:"product_picture,omitempty"`
+	Icon           ProductPicture           `json:"icon,omitempty"`
 }
 
 type ProductPicture struct {
@@ -77,25 +78,38 @@ func NewProductsWithPackagesResponse(packages []models.Packages) *[]ProductWithP
 
 func NewProductResponse(product models.Product) *ProductResponse {
 	var productPicture ProductPicture
+	var icon ProductPicture
 	if product.ProductPicture != nil {
 		productPicture = ProductPicture{
 			ID:   *product.ProductPictureID,
 			Name: product.ProductPicture.Name,
 			Url:  product.ProductPicture.Url,
+			Type: product.ProductPicture.Type,
+		}
+	}
+
+	if product.Icon != nil {
+		icon = ProductPicture{
+			ID:   *product.IconID,
+			Name: product.Icon.Name,
+			Url:  product.Icon.Url,
+			Type: product.Icon.Type,
 		}
 	}
 
 	productResponse := ProductResponse{
-		ID:           product.ID,
-		Name:         product.Name,
-		Type:         product.Type,
-		Provider:     product.Provider,
-		Price:        product.Price,
-		PricePoints:  product.PricePoints,
-		RewardPoints: product.RewardPoints,
-		Description:  product.Description,
-		Stock:        product.Stock,
-		Recommended:  product.Recommended,
+		ID:             product.ID,
+		Name:           product.Name,
+		Description:    product.Description,
+		Type:           product.Type,
+		Provider:       product.Provider,
+		Price:          product.Price,
+		PricePoints:    product.PricePoints,
+		RewardPoints:   product.RewardPoints,
+		Stock:          product.Stock,
+		Recommended:    product.Recommended,
+		ProductPicture: productPicture,
+		Icon:           icon,
 	}
 
 	if product.ProductPicture != nil {
