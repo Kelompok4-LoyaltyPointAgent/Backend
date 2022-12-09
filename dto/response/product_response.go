@@ -17,6 +17,7 @@ type ProductResponse struct {
 	Recommended    bool           `json:"recommended"`
 	Description    string         `json:"description"`
 	ProductPicture ProductPicture `json:"product_picture,omitempty"`
+	Icon           ProductPicture `json:"icon,omitempty"`
 }
 
 type ProductPicture struct {
@@ -75,11 +76,20 @@ func NewProductsWithPackagesResponse(packages []models.Packages) *[]ProductWithP
 
 func NewProductResponse(product models.Product) *ProductResponse {
 	var productPicture ProductPicture
+	var icon ProductPicture
 	if product.ProductPicture != nil {
 		productPicture = ProductPicture{
 			ID:   *product.ProductPictureID,
 			Name: product.ProductPicture.Name,
 			Url:  product.ProductPicture.Url,
+		}
+	}
+
+	if product.Icon != nil {
+		icon = ProductPicture{
+			ID:   *product.IconID,
+			Name: product.Icon.Name,
+			Url:  product.Icon.Url,
 		}
 	}
 
@@ -94,6 +104,7 @@ func NewProductResponse(product models.Product) *ProductResponse {
 		Stock:          product.Stock,
 		Recommended:    product.Recommended,
 		ProductPicture: productPicture,
+		Icon:           icon,
 	}
 }
 

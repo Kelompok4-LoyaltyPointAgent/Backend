@@ -10,6 +10,7 @@ type ProductPicture struct {
 	ID   uuid.UUID
 	Name string
 	Url  string
+	Type string
 }
 
 func (productPicture *ProductPicture) BeforeCreate(tx *gorm.DB) (err error) {
