@@ -2,31 +2,33 @@ package response
 
 import (
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 )
 
 type ProductResponse struct {
-	ID             uuid.UUID      `json:"id"`
-	Name           string         `json:"name"`
-	Type           string         `json:"type"`
-	Provider       string         `json:"provider"`
-	Price          uint           `json:"price"`
-	PricePoints    uint           `json:"price_points"`
-	RewardPoints   uint           `json:"reward_points"`
-	Stock          uint           `json:"stock"`
-	Recommended    bool           `json:"recommended"`
-	Description    string         `json:"description"`
-	ProductPicture ProductPicture `json:"product_picture,omitempty"`
-	Icon           ProductPicture `json:"icon,omitempty"`
+	ID             uuid.UUID                `json:"id"`
+	Name           string                   `json:"name"`
+	Type           constant.ProductTypeEnum `json:"type"`
+	Provider       string                   `json:"provider"`
+	Price          uint                     `json:"price"`
+	PricePoints    uint                     `json:"price_points"`
+	RewardPoints   uint                     `json:"reward_points"`
+	Stock          uint                     `json:"stock"`
+	Recommended    bool                     `json:"recommended"`
+	Description    string                   `json:"description"`
+	ProductPicture ProductPicture           `json:"product_picture,omitempty"`
+	Icon           ProductPicture           `json:"icon,omitempty"`
 }
 
 type ProductPicture struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-	Url  string    `json:"url"`
+	ID   uuid.UUID                       `json:"id"`
+	Name string                          `json:"name"`
+	Url  string                          `json:"url"`
+	Type constant.ProductPictureTypeEnum `json:"type"`
 }
 
-//Product With Credit Response
+// Product With Credit Response
 type ProductWithCreditResponse struct {
 	ProductResponse
 	Credit CreditResponse `json:"credit,omitempty"`
@@ -50,7 +52,7 @@ func NewProductsWithCreditsResponse(credits []models.Credit) *[]ProductWithCredi
 	return &response
 }
 
-//Product With Package Response
+// Product With Package Response
 type ProductWithPackagesResponse struct {
 	ProductResponse
 	Package PackagesResponse `json:"package,omitempty"`
@@ -82,6 +84,7 @@ func NewProductResponse(product models.Product) *ProductResponse {
 			ID:   *product.ProductPictureID,
 			Name: product.ProductPicture.Name,
 			Url:  product.ProductPicture.Url,
+			Type: product.ProductPicture.Type,
 		}
 	}
 
@@ -90,12 +93,14 @@ func NewProductResponse(product models.Product) *ProductResponse {
 			ID:   *product.IconID,
 			Name: product.Icon.Name,
 			Url:  product.Icon.Url,
+			Type: product.Icon.Type,
 		}
 	}
 
-	return &ProductResponse{
+	productResponse := ProductResponse{
 		ID:             product.ID,
 		Name:           product.Name,
+		Description:    product.Description,
 		Type:           product.Type,
 		Provider:       product.Provider,
 		Price:          product.Price,
@@ -106,6 +111,12 @@ func NewProductResponse(product models.Product) *ProductResponse {
 		ProductPicture: productPicture,
 		Icon:           icon,
 	}
+
+	if product.ProductPicture != nil {
+		productResponse.ProductPicture = productPicture
+	}
+
+	return &productResponse
 }
 
 func NewProductsResponse(products []models.Product) *[]ProductResponse {

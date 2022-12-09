@@ -3,6 +3,7 @@ package user_service
 import (
 	"errors"
 
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -58,7 +59,7 @@ func (s *userService) Create(payload payload.UserPayload) (response.UserResponse
 		Name:     payload.Name,
 		Email:    payload.Email,
 		Password: payload.Password,
-		Role:     "User",
+		Role:     constant.UserRoleUser,
 		Points:   payload.Points,
 	}
 
@@ -196,7 +197,7 @@ func (s *userService) Login(payload payload.LoginPayload) (response.LoginRespons
 		return response.LoginResponse{}, err
 	}
 
-	token, err := helper.CreateToken(user.ID, user.Role)
+	token, err := helper.CreateToken(user.ID, user.Role.String())
 	if err != nil {
 		return response.LoginResponse{}, err
 	}

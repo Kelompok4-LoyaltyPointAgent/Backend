@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -86,15 +87,17 @@ func (s *productService) FindByRecommendedWithCredit() (*[]response.ProductWithC
 }
 
 func (s *productService) CreateProductWithCredit(payload payload.ProductWithCreditPayload) (*response.ProductWithCreditResponse, error) {
+	var productPictures *models.ProductPicture
+
 	product := models.Product{
 		Name:         payload.Name,
-		Type:         "Credit",
+		Description:  payload.Description,
+		Type:         constant.ProductTypeCredit,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -119,14 +122,16 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
-				Type: "Product",
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
 			}
 			product.ProductPictureID = &createProductPicture.ID
+			productPictures = &createProductPicture
 		} else {
 			product.ProductPictureID = &productPicture.ID
+			productPictures = &productPicture
 		}
 	}
 
@@ -134,6 +139,9 @@ func (s *productService) CreateProductWithCredit(payload payload.ProductWithCred
 	if err != nil {
 		return nil, err
 	}
+
+	product.Icon = &icon
+	product.ProductPicture = productPictures
 
 	credit, err := s.creditRepository.Create(models.Credit{
 		ProductID:    &product.ID,
@@ -158,13 +166,13 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 
 	product := models.Product{
 		Name:         payload.Name,
-		Type:         "Credit",
+		Description:  payload.Description,
+		Type:         constant.ProductTypeCredit,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if strings.ToLower(getProduct.Provider) != strings.ToLower(payload.Provider) {
@@ -194,7 +202,7 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
-				Type: "Product",
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
@@ -275,15 +283,17 @@ func (s *productService) FindByRecommendedWithPackages() (*[]response.ProductWit
 }
 
 func (s *productService) CreateProductWithPackages(payload payload.ProductWithPackagesPayload) (*response.ProductWithPackagesResponse, error) {
+	var productPictures *models.ProductPicture
+
 	product := models.Product{
 		Name:         payload.Name,
-		Type:         "Packages",
+		Description:  payload.Description,
+		Type:         constant.ProductTypePackage,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if payload.Recommended != nil {
@@ -308,16 +318,16 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
-				Type: "Product",
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
 			}
 			product.ProductPictureID = &createProductPicture.ID
-			product.ProductPicture = &createProductPicture
+			productPictures = &createProductPicture
 		} else {
 			product.ProductPictureID = &productPicture.ID
-			product.ProductPicture = &productPicture
+			productPictures = &productPicture
 		}
 	}
 
@@ -326,16 +336,18 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		return nil, err
 	}
 
+	product.Icon = &icon
+	product.ProductPicture = productPictures
+
 	pack, err := s.packagesRepository.Create(models.Packages{
-		ProductID:      &product.ID,
-		ActivePeriod:   payload.ActivePeriod,
-		TotalInternet:  payload.TotalInternet,
-		MainInternet:   payload.MainInternet,
-		NightInternet:  payload.NightInternet,
-		SocialMedia:    payload.SocialMedia,
-		Call:           payload.Call,
-		SMS:            payload.SMS,
-		TermsOfService: payload.TermOfService,
+		ProductID:     &product.ID,
+		ActivePeriod:  payload.ActivePeriod,
+		TotalInternet: payload.TotalInternet,
+		MainInternet:  payload.MainInternet,
+		NightInternet: payload.NightInternet,
+		SocialMedia:   payload.SocialMedia,
+		Call:          payload.Call,
+		SMS:           payload.SMS,
 	})
 	if err != nil {
 		return nil, err
@@ -352,13 +364,13 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 
 	product := models.Product{
 		Name:         payload.Name,
-		Type:         "Packages",
+		Description:  payload.Description,
+		Type:         constant.ProductTypePackage,
 		Provider:     payload.Provider,
 		Price:        payload.Price,
 		PricePoints:  payload.PricePoints,
 		RewardPoints: payload.RewardPoints,
 		Stock:        payload.Stock,
-		Description:  payload.Description,
 	}
 
 	if strings.ToLower(getProduct.Provider) != strings.ToLower(payload.Provider) {
@@ -388,7 +400,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 			createProductPicture, err := s.productPictureRepository.Create(models.ProductPicture{
 				Name: fileName,
 				Url:  url,
-				Type: "Product",
+				Type: constant.ProductPictureTypePhoto,
 			})
 			if err != nil {
 				return nil, err
@@ -405,14 +417,13 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 	}
 
 	pack, err := s.packagesRepository.UpdateByProductID(models.Packages{
-		ActivePeriod:   payload.ActivePeriod,
-		TotalInternet:  payload.TotalInternet,
-		MainInternet:   payload.MainInternet,
-		NightInternet:  payload.NightInternet,
-		SocialMedia:    payload.SocialMedia,
-		Call:           payload.Call,
-		SMS:            payload.SMS,
-		TermsOfService: payload.TermOfService,
+		ActivePeriod:  payload.ActivePeriod,
+		TotalInternet: payload.TotalInternet,
+		MainInternet:  payload.MainInternet,
+		NightInternet: payload.NightInternet,
+		SocialMedia:   payload.SocialMedia,
+		Call:          payload.Call,
+		SMS:           payload.SMS,
 	}, id)
 	if err != nil {
 		return nil, err

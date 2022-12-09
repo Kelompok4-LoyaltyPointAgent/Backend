@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -12,8 +13,8 @@ type User struct {
 	Name     string
 	Email    string
 	Password string
-	Role     string
-	Points   int
+	Role     constant.UserRoleEnum
+	Points   uint
 }
 
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {

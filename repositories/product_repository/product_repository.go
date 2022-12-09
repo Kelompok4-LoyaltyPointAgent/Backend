@@ -35,13 +35,13 @@ func (r *productRepository) FindByID(id any) (models.Product, error) {
 }
 
 func (r *productRepository) Create(product models.Product) (models.Product, error) {
-	err := r.db.Create(&product).Error
+	err := r.db.Omit("Icon").Omit("ProductPicture").Create(&product).Error
 	return product, err
 }
 
 func (r *productRepository) Update(productUpdate models.Product, id any) (models.Product, error) {
 	var product models.Product
-	err := r.db.Model(&product).Where("id = ?", id).Updates(&productUpdate).Error
+	err := r.db.Model(&product).Omit("Icon").Omit("ProductPicture").Where("id = ?", id).Updates(&productUpdate).Error
 	if err != nil {
 		return product, err
 	}

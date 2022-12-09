@@ -13,7 +13,6 @@ type OTP struct {
 	UserID    uuid.UUID
 	Pin       string
 	ExpiredAt time.Time
-	IsUsed    bool
 }
 
 func (OTP) TableName() string {

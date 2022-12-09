@@ -2,6 +2,11 @@ package helper
 
 import "math/rand"
 
+type OTPEmailData struct {
+	Length int
+	Pin    string
+}
+
 func CreatePin(length int) string {
 	letters := []byte("0123456789")
 

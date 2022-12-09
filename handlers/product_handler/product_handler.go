@@ -98,7 +98,6 @@ func (h *productHandler) CreateProductWithCredit(c echo.Context) error {
 	}
 
 	payload.Name = strings.TrimSpace(payload.Name)
-	payload.Description = strings.TrimSpace(payload.Description)
 	payload.Provider = strings.TrimSpace(payload.Provider)
 
 	if err := h.validate.Struct(&payload); err != nil {
@@ -128,7 +127,6 @@ func (h *productHandler) UpdateProductWithCredit(c echo.Context) error {
 	}
 
 	payload.Name = strings.TrimSpace(payload.Name)
-	payload.Description = strings.TrimSpace(payload.Description)
 	payload.Provider = strings.TrimSpace(payload.Provider)
 
 	if err := h.validate.Struct(&payload); err != nil {
@@ -153,11 +151,7 @@ func (h *productHandler) DeleteProductWithCredit(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
 
-	return response.Success(c, "success", http.StatusOK, map[string]any{
-		"id":      c.Param("id"),
-		"kind":    "Credit",
-		"deleted": true,
-	})
+	return response.Success(c, "success", http.StatusOK, nil)
 }
 
 func (h *productHandler) GetProductsWithPackages(c echo.Context) error {
@@ -215,6 +209,10 @@ func (h *productHandler) CreateProductWithPackage(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
+	payload.Name = strings.TrimSpace(payload.Name)
+	payload.Description = strings.TrimSpace(payload.Description)
+	payload.Provider = strings.TrimSpace(payload.Provider)
+
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
@@ -246,6 +244,10 @@ func (h *productHandler) UpdateProductWithPackage(c echo.Context) error {
 		payload.ProductPicture = file
 	}
 
+	payload.Name = strings.TrimSpace(payload.Name)
+	payload.Description = strings.TrimSpace(payload.Description)
+	payload.Provider = strings.TrimSpace(payload.Provider)
+
 	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
@@ -263,9 +265,5 @@ func (h *productHandler) DeleteProductWithPackage(c echo.Context) error {
 		return response.Error(c, "failed", http.StatusInternalServerError, err)
 	}
 
-	return response.Success(c, "success", http.StatusOK, map[string]any{
-		"id":      c.Param("id"),
-		"kind":    "Package",
-		"deleted": true,
-	})
+	return response.Success(c, "success", http.StatusOK, nil)
 }

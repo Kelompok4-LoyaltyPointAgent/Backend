@@ -35,27 +35,25 @@ func (s *otpService) CreateOTP(payload payload.RequestOTPPayload) (*response.Req
 
 	pin := helper.CreatePin(5)
 
-	_, otpErr := s.otpRepository.FindByPin(pin)
-	if otpErr == nil {
-		return nil, errors.New("pin already exists")
+	if _, err := s.otpRepository.FindByPinAndUserID(pin, user.ID); err == nil {
+		return nil, errors.New("failed creating otp")
 	}
 
 	otp, err := s.otpRepository.Create(models.OTP{
 		UserID:    user.ID,
 		Pin:       pin,
 		ExpiredAt: time.Now().Add(5 * time.Minute),
-		IsUsed:    false,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: send pin
-	// user, err := s.userRepository.FindByID(userID.String())
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// send pin via email to user.Email
+	if err := helper.SendOTP(user.Email, helper.OTPEmailData{
+		Length: len(pin),
+		Pin:    pin,
+	}); err != nil {
+		return nil, err
+	}
 
 	return response.NewRequestOTPResponse(otp.ExpiredAt), nil
 }
@@ -75,7 +73,7 @@ func (s *otpService) VerifyOTP(payload payload.VerifyOTPPayload) (*response.Veri
 		return nil, errors.New("otp expired")
 	}
 
-	if _, err := s.otpRepository.Update(models.OTP{IsUsed: true}, otp.ID); err != nil {
+	if err := s.otpRepository.Delete(otp.ID); err != nil {
 		log.Printf("Error: %s", err)
 		return nil, errors.New("internal server error")
 	}

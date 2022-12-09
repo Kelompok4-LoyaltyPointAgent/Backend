@@ -1,0 +1,155 @@
+<html lang="en-US">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Hola Pulsa</title>
+    <meta name="description" content="invoice" />
+    <style type="text/css">
+      @import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700);
+
+      a:hover {
+        text-decoration: underline !important;
+      }
+
+      .body {
+        margin: 0px;
+        background-color: #f2f3f8;
+      }
+
+      .outer-table {
+        background-color: #f2f3f8;
+        font-family: 'Open Sans', sans-serif;
+        width: 100%;
+        border: 0px;
+      }
+
+      .inner-table {
+        background-color: #f2f3f8;
+        max-width: 670px;
+        margin: 0 auto;
+        width: 100%;
+        border: 0px;
+      }
+
+      .content-table {
+        width: 95%;
+        max-width: 670px;
+        border: 0px;
+        background: #fff;
+        border-radius: 3px;
+        text-align: center;
+        -webkit-box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
+        -moz-box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
+        box-shadow: 0 6px 18px 0 rgba(0, 0, 0, 0.06);
+      }
+
+      .title {
+        color: #1e1e2d;
+        font-weight: 500;
+        margin: 0;
+        font-size: 32px;
+        font-family: 'Rubik', sans-serif;
+      }
+
+      .divider {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 29px 0 26px;
+        border-bottom: 1px solid #cecece;
+        width: 100px;
+      }
+
+      .content {
+        color: #455056;
+        font-size: 15px;
+        line-height: 24px;
+        margin: 0;
+      }
+
+      .button {
+        background: #4b9dd3;
+        text-decoration: none !important;
+        font-weight: 500;
+        margin-top: 35px;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 14px;
+        padding: 10px 24px;
+        display: inline-block;
+        border-radius: 50px;
+      }
+
+      .copyright {
+        font-size: 14px;
+        color: rgba(69, 80, 86, 0.7411764705882353);
+        line-height: 18px;
+        margin: 0 0 0;
+      }
+    </style>
+  </head>
+
+  <body class="body">
+    <!--100% body table-->
+    <table cellspacing="0" cellpadding="0" class="outer-table">
+      <tr>
+        <td>
+          <table class="inner-table" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="height: 80px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/capstone-project-eede7.appspot.com/o/1.svg?alt=media&token=0283b185-8a73-4d78-95af-e46e7526a144"
+                  title="logo"
+                  alt="logo"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 20px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td>
+                <table
+                  class="content-table"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                >
+                  <tr>
+                    <td style="height: 40px">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0 35px">
+                      <h1 class="title">OTP Verification</h1>
+                      <span class="divider"></span>
+                      <p class="content">
+                        Enter this {{.Length}} digits pin to sign in.
+                      </p>
+                      <p><strong>{{.Pin}}</strong></p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="height: 40px">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 20px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">
+                <p class="copyright">&copy; <strong>Hola Pulsa</strong></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="height: 80px">&nbsp;</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <!--/100% body table-->
+  </body>
+</html>
