@@ -175,7 +175,7 @@ func (s *productService) UpdateProductWithCredit(payload payload.ProductWithCred
 		Stock:        payload.Stock,
 	}
 
-	if strings.ToLower(getProduct.Provider) != strings.ToLower(payload.Provider) {
+	if strings.EqualFold(getProduct.Provider, payload.Provider) {
 		icon, err := s.FindIconByProvider(payload.Provider)
 		if err != nil {
 			return nil, err
@@ -373,7 +373,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		Stock:        payload.Stock,
 	}
 
-	if strings.ToLower(getProduct.Provider) != strings.ToLower(payload.Provider) {
+	if strings.EqualFold(getProduct.Provider, payload.Provider) {
 		icon, err := s.FindIconByProvider(payload.Provider)
 		if err != nil {
 			return nil, err
