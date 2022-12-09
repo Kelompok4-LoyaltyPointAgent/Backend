@@ -18,6 +18,7 @@ type TransactionResponse struct {
 	Type              constant.TransactionTypeEnum   `json:"type"`
 	InvoiceURL        string                         `json:"invoice_url,omitempty"`
 	TransactionDetail *TransactionDetailResponse     `json:"transaction_detail,omitempty"`
+	CreatedDate       string                         `json:"created_date,omitempty"`
 }
 
 type TransactionDetailResponse struct {
@@ -46,6 +47,7 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 		Status:            transaction.Status,
 		Type:              transaction.Type,
 		TransactionDetail: NewTransactionDetailResponse(transactionDetail),
+		CreatedDate:       transaction.CreatedAt.Format("02 January 2006"),
 	}
 
 	if invoiceURL != "" {
