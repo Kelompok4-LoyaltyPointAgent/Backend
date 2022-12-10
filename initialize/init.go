@@ -3,6 +3,7 @@ package initialize
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/db"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/faq_handler"
+	"github.com/kelompok4-loyaltypointagent/backend/handlers/feedback_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/forgot_password_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/hello_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/otp_handler"
@@ -12,6 +13,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/faq_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/feedback_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/forgot_password_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/otp_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/packages_repository"
@@ -20,6 +22,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/transaction_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/services/faq_service"
+	"github.com/kelompok4-loyaltypointagent/backend/services/feedback_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/forgot_password_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/otp_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/product_service"
@@ -69,6 +72,11 @@ var faqRepository faq_repository.FAQRepository
 var faqService faq_service.FAQService
 var FAQHandler faq_handler.FAQHandler
 
+//Feedback
+var FeedbackHandler feedback_handler.FeedbackHandler
+var feedbackService feedback_service.FeedbackService
+var feedbackRepository feedback_repository.FeedbackRepository
+
 func Init() {
 	helper.InitAppFirebase()
 	initRepositories()
@@ -88,6 +96,7 @@ func initRepositories() {
 	transactionRepository = transaction_repository.NewTransactionRepository(db)
 	faqRepository = faq_repository.NewFAQRepository(db)
 	forgotPasswordRepository = forgot_password_repository.NewForgotPasswordRepository(db)
+	feedbackRepository = feedback_repository.NewFeedbackRepository(db)
 }
 
 func initServices() {
@@ -97,6 +106,7 @@ func initServices() {
 	transactionService = transaction_service.NewTransactionService(transactionRepository, productRepository, userRepository)
 	faqService = faq_service.NewFAQService(faqRepository)
 	forgotPasswordService = forgot_password_service.NewForgotPasswordService(forgotPasswordRepository, userRepository)
+	feedbackService = feedback_service.NewFeedbackService(feedbackRepository)
 }
 
 func initHandlers() {
@@ -107,4 +117,5 @@ func initHandlers() {
 	TransactionHandler = transaction_handler.NewTransactionHandler(transactionService)
 	FAQHandler = faq_handler.NewFAQHandler(faqService)
 	ForgotPasswordHandler = forgot_password_handler.NewForgotPasswordHandler(forgotPasswordService)
+	FeedbackHandler = feedback_handler.NewFeedbackHandler(feedbackService)
 }

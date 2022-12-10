@@ -79,4 +79,9 @@ func Setup(app *echo.Echo) {
 	transactionV1.PUT("/:id", initialize.TransactionHandler.UpdateTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
 	transactionV1.DELETE("/:id", initialize.TransactionHandler.DeleteTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
 	transactionV1.POST("/cancel/:id", initialize.TransactionHandler.CancelTransaction)
+
+	feedback := v1.Group("/feedbacks", auth)
+	feedback.GET("", initialize.FeedbackHandler.FindAll, middlewares.AuthorizedRoles([]string{"Admin"}))
+	feedback.GET("/:id", initialize.FeedbackHandler.FindByID, middlewares.AuthorizedRoles([]string{"Admin"}))
+	feedback.POST("", initialize.FeedbackHandler.Create)
 }
