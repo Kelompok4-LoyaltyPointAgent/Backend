@@ -26,9 +26,9 @@ func (r *faqRepository) FindAll(query any, args ...any) ([]models.FAQ, error) {
 
 	var err error
 	if query != nil {
-		err = r.db.Find(&faqs).Error
-	} else {
 		err = r.db.Where(query, args...).Find(&faqs).Error
+	} else {
+		err = r.db.Find(&faqs).Error
 	}
 
 	return faqs, err
