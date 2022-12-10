@@ -16,7 +16,6 @@ type PackagesResponse struct {
 	SocialMedia   float64          `json:"social_media"`
 	Call          int              `json:"call"`
 	SMS           int              `json:"sms"`
-	Description   string           `json:"description"`
 }
 
 func NewPackagesResponse(packages models.Packages) *PackagesResponse {
@@ -30,7 +29,6 @@ func NewPackagesResponse(packages models.Packages) *PackagesResponse {
 		SocialMedia:   packages.SocialMedia,
 		Call:          packages.Call,
 		SMS:           packages.SMS,
-		Description:   packages.Description,
 	}
 	return response
 }

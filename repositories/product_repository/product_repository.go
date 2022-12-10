@@ -24,24 +24,24 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 
 func (r *productRepository) FindAll() ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Preload("ProductPicture").Find(&products).Error
+	err := r.db.Preload("ProductPicture").Preload("Icon").Find(&products).Error
 	return products, err
 }
 
 func (r *productRepository) FindByID(id any) (models.Product, error) {
 	var product models.Product
-	err := r.db.Where("id = ?", id).Preload("ProductPicture").First(&product).Error
+	err := r.db.Where("id = ?", id).Preload("ProductPicture").Preload("Icon").First(&product).Error
 	return product, err
 }
 
 func (r *productRepository) Create(product models.Product) (models.Product, error) {
-	err := r.db.Create(&product).Error
+	err := r.db.Omit("Icon").Omit("ProductPicture").Create(&product).Error
 	return product, err
 }
 
 func (r *productRepository) Update(productUpdate models.Product, id any) (models.Product, error) {
 	var product models.Product
-	err := r.db.Model(&product).Where("id = ?", id).Updates(&productUpdate).Error
+	err := r.db.Model(&product).Omit("Icon").Omit("ProductPicture").Where("id = ?", id).Updates(&productUpdate).Error
 	if err != nil {
 		return product, err
 	}

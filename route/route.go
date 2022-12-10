@@ -49,12 +49,17 @@ func Setup(app *echo.Echo) {
 	users.PUT("/:id", initialize.UserHandler.UpdateUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
 	users.DELETE("/:id", initialize.UserHandler.DeleteUserByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
 
+	favorites := users.Group("/favorites", auth)
+	favorites.GET("", initialize.FavoritesHandler.FindAll)
+	favorites.POST("", initialize.FavoritesHandler.Create, middlewares.AuthorizedRoles([]string{"User"}))
+	favorites.DELETE("/:product_id", initialize.FavoritesHandler.Delete, middlewares.AuthorizedRoles([]string{"User"}))
+
 	faqs := v1.Group("/faqs", auth)
-	faqs.GET("", initialize.ProductHandler.GetProductsWithCredits)
-	faqs.POST("", initialize.ProductHandler.CreateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
-	faqs.GET("/:id", initialize.ProductHandler.GetProductWithCredit)
-	faqs.PUT("/:id", initialize.ProductHandler.UpdateProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
-	faqs.DELETE("/:id", initialize.ProductHandler.DeleteProductWithCredit, middlewares.AuthorizedRoles([]string{"Admin"}))
+	faqs.GET("", initialize.FAQHandler.GetFAQs)
+	faqs.POST("", initialize.FAQHandler.CreateFAQ, middlewares.AuthorizedRoles([]string{"Admin"}))
+	faqs.GET("/:id", initialize.FAQHandler.GetFAQ)
+	faqs.PUT("/:id", initialize.FAQHandler.UpdateFAQ, middlewares.AuthorizedRoles([]string{"Admin"}))
+	faqs.DELETE("/:id", initialize.FAQHandler.DeleteFAQ, middlewares.AuthorizedRoles([]string{"Admin"}))
 
 	products := v1.Group("/products")
 
@@ -79,4 +84,9 @@ func Setup(app *echo.Echo) {
 	transactionV1.PUT("/:id", initialize.TransactionHandler.UpdateTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
 	transactionV1.DELETE("/:id", initialize.TransactionHandler.DeleteTransaction, middlewares.AuthorizedRoles([]string{"Admin"}))
 	transactionV1.POST("/cancel/:id", initialize.TransactionHandler.CancelTransaction)
+
+	feedback := v1.Group("/feedbacks", auth)
+	feedback.GET("", initialize.FeedbackHandler.FindAll, middlewares.AuthorizedRoles([]string{"Admin"}))
+	feedback.GET("/:id", initialize.FeedbackHandler.FindByID, middlewares.AuthorizedRoles([]string{"Admin"}))
+	feedback.POST("", initialize.FeedbackHandler.Create)
 }
