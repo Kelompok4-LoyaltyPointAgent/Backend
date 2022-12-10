@@ -14,6 +14,7 @@ type Feedbacks struct {
 	IsArticleHelpful     *bool
 	IsArticleEasyToFind  *bool
 	IsDesignGood         *bool
+	Review               string
 }
 
 func (Feedbacks) TableName() string {

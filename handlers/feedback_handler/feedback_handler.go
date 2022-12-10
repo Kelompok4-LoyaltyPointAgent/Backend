@@ -3,6 +3,7 @@ package feedback_handler
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -17,17 +18,23 @@ type FeedbackHandler interface {
 }
 
 type feedbackHandler struct {
-	service feedback_service.FeedbackService
+	validate *validator.Validate
+	service  feedback_service.FeedbackService
 }
 
 func NewFeedbackHandler(service feedback_service.FeedbackService) FeedbackHandler {
-	return &feedbackHandler{service}
+	validate := validator.New()
+	return &feedbackHandler{validate, service}
 }
 
 func (h *feedbackHandler) Create(c echo.Context) error {
 	var payload payload.FeedbackPayload
 
 	if err := c.Bind(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	if err := h.validate.Struct(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}
 
