@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/db"
+	"github.com/kelompok4-loyaltypointagent/backend/handlers/analytics_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/faq_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/favorites_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/feedback_handler"
@@ -12,6 +13,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/transaction_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/user_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
+	"github.com/kelompok4-loyaltypointagent/backend/repositories/analytics_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/faq_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/favorites_repository"
@@ -23,6 +25,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/product_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/transaction_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/user_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/services/analytics_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/faq_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/favorites_service"
 	"github.com/kelompok4-loyaltypointagent/backend/services/feedback_service"
@@ -75,15 +78,20 @@ var faqRepository faq_repository.FAQRepository
 var faqService faq_service.FAQService
 var FAQHandler faq_handler.FAQHandler
 
-//Favorites
+// Favorites
 var favoritesRepository favorites_repository.FavoritesRepository
 var favoritesService favorites_service.FavoritesService
 var FavoritesHandler favorites_handler.FavoritesHandler
 
-//Feedback
+// Feedback
 var FeedbackHandler feedback_handler.FeedbackHandler
 var feedbackService feedback_service.FeedbackService
 var feedbackRepository feedback_repository.FeedbackRepository
+
+// Analytics
+var AnalyticsHandler analytics_handler.AnalyticsHandler
+var analyticsService analytics_service.AnalyticsService
+var analyticsRepository analytics_repository.AnalyticsRepository
 
 func Init() {
 	helper.InitAppFirebase()
@@ -106,6 +114,7 @@ func initRepositories() {
 	forgotPasswordRepository = forgot_password_repository.NewForgotPasswordRepository(db)
 	favoritesRepository = favorites_repository.NewFavoritesRepository(db)
 	feedbackRepository = feedback_repository.NewFeedbackRepository(db)
+	analyticsRepository = analytics_repository.NewAnalyticsRepository(db)
 }
 
 func initServices() {
@@ -117,6 +126,7 @@ func initServices() {
 	forgotPasswordService = forgot_password_service.NewForgotPasswordService(forgotPasswordRepository, userRepository)
 	favoritesService = favorites_service.NewFavoritesService(favoritesRepository)
 	feedbackService = feedback_service.NewFeedbackService(feedbackRepository)
+	analyticsService = analytics_service.NewAnalyticsService(analyticsRepository)
 }
 
 func initHandlers() {
@@ -129,4 +139,5 @@ func initHandlers() {
 	ForgotPasswordHandler = forgot_password_handler.NewForgotPasswordHandler(forgotPasswordService)
 	FavoritesHandler = favorites_handler.NewFavoritesHandler(favoritesService)
 	FeedbackHandler = feedback_handler.NewFeedbackHandler(feedbackService)
+	AnalyticsHandler = analytics_handler.NewAnalyticsHandler(analyticsService)
 }

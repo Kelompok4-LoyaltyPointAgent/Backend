@@ -34,9 +34,9 @@ func Setup(app *echo.Echo) {
 	otp.POST("/request", initialize.OTPHandler.RequestOTP)
 	otp.POST("/verify", initialize.OTPHandler.VerifyOTP)
 
-	forgotPasswordV1 := v1.Group("/forgot-password")
-	forgotPasswordV1.POST("/request", initialize.ForgotPasswordHandler.RequestForgotPassword)
-	forgotPasswordV1.POST("/submit", initialize.ForgotPasswordHandler.SubmitForgotPassword)
+	forgotPassword := v1.Group("/forgot-password")
+	forgotPassword.POST("/request", initialize.ForgotPasswordHandler.RequestForgotPassword)
+	forgotPassword.POST("/submit", initialize.ForgotPasswordHandler.SubmitForgotPassword)
 
 	users := v1.Group("/users", auth)
 	//User
@@ -89,4 +89,7 @@ func Setup(app *echo.Echo) {
 	feedback.GET("", initialize.FeedbackHandler.FindAll, middlewares.AuthorizedRoles([]string{"Admin"}))
 	feedback.GET("/:id", initialize.FeedbackHandler.FindByID, middlewares.AuthorizedRoles([]string{"Admin"}))
 	feedback.POST("", initialize.FeedbackHandler.Create)
+
+	analytics := v1.Group("/analytics", auth)
+	analytics.GET("", initialize.AnalyticsHandler.Analytics, middlewares.AuthorizedRoles([]string{"Admin"}))
 }

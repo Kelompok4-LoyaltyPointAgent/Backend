@@ -69,7 +69,11 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 func NewTransactionsResponse(transactions []models.Transaction) *[]TransactionResponse {
 	var response []TransactionResponse
 	for _, td := range transactions {
-		response = append(response, *NewTransactionResponse(td, *td.TransactionDetail, ""))
+		if td.TransactionDetail != nil {
+			response = append(response, *NewTransactionResponse(td, *td.TransactionDetail, ""))
+		} else {
+			response = append(response, *NewTransactionResponse(td, models.TransactionDetail{}, ""))
+		}
 	}
 	return &response
 }
