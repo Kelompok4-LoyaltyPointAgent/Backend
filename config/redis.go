@@ -9,7 +9,6 @@ import (
 type RedisConfig struct {
 	Addr     string
 	Port     string
-	Username string
 	Password string
 	DB       int
 }
@@ -23,7 +22,6 @@ func LoadRedisConfig() RedisConfig {
 	return RedisConfig{
 		Addr:     os.Getenv("REDIS_ADDR"),
 		Port:     os.Getenv("REDIS_PORT"),
-		Username: os.Getenv("REDIS_USERNAME"),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       db,
 	}
