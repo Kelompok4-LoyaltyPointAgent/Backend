@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_analytics_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/db"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/analytics_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/faq_handler"
@@ -13,6 +14,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/transaction_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/user_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
+	"github.com/kelompok4-loyaltypointagent/backend/redisclient"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/analytics_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/credit_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/faq_repository"
@@ -92,6 +94,7 @@ var feedbackRepository feedback_repository.FeedbackRepository
 var AnalyticsHandler analytics_handler.AnalyticsHandler
 var analyticsService analytics_service.AnalyticsService
 var analyticsRepository analytics_repository.AnalyticsRepository
+var cachedAnalyticsRepository cached_analytics_repository.CachedAnalyticsRepository
 
 func Init() {
 	helper.InitAppFirebase()
@@ -115,6 +118,9 @@ func initRepositories() {
 	favoritesRepository = favorites_repository.NewFavoritesRepository(db)
 	feedbackRepository = feedback_repository.NewFeedbackRepository(db)
 	analyticsRepository = analytics_repository.NewAnalyticsRepository(db)
+
+	redisDB := redisclient.Init()
+	cachedAnalyticsRepository = cached_analytics_repository.NewCachedAnalyticsRepository(redisDB)
 }
 
 func initServices() {
@@ -126,7 +132,7 @@ func initServices() {
 	forgotPasswordService = forgot_password_service.NewForgotPasswordService(forgotPasswordRepository, userRepository)
 	favoritesService = favorites_service.NewFavoritesService(favoritesRepository)
 	feedbackService = feedback_service.NewFeedbackService(feedbackRepository)
-	analyticsService = analytics_service.NewAnalyticsService(analyticsRepository)
+	analyticsService = analytics_service.NewAnalyticsService(analyticsRepository, cachedAnalyticsRepository)
 }
 
 func initHandlers() {
