@@ -9,7 +9,7 @@ type RequestOTPResponse struct {
 }
 
 type VerifyOTPResponse struct {
-	Verified bool `json:"verified"`
+	Token string `json:"token"`
 }
 
 func NewRequestOTPResponse(expiredAt time.Time) *RequestOTPResponse {
@@ -18,8 +18,8 @@ func NewRequestOTPResponse(expiredAt time.Time) *RequestOTPResponse {
 	}
 }
 
-func NewVerifyOTPResponse(verified bool) *VerifyOTPResponse {
+func NewVerifyOTPResponse(token string) *VerifyOTPResponse {
 	return &VerifyOTPResponse{
-		Verified: verified,
+		Token: token,
 	}
 }
