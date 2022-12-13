@@ -348,6 +348,7 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:   payload.SocialMedia,
 		Call:          payload.Call,
 		SMS:           payload.SMS,
+		Description:   payload.PackageDescription,
 	})
 	if err != nil {
 		return nil, err
@@ -424,6 +425,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:   payload.SocialMedia,
 		Call:          payload.Call,
 		SMS:           payload.SMS,
+		Description:   payload.PackageDescription,
 	}, id)
 	if err != nil {
 		return nil, err
