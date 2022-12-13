@@ -39,7 +39,7 @@ func (h *faqHandler) GetFAQs(c echo.Context) error {
 		args = append(args, category)
 	}
 
-	faqs, err := h.service.FindAll(query, args)
+	faqs, err := h.service.FindAll(query, args...)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusNotFound, err)
 	}
