@@ -17,3 +17,8 @@ type ChangePasswordPayload struct {
 	NewPassword     string `json:"new_password" validate:"required"`
 	ConfirmPassword string `json:"confirm_password" validate:"required"`
 }
+
+type ChangePasswordFromResetPasswordPayload struct {
+	NewPassword     string `json:"new_password" validate:"required"`
+	ConfirmPassword string `json:"confirm_password" validate:"required"`
+}

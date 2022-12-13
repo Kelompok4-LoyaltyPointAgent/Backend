@@ -21,6 +21,7 @@ type UserService interface {
 	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
 	UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error)
 	ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error)
+	ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error)
 	Delete(id string) (response.UserResponse, error)
 }
 
@@ -241,4 +242,36 @@ func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id s
 		Points: user.Points,
 	}
 	return userResponse, nil
+}
+
+func (s *userService) ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error) {
+
+	//Get User by ID
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	if payload.NewPassword != payload.ConfirmPassword {
+		return response.UserResponse{}, errors.New("New Password and Confirm Password not match")
+	}
+
+	getUser.Password = payload.NewPassword
+
+	if err := getUser.HashPassword(getUser.Password); err != nil {
+		return response.UserResponse{}, err
+	}
+
+	user, err := s.repository.Update(getUser, id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+	userResponse := response.UserResponse{
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
+	}
+	return userResponse, nil
+
 }

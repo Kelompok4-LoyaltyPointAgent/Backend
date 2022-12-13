@@ -17,6 +17,7 @@ type UserHandler interface {
 	CreateUser(c echo.Context) error
 	UpdateUser(c echo.Context) error
 	ChangePassword(c echo.Context) error
+	ChangePasswordFromResetPassword(c echo.Context) error
 	FindUserByID(c echo.Context) error
 	Login(c echo.Context) error
 	//Admin
@@ -117,6 +118,27 @@ func (h *userHandler) ChangePassword(c echo.Context) error {
 
 	return response.Success(c, "success", http.StatusOK, user)
 
+}
+
+func (h *userHandler) ChangePasswordFromResetPassword(c echo.Context) error {
+	var payload payload.ChangePasswordFromResetPasswordPayload
+
+	if err := c.Bind(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	if err := h.validate.Struct(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	claims := helper.GetTokenClaims(c)
+
+	user, err := h.service.ChangePasswordFromResetPassword(payload, claims.ID.String())
+	if err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, user)
 }
 
 func (h *userHandler) FindUserByID(c echo.Context) error {

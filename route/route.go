@@ -43,6 +43,7 @@ func Setup(app *echo.Echo) {
 	users.GET("/me", initialize.UserHandler.FindUserByID)
 	users.PUT("", initialize.UserHandler.UpdateUser)
 	users.PUT("/change-password", initialize.UserHandler.ChangePassword)
+	users.PUT("/reset-password", initialize.UserHandler.ChangePasswordFromResetPassword)
 	//Admin
 	users.GET("", initialize.UserHandler.FindAllUser, middlewares.AuthorizedRoles([]string{"Admin"}))
 	users.GET("/:id", initialize.UserHandler.FindUserByIDByAdmin, middlewares.AuthorizedRoles([]string{"Admin"}))
