@@ -183,7 +183,7 @@ func (s *userHandlerSuite) TestUpdateUser() {
 				Password: "password",
 				Points:   0,
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusInternalServerError,
 			ExpectedFunc: func() {
 				s.service.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -198,7 +198,7 @@ func (s *userHandlerSuite) TestUpdateUser() {
 				Password: "password",
 				Points:   0,
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, nil)
@@ -247,7 +247,7 @@ func (s *userHandlerSuite) TestChangePassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -261,7 +261,7 @@ func (s *userHandlerSuite) TestChangePassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, nil)
@@ -309,7 +309,7 @@ func (s *userHandlerSuite) TestChangePasswordFromResetPassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePasswordFromResetPassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -322,7 +322,7 @@ func (s *userHandlerSuite) TestChangePasswordFromResetPassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePasswordFromResetPassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, nil)
@@ -354,7 +354,7 @@ func (s *userHandlerSuite) TestFindUserByID() {
 		{
 			Name:         "bad request",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -363,7 +363,7 @@ func (s *userHandlerSuite) TestFindUserByID() {
 		{
 			Name:         "ok",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any()).Return(response.UserResponse{}, nil)
@@ -395,7 +395,7 @@ func (s *userHandlerSuite) TestFindAllUser() {
 		{
 			Name:         "bad request",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindAll().Return([]response.UserResponse{}, errors.New("error"))
@@ -404,7 +404,7 @@ func (s *userHandlerSuite) TestFindAllUser() {
 		{
 			Name:         "ok",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindAll().Return([]response.UserResponse{}, nil)
@@ -655,7 +655,7 @@ func (s *userHandlerSuite) TestCheckPassword() {
 			Body: payload.CheckPasswordPayload{
 				CheckPassword: "password",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusInternalServerError,
 			ExpectedFunc: func() {
 				s.service.EXPECT().CheckPassword(gomock.Any(), gomock.Any()).Return(false, errors.New("error"))
@@ -667,7 +667,7 @@ func (s *userHandlerSuite) TestCheckPassword() {
 			Body: payload.CheckPasswordPayload{
 				CheckPassword: "password",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().CheckPassword(gomock.Any(), gomock.Any()).Return(true, nil)
