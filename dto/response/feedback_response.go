@@ -12,14 +12,19 @@ type FeedbackResponse struct {
 }
 
 func NewFeedbackResponse(feedback models.Feedbacks) *FeedbackResponse {
-	return &FeedbackResponse{
-		User:                 NewUserResponse(*feedback.User),
+	response := &FeedbackResponse{
 		IsInformationHelpful: feedback.IsInformationHelpful,
 		IsArticleHelpful:     feedback.IsArticleHelpful,
 		IsArticleEasyToFind:  feedback.IsArticleEasyToFind,
 		IsDesignGood:         feedback.IsDesignGood,
 		Review:               feedback.Review,
 	}
+
+	if response.User != nil {
+		response.User = NewUserResponse(*feedback.User)
+	}
+
+	return response
 }
 
 func NewFeedbackResponseList(feedback []models.Feedbacks) *[]FeedbackResponse {
