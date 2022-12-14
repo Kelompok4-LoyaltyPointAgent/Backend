@@ -60,7 +60,7 @@ func (m *MockUserService) ChangePasswordFromResetPassword(payload payload.Change
 	return ret0, ret1
 }
 
-// ChangePasswordFromResetPassword indicates an expected call of ChangePassword.
+// ChangePasswordFromResetPassword indicates an expected call of ChangePasswordFromResetPassword.
 func (mr *MockUserServiceMockRecorder) ChangePasswordFromResetPassword(payload, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangePasswordFromResetPassword", reflect.TypeOf((*MockUserService)(nil).ChangePasswordFromResetPassword), payload, id)
@@ -200,5 +200,3 @@ func (mr *MockUserServiceMockRecorder) UpdateUserByAdmin(payload, id interface{}
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserByAdmin", reflect.TypeOf((*MockUserService)(nil).UpdateUserByAdmin), payload, id)
 }
-
-

@@ -1,9 +1,12 @@
 package testhelper
 
+import "github.com/golang-jwt/jwt"
+
 type HTTPTestCase struct {
 	Name         string
 	Request      Request
 	Body         any
+	Token        *jwt.Token
 	ExpectedCode int
 	ExpectedFunc func()
 }
