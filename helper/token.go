@@ -37,7 +37,7 @@ func CreateToken(id uuid.UUID, role string) (string, error) {
 
 func GetTokenClaims(c echo.Context) *JWTCustomClaims {
 	token := c.Get("token").(*jwt.Token)
-	claims := token.Claims.(*JWTCustomClaims)
+	claims := token.Claims.(JWTCustomClaims)
 
-	return claims
+	return &claims
 }
