@@ -15,11 +15,19 @@ type ProductPayload struct {
 }
 
 type ProductWithCreditPayload struct {
-	ProductPayload
-	ActivePeriod int `form:"active_period" validate:"required"`
-	Amount       int `form:"amount" validate:"required"`
-	Call         int `form:"call" validate:"required"`
-	SMS          int `form:"sms" validate:"required"`
+	Name           string                `form:"name" validate:"required"`
+	Description    string                `form:"description" validate:"required"`
+	Provider       string                `form:"provider" validate:"required"`
+	Price          uint                  `form:"price" validate:"required"`
+	PricePoints    uint                  `form:"price_points" validate:"required"`
+	RewardPoints   uint                  `form:"reward_points" validate:"required"`
+	Stock          uint                  `form:"stock" validate:"required"`
+	Recommended    *bool                 `form:"recommended"`
+	ProductPicture *multipart.FileHeader `form:"product_picture"`
+	ActivePeriod   int                   `form:"active_period" validate:"required"`
+	Amount         int                   `form:"amount" validate:"required"`
+	Call           int                   `form:"call" validate:"required"`
+	SMS            int                   `form:"sms" validate:"required"`
 }
 
 type ProductWithPackagesPayload struct {
