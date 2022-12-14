@@ -19,9 +19,10 @@ type UserService interface {
 	Create(payload payload.UserPayload) (response.UserResponse, error)
 	Login(payload payload.LoginPayload) (response.LoginResponse, error)
 	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
-	UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error)
+	UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error)
 	ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error)
 	ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error)
+	CheckPassword(payload payload.CheckPasswordPayload, id string) (bool, error)
 	Delete(id string) (response.UserResponse, error)
 }
 
@@ -126,19 +127,12 @@ func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (res
 	return userResponse, nil
 }
 
-func (s *userService) UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error) {
+func (s *userService) UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error) {
 
 	userModel := models.User{
-		Name:     payload.Name,
-		Email:    payload.Email,
-		Password: payload.Password,
-		Points:   payload.Points,
-	}
-
-	if payload.Password != "" {
-		if err := userModel.HashPassword(userModel.Password); err != nil {
-			return response.UserResponse{}, err
-		}
+		Name:   payload.Name,
+		Email:  payload.Email,
+		Points: payload.Points,
 	}
 
 	_, err := s.repository.Update(userModel, id)
@@ -274,4 +268,18 @@ func (s *userService) ChangePasswordFromResetPassword(payload payload.ChangePass
 	}
 	return userResponse, nil
 
+}
+
+func (s *userService) CheckPassword(payload payload.CheckPasswordPayload, id string) (bool, error) {
+
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return false, err
+	}
+
+	if err := getUser.CheckPassword(payload.CheckPassword); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

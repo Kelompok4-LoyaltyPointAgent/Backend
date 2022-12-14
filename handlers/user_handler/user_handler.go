@@ -20,6 +20,7 @@ type UserHandler interface {
 	ChangePasswordFromResetPassword(c echo.Context) error
 	FindUserByID(c echo.Context) error
 	Login(c echo.Context) error
+	CheckPassword(c echo.Context) error
 	//Admin
 	FindAllUser(c echo.Context) error
 	FindUserByIDByAdmin(c echo.Context) error
@@ -177,7 +178,7 @@ func (h *userHandler) FindUserByIDByAdmin(c echo.Context) error {
 }
 
 func (h *userHandler) UpdateUserByAdmin(c echo.Context) error {
-	var userPayload payload.UserPayload
+	var userPayload payload.UserPayloadByAdmin
 
 	if err := c.Bind(&userPayload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
@@ -217,4 +218,26 @@ func (h *userHandler) DeleteUserByAdmin(c echo.Context) error {
 	}
 
 	return response.Success(c, "success", http.StatusOK, nil)
+}
+
+func (h *userHandler) CheckPassword(c echo.Context) error {
+	var payload payload.CheckPasswordPayload
+
+	if err := c.Bind(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	if err := h.validate.Struct(&payload); err != nil {
+		return response.Error(c, "failed", http.StatusBadRequest, err)
+	}
+
+	//Get user id from token
+	claims := helper.GetTokenClaims(c)
+
+	check, err := h.service.CheckPassword(payload, claims.ID.String())
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, echo.Map{"check": check})
 }

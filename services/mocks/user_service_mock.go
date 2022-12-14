@@ -187,7 +187,7 @@ func (mr *MockUserServiceMockRecorder) UpdateProfile(payload, id interface{}) *g
 }
 
 // UpdateUserByAdmin mocks base method.
-func (m *MockUserService) UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error) {
+func (m *MockUserService) UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUserByAdmin", payload, id)
 	ret0, _ := ret[0].(response.UserResponse)
@@ -200,3 +200,22 @@ func (mr *MockUserServiceMockRecorder) UpdateUserByAdmin(payload, id interface{}
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserByAdmin", reflect.TypeOf((*MockUserService)(nil).UpdateUserByAdmin), payload, id)
 }
+
+// ChangePassword mocks base method.
+func (m *MockUserService) CheckPassword(payload payload.CheckPasswordPayload, id string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckPassword", payload, id)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ChangePassword indicates an expected call of ChangePassword.
+func (mr *MockUserServiceMockRecorder) CheckPassword(payload, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPassword", reflect.TypeOf((*MockUserService)(nil).CheckPassword), payload, id)
+}
+
+
+
+
