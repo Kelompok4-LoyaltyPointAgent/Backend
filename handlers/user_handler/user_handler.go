@@ -154,7 +154,9 @@ func (h *userHandler) FindUserByID(c echo.Context) error {
 }
 
 func (h *userHandler) FindAllUser(c echo.Context) error {
-	users, err := h.service.FindAll()
+	role := c.QueryParam("role")
+
+	users, err := h.service.FindAll(role)
 	if err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)
 	}

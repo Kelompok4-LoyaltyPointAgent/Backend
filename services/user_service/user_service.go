@@ -15,7 +15,7 @@ type UserService interface {
 	FindByID(id string) (response.UserResponse, error)
 	FindByIDByAdmin(id string) (models.User, error)
 	FindByEmail(email string) (response.UserResponse, error)
-	FindAll() ([]response.UserResponse, error)
+	FindAll(filter string) ([]response.UserResponse, error)
 	Create(payload payload.UserPayload) (response.UserResponse, error)
 	Login(payload payload.LoginPayload) (response.LoginResponse, error)
 	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
@@ -82,8 +82,24 @@ func (s *userService) Create(payload payload.UserPayload) (response.UserResponse
 	return userResponse, nil
 }
 
-func (s *userService) FindAll() ([]response.UserResponse, error) {
-	users, err := s.repository.FindAll()
+func (s *userService) FindAll(filter string) ([]response.UserResponse, error) {
+
+	var query string
+	var args string
+
+	if filter == "" {
+		query = ""
+	} else if filter == "Admin" {
+		query = "role = ?"
+		args = "Admin"
+	} else if filter == "User" {
+		query = "role = ?"
+		args = "User"
+	} else {
+		return []response.UserResponse{}, errors.New("Role not found")
+	}
+
+	users, err := s.repository.FindAll(query, args)
 	if err != nil {
 		return []response.UserResponse{}, err
 	}

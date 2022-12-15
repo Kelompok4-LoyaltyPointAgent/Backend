@@ -398,7 +398,7 @@ func (s *userHandlerSuite) TestFindAllUser() {
 			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
-				s.service.EXPECT().FindAll().Return([]response.UserResponse{}, errors.New("error"))
+				s.service.EXPECT().FindAll("").Return([]response.UserResponse{}, errors.New("error"))
 			},
 		},
 		{
@@ -407,7 +407,7 @@ func (s *userHandlerSuite) TestFindAllUser() {
 			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
-				s.service.EXPECT().FindAll().Return([]response.UserResponse{}, nil)
+				s.service.EXPECT().FindAll("").Return([]response.UserResponse{}, nil)
 			},
 		},
 	}
