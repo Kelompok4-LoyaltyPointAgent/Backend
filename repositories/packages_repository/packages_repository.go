@@ -36,7 +36,7 @@ func (r *packagesRepository) Create(packages models.Packages) (models.Packages, 
 
 func (r *packagesRepository) FindByProductID(id any) (models.Packages, error) {
 	var packages models.Packages
-	err := r.db.Where("product_id = ?", id).Preload("Product").Preload("Product.ProductPicture").Preload("Product.Icon").Find(&packages).Error
+	err := r.db.Where("product_id = ?", id).Preload("Product").Preload("Product.ProductPicture").Preload("Product.Icon").First(&packages).Error
 	return packages, err
 }
 

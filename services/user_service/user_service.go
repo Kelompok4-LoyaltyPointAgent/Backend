@@ -15,12 +15,14 @@ type UserService interface {
 	FindByID(id string) (response.UserResponse, error)
 	FindByIDByAdmin(id string) (models.User, error)
 	FindByEmail(email string) (response.UserResponse, error)
-	FindAll() ([]response.UserResponse, error)
+	FindAll(filter string) ([]response.UserResponse, error)
 	Create(payload payload.UserPayload) (response.UserResponse, error)
 	Login(payload payload.LoginPayload) (response.LoginResponse, error)
 	UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error)
-	UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error)
+	UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error)
 	ChangePassword(payload payload.ChangePasswordPayload, id string) (response.UserResponse, error)
+	ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error)
+	CheckPassword(payload payload.CheckPasswordPayload, id string) (bool, error)
 	Delete(id string) (response.UserResponse, error)
 }
 
@@ -80,8 +82,24 @@ func (s *userService) Create(payload payload.UserPayload) (response.UserResponse
 	return userResponse, nil
 }
 
-func (s *userService) FindAll() ([]response.UserResponse, error) {
-	users, err := s.repository.FindAll()
+func (s *userService) FindAll(filter string) ([]response.UserResponse, error) {
+
+	var query string
+	var args string
+
+	if filter == "" {
+		query = ""
+	} else if filter == "Admin" {
+		query = "role = ?"
+		args = "Admin"
+	} else if filter == "User" {
+		query = "role = ?"
+		args = "User"
+	} else {
+		return []response.UserResponse{}, errors.New("Role not found")
+	}
+
+	users, err := s.repository.FindAll(query, args)
 	if err != nil {
 		return []response.UserResponse{}, err
 	}
@@ -125,19 +143,12 @@ func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (res
 	return userResponse, nil
 }
 
-func (s *userService) UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error) {
+func (s *userService) UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error) {
 
 	userModel := models.User{
-		Name:     payload.Name,
-		Email:    payload.Email,
-		Password: payload.Password,
-		Points:   payload.Points,
-	}
-
-	if payload.Password != "" {
-		if err := userModel.HashPassword(userModel.Password); err != nil {
-			return response.UserResponse{}, err
-		}
+		Name:   payload.Name,
+		Email:  payload.Email,
+		Points: payload.Points,
 	}
 
 	_, err := s.repository.Update(userModel, id)
@@ -241,4 +252,50 @@ func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id s
 		Points: user.Points,
 	}
 	return userResponse, nil
+}
+
+func (s *userService) ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error) {
+
+	//Get User by ID
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+
+	if payload.NewPassword != payload.ConfirmPassword {
+		return response.UserResponse{}, errors.New("New Password and Confirm Password not match")
+	}
+
+	getUser.Password = payload.NewPassword
+
+	if err := getUser.HashPassword(getUser.Password); err != nil {
+		return response.UserResponse{}, err
+	}
+
+	user, err := s.repository.Update(getUser, id)
+	if err != nil {
+		return response.UserResponse{}, err
+	}
+	userResponse := response.UserResponse{
+		ID:     user.ID.String(),
+		Name:   user.Name,
+		Email:  user.Email,
+		Points: user.Points,
+	}
+	return userResponse, nil
+
+}
+
+func (s *userService) CheckPassword(payload payload.CheckPasswordPayload, id string) (bool, error) {
+
+	getUser, err := s.repository.FindByID(id)
+	if err != nil {
+		return false, err
+	}
+
+	if err := getUser.CheckPassword(payload.CheckPassword); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
