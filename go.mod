@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	firebase.google.com/go/v4 v4.10.0
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
