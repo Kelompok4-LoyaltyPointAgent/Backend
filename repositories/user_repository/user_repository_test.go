@@ -59,7 +59,7 @@ func (s *userRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `users`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll()
+	s.repository.FindAll("", "")
 }
 
 func (s *userRepositorySuite) TestUpdate() {
