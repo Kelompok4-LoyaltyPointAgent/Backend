@@ -8,7 +8,7 @@ import (
 type UserRepository interface {
 	FindByID(id string) (models.User, error)
 	Create(user models.User) (models.User, error)
-	FindAll() ([]models.User, error)
+	FindAll(query string, args string) ([]models.User, error)
 	Update(user models.User, id string) (models.User, error)
 	Delete(id string) (models.User, error)
 	FindByEmail(email string) (models.User, error)
@@ -39,9 +39,15 @@ func (r *userRepository) Create(user models.User) (models.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) FindAll() ([]models.User, error) {
+func (r *userRepository) FindAll(query string, args string) ([]models.User, error) {
 	var users []models.User
-	err := r.db.Find(&users).Error
+	var err error
+	if query == "" {
+		err = r.db.Find(&users).Error
+	} else {
+		err = r.db.Where(query, args).Find(&users).Error
+	}
+
 	if err != nil {
 		return users, err
 	}

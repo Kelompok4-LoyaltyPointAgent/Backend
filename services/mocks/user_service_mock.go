@@ -97,18 +97,18 @@ func (mr *MockUserServiceMockRecorder) Delete(id interface{}) *gomock.Call {
 }
 
 // FindAll mocks base method.
-func (m *MockUserService) FindAll() ([]response.UserResponse, error) {
+func (m *MockUserService) FindAll(filter string) ([]response.UserResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll")
+	ret := m.ctrl.Call(m, "FindAll", filter)
 	ret0, _ := ret[0].([]response.UserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAll indicates an expected call of FindAll.
-func (mr *MockUserServiceMockRecorder) FindAll() *gomock.Call {
+func (mr *MockUserServiceMockRecorder) FindAll(filter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockUserService)(nil).FindAll))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockUserService)(nil).FindAll), filter)
 }
 
 // FindByEmail mocks base method.
