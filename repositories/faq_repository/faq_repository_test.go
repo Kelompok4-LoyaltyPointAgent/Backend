@@ -3,6 +3,7 @@ package faq_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *faqRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `frequently_asked_questions`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll(nil, nil)
+	if _, err := s.repository.FindAll(nil, nil); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *faqRepositorySuite) TestFindByID() {
@@ -43,7 +46,9 @@ func (s *faqRepositorySuite) TestFindByID() {
 	query := regexp.QuoteMeta("SELECT * FROM `frequently_asked_questions`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *faqRepositorySuite) TestCreate() {
@@ -53,12 +58,16 @@ func (s *faqRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.FAQ{})
+	if _, err := s.repository.Create(models.FAQ{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.FAQ{})
+	if _, err := s.repository.Create(models.FAQ{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -73,7 +82,9 @@ func (s *faqRepositorySuite) TestUpdate() {
 	query = regexp.QuoteMeta("SELECT * FROM `frequently_asked_questions`")
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.Update(models.FAQ{}, id)
+	if _, err := s.repository.Update(models.FAQ{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *faqRepositorySuite) TestDelete() {
@@ -82,5 +93,7 @@ func (s *faqRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.Delete(id)
+	if err := s.repository.Delete(id); err != nil {
+		log.Println(err)
+	}
 }

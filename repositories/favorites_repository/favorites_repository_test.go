@@ -3,6 +3,7 @@ package favorites_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -36,7 +37,9 @@ func (s *favoritesRepositorySuite) TestFindAll() {
 	rows := sqlmock.NewRows([]string{"user_id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
 
-	s.repository.FindAll(nil, nil)
+	if _, err := s.repository.FindAll(nil, nil); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *favoritesRepositorySuite) TestCreate() {
@@ -46,12 +49,16 @@ func (s *favoritesRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.Favorites{})
+	if _, err := s.repository.Create(models.Favorites{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.Favorites{})
+	if _, err := s.repository.Create(models.Favorites{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -60,5 +67,7 @@ func (s *favoritesRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.Delete("user_id", "product_id")
+	if err := s.repository.Delete("user_id", "product_id"); err != nil {
+		log.Println(err)
+	}
 }

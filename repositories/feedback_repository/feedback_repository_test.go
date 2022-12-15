@@ -3,6 +3,7 @@ package feedback_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *feedbackRepositorySuite) TestFindByID() {
 	query := regexp.QuoteMeta("SELECT * FROM `feedbacks`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *feedbackRepositorySuite) TestCreate() {
@@ -45,12 +48,16 @@ func (s *feedbackRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.Feedbacks{})
+	if _, err := s.repository.Create(models.Feedbacks{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.Feedbacks{})
+	if _, err := s.repository.Create(models.Feedbacks{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -59,5 +66,7 @@ func (s *feedbackRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `feedbacks`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll()
+	if _, err := s.repository.FindAll(); err != nil {
+		log.Println(err)
+	}
 }

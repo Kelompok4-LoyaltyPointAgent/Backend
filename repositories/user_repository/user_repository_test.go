@@ -3,6 +3,7 @@ package user_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *userRepositorySuite) TestFindByID() {
 	query := regexp.QuoteMeta("SELECT * FROM `users`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *userRepositorySuite) TestCreate() {
@@ -45,12 +48,16 @@ func (s *userRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.User{})
+	if _, err := s.repository.Create(models.User{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.User{})
+	if _, err := s.repository.Create(models.User{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -59,7 +66,9 @@ func (s *userRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `users`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll("", "")
+	if _, err := s.repository.FindAll("", ""); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *userRepositorySuite) TestUpdate() {
@@ -69,7 +78,9 @@ func (s *userRepositorySuite) TestUpdate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Update(models.User{}, id)
+	if _, err := s.repository.Update(models.User{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *userRepositorySuite) TestDelete() {
@@ -78,7 +89,9 @@ func (s *userRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.Delete(id)
+	if _, err := s.repository.Delete(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *userRepositorySuite) TestFindByEmail() {
@@ -86,5 +99,7 @@ func (s *userRepositorySuite) TestFindByEmail() {
 	query := regexp.QuoteMeta("SELECT * FROM `users`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindByEmail("user@example.com")
+	if _, err := s.repository.FindByEmail("user@example.com"); err != nil {
+		log.Println(err)
+	}
 }

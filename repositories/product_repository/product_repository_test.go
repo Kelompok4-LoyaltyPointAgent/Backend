@@ -3,6 +3,7 @@ package product_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *productRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `products`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll()
+	if _, err := s.repository.FindAll(); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productRepositorySuite) TestFindByID() {
@@ -43,7 +46,9 @@ func (s *productRepositorySuite) TestFindByID() {
 	query := regexp.QuoteMeta("SELECT * FROM `products`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productRepositorySuite) TestCreate() {
@@ -53,12 +58,16 @@ func (s *productRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.Product{})
+	if _, err := s.repository.Create(models.Product{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.Product{})
+	if _, err := s.repository.Create(models.Product{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -73,7 +82,9 @@ func (s *productRepositorySuite) TestUpdate() {
 	query = regexp.QuoteMeta("SELECT * FROM `products`")
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.Update(models.Product{}, id)
+	if _, err := s.repository.Update(models.Product{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productRepositorySuite) TestDelete() {
@@ -82,7 +93,9 @@ func (s *productRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.DeleteByID(id)
+	if err := s.repository.DeleteByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productRepositorySuite) TestSetBooleanRecommended() {
@@ -91,5 +104,7 @@ func (s *productRepositorySuite) TestSetBooleanRecommended() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.SetBooleanRecommended(id, true)
+	if err := s.repository.SetBooleanRecommended(id, true); err != nil {
+		log.Println(err)
+	}
 }

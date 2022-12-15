@@ -3,6 +3,7 @@ package otp_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *otpRepositorySuite) TestFindByID() {
 	query := regexp.QuoteMeta("SELECT * FROM `one_time_passwords`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *otpRepositorySuite) TestFindByPin() {
@@ -43,7 +46,9 @@ func (s *otpRepositorySuite) TestFindByPin() {
 	query := regexp.QuoteMeta("SELECT * FROM `one_time_passwords`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByPin(id)
+	if _, err := s.repository.FindByPin(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *otpRepositorySuite) TestFindPinAndUserID() {
@@ -51,7 +56,9 @@ func (s *otpRepositorySuite) TestFindPinAndUserID() {
 	query := regexp.QuoteMeta("SELECT * FROM `one_time_passwords`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs("any", id).WillReturnRows(rows)
-	s.repository.FindByPinAndUserID("any", id)
+	if _, err := s.repository.FindByPinAndUserID("any", id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *otpRepositorySuite) TestCreate() {
@@ -61,12 +68,16 @@ func (s *otpRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.OTP{})
+	if _, err := s.repository.Create(models.OTP{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.OTP{})
+	if _, err := s.repository.Create(models.OTP{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -81,7 +92,9 @@ func (s *otpRepositorySuite) TestUpdate() {
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.Update(models.OTP{}, id)
+	if _, err := s.repository.Update(models.OTP{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *otpRepositorySuite) TestDelete() {
@@ -90,5 +103,7 @@ func (s *otpRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.Delete(id)
+	if err := s.repository.Delete(id); err != nil {
+		log.Println(err)
+	}
 }

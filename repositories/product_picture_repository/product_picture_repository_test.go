@@ -3,6 +3,7 @@ package product_picture_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *productPictureRepositorySuite) TestFindByID() {
 	query := regexp.QuoteMeta("SELECT * FROM `product_pictures`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productPictureRepositorySuite) TestFindByName() {
@@ -43,7 +46,9 @@ func (s *productPictureRepositorySuite) TestFindByName() {
 	query := regexp.QuoteMeta("SELECT * FROM `product_pictures`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs("user").WillReturnRows(rows)
-	s.repository.FindByName("user")
+	if _, err := s.repository.FindByName("user"); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productPictureRepositorySuite) TestCreate() {
@@ -53,12 +58,16 @@ func (s *productPictureRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.ProductPicture{})
+	if _, err := s.repository.Create(models.ProductPicture{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.ProductPicture{})
+	if _, err := s.repository.Create(models.ProductPicture{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -73,7 +82,9 @@ func (s *productPictureRepositorySuite) TestUpdate() {
 	query = regexp.QuoteMeta("SELECT * FROM `product_pictures`")
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.Update(models.ProductPicture{}, id)
+	if _, err := s.repository.Update(models.ProductPicture{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *productPictureRepositorySuite) TestDelete() {
@@ -82,5 +93,7 @@ func (s *productPictureRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.Delete(id)
+	if err := s.repository.Delete(id); err != nil {
+		log.Println(err)
+	}
 }

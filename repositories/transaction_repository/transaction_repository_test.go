@@ -3,6 +3,7 @@ package transaction_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *transactionRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `transactions`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll(nil, nil)
+	if _, err := s.repository.FindAll(nil, nil); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *transactionRepositorySuite) TestFindByID() {
@@ -49,7 +52,9 @@ func (s *transactionRepositorySuite) TestFindByID() {
 	rows = sqlmock.NewRows([]string{"id", "transaction_id"}).AddRow(tdID, id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.FindByID(id)
+	if _, err := s.repository.FindByID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *transactionRepositorySuite) TestCreate() {
@@ -59,12 +64,16 @@ func (s *transactionRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.Transaction{})
+	if _, err := s.repository.Create(models.Transaction{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.Transaction{})
+	if _, err := s.repository.Create(models.Transaction{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -84,7 +93,9 @@ func (s *transactionRepositorySuite) TestUpdate() {
 	rows = sqlmock.NewRows([]string{"id", "transaction_id"}).AddRow(tdID, id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.Update(models.Transaction{}, id)
+	if _, err := s.repository.Update(models.Transaction{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *transactionRepositorySuite) TestDelete() {
@@ -93,7 +104,9 @@ func (s *transactionRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.Delete(id)
+	if err := s.repository.Delete(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *transactionRepositorySuite) TestCreateDetail() {
@@ -103,12 +116,16 @@ func (s *transactionRepositorySuite) TestCreateDetail() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.CreateDetail(models.TransactionDetail{})
+	if _, err := s.repository.CreateDetail(models.TransactionDetail{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.CreateDetail(models.TransactionDetail{})
+	if _, err := s.repository.CreateDetail(models.TransactionDetail{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -118,5 +135,7 @@ func (s *transactionRepositorySuite) TestDeleteDetailByTransactionID() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.DeleteDetailByTransactionID(id)
+	if err := s.repository.DeleteDetailByTransactionID(id); err != nil {
+		log.Println(err)
+	}
 }

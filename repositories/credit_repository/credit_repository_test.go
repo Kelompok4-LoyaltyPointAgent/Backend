@@ -3,6 +3,7 @@ package credit_repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"regexp"
 	"testing"
 
@@ -35,7 +36,9 @@ func (s *creditRepositorySuite) TestFindAll() {
 	query := regexp.QuoteMeta("SELECT * FROM `credits`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindAll()
+	if _, err := s.repository.FindAll(); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *creditRepositorySuite) TestCreate() {
@@ -45,12 +48,16 @@ func (s *creditRepositorySuite) TestCreate() {
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
 	s.mock.ExpectClose()
-	s.repository.Create(models.Credit{})
+	if _, err := s.repository.Create(models.Credit{}); err != nil {
+		log.Println(err)
+	}
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnError(errors.New("error"))
 	s.mock.ExpectCommit()
-	s.repository.Create(models.Credit{})
+	if _, err := s.repository.Create(models.Credit{}); err != nil {
+		log.Println(err)
+	}
 	s.mock.ExpectClose()
 }
 
@@ -59,7 +66,9 @@ func (s *creditRepositorySuite) TestFindByProductID() {
 	query := regexp.QuoteMeta("SELECT * FROM `credits`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
-	s.repository.FindByProductID(id)
+	if _, err := s.repository.FindByProductID(id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *creditRepositorySuite) TestFindByProvider() {
@@ -67,7 +76,9 @@ func (s *creditRepositorySuite) TestFindByProvider() {
 	query := regexp.QuoteMeta("SELECT * FROM `credits`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindByProvider("any")
+	if _, err := s.repository.FindByProvider("any"); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *creditRepositorySuite) TestFindByRecommended() {
@@ -75,7 +86,9 @@ func (s *creditRepositorySuite) TestFindByRecommended() {
 	query := regexp.QuoteMeta("SELECT * FROM `credits`")
 	rows := sqlmock.NewRows([]string{"id"}).AddRow(id)
 	s.mock.ExpectQuery(query).WillReturnRows(rows)
-	s.repository.FindByRecommended()
+	if _, err := s.repository.FindByRecommended(); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *creditRepositorySuite) TestUpdateByProductID() {
@@ -89,7 +102,9 @@ func (s *creditRepositorySuite) TestUpdateByProductID() {
 	query = regexp.QuoteMeta("SELECT * FROM `credits`")
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.UpdateByProductID(models.Credit{}, id)
+	if _, err := s.repository.UpdateByProductID(models.Credit{}, id); err != nil {
+		log.Println(err)
+	}
 }
 
 func (s *creditRepositorySuite) TestDeleteByProductID() {
@@ -98,5 +113,7 @@ func (s *creditRepositorySuite) TestDeleteByProductID() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	s.repository.DeleteByProductID(id)
+	if err := s.repository.DeleteByProductID(id); err != nil {
+		log.Println(err)
+	}
 }
