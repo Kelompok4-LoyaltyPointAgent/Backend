@@ -2,6 +2,7 @@ package analytics_repository
 
 import (
 	"database/sql"
+	"log"
 	"regexp"
 	"testing"
 
@@ -61,5 +62,7 @@ func (s *analyticsRepositorySuite) TestRecentTransactions() {
 	rows = sqlmock.NewRows([]string{"id", "transaction_id"}).AddRow(tdID, id)
 	s.mock.ExpectQuery(query).WithArgs(id).WillReturnRows(rows)
 
-	s.repository.RecentTransactions(2022, 1)
+	if _, err := s.repository.RecentTransactions(2022, 1); err != nil {
+		log.Println(err)
+	}
 }
