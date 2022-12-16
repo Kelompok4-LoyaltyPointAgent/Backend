@@ -20,15 +20,15 @@ type LoginPayload struct {
 
 type ChangePasswordPayload struct {
 	OldPassword     string `json:"old_password" validate:"required"`
-	NewPassword     string `json:"new_password" validate:"required"`
-	ConfirmPassword string `json:"confirm_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required,min=8"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8"`
 }
 
 type ChangePasswordFromResetPasswordPayload struct {
-	NewPassword     string `json:"new_password" validate:"required"`
-	ConfirmPassword string `json:"confirm_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required,min=8"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8"`
 }
 
 type CheckPasswordPayload struct {
-	CheckPassword string `json:"check_password"`
+	CheckPassword string `json:"check_password" validate:"requred,min=8"`
 }
