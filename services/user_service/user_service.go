@@ -89,12 +89,12 @@ func (s *userService) FindAll(filter string) ([]response.UserResponse, error) {
 
 	if filter == "" {
 		query = ""
-	} else if filter == "Admin" {
+	} else if filter == constant.UserRoleAdmin.String() {
 		query = "role = ?"
-		args = "Admin"
-	} else if filter == "User" {
+		args = constant.UserRoleAdmin.String()
+	} else if filter == constant.UserRoleUser.String() {
 		query = "role = ?"
-		args = "User"
+		args = constant.UserRoleUser.String()
 	} else {
 		return []response.UserResponse{}, errors.New("Role not found")
 	}

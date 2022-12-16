@@ -42,7 +42,7 @@ func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filte
 
 	var transactions []models.Transaction
 	var err error
-	if claims.Role == "Admin" {
+	if claims.Role == constant.UserRoleAdmin.String() {
 		transactions, err = s.transactionRepository.FindAll("", "")
 		if err != nil {
 			return nil, err
@@ -73,7 +73,7 @@ func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filte
 func (s *transactionService) FindByID(id any, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error) {
 	var transaction models.Transaction
 	var err error
-	if claims.Role == "Admin" {
+	if claims.Role == constant.UserRoleAdmin.String() {
 		transaction, err = s.transactionRepository.FindByID(id)
 		if err != nil {
 			return nil, err
@@ -94,7 +94,7 @@ func (s *transactionService) FindByID(id any, claims *helper.JWTCustomClaims) (*
 func (s *transactionService) Create(payload payload.TransactionPayload, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error) {
 	var product models.Product
 
-	if claims.Role != "Admin" {
+	if claims.Role != constant.UserRoleAdmin.String() {
 		payload.UserID = claims.ID.String()
 		payload.Status = ""
 	}
@@ -185,7 +185,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 		return nil, err
 	}
 
-	if transaction.Status == constant.TransactionStatusPending && claims.Role != "Admin" && transaction.Type == constant.TransactionTypePurchase {
+	if transaction.Status == constant.TransactionStatusPending && claims.Role != constant.UserRoleAdmin.String() && transaction.Type == constant.TransactionTypePurchase {
 		// TODO: send bill via payment gateway
 		resp, err := helper.CreateInvoiceXendit(transaction, *transaction.TransactionDetail, user)
 		if err != nil {
@@ -194,7 +194,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 
 		return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, resp.InvoiceURL), nil
 
-	} else if transaction.Status == constant.TransactionStatusPending && claims.Role != "Admin" && transaction.Type == constant.TransactionTypeCashout {
+	} else if transaction.Status == constant.TransactionStatusPending && claims.Role != constant.UserRoleAdmin.String() && transaction.Type == constant.TransactionTypeCashout {
 
 		_, err := helper.CreateDisbursementXendit(transaction, *transaction.TransactionDetail, user)
 		if err != nil {
