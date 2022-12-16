@@ -10,11 +10,10 @@ import (
 	"log"
 	"mime/multipart"
 	"net/url"
-	"os"
-	"strings"
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/config"
 	"google.golang.org/api/option"
 )
 
@@ -35,26 +34,13 @@ type serviceAccountKey struct {
 
 func InitAppFirebase() {
 	fmt.Println("Init firebase app")
-	privateKey := strings.Replace(os.Getenv("PRIVATE_KEY"), `\n`, "\n", -1)
-
-	serviceAccountKey := serviceAccountKey{
-		Type:                    os.Getenv("TYPE"),
-		ProjectID:               os.Getenv("PROJECT_ID"),
-		PrivateKeyID:            os.Getenv("PRIVATE_KEY_ID"),
-		PrivateKey:              string(privateKey),
-		ClientEmail:             os.Getenv("CLIENT_EMAIL"),
-		ClientID:                os.Getenv("CLIENT_ID"),
-		AuthURI:                 "https://accounts.google.com/o/oauth2/auth",
-		TokenURI:                "https://oauth2.googleapis.com/token",
-		AuthProviderX509CertURL: "https://www.googleapis.com/oauth2/v1/certs",
-		ClientX509CertURL:       "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-1irbg%40capstone-project-eede7.iam.gserviceaccount.com",
-	}
+	firebaseConfig := config.LoadFirebaseConfig()
 
 	// Struct to JSON
-	jsonKey, _ := json.Marshal(serviceAccountKey)
+	jsonKey, _ := json.Marshal(firebaseConfig.ServiceAccountKey)
 
 	config := &firebase.Config{
-		StorageBucket: os.Getenv("BUCKET"),
+		StorageBucket: firebaseConfig.Bucket,
 	}
 
 	opt := option.WithCredentialsJSON(jsonKey)
