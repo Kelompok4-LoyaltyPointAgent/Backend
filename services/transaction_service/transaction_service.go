@@ -135,12 +135,10 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 
 			points := user.Points - product.PricePoints
 
-			// TODO: make sure user points can be updated to 0
 			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return nil, err
 			}
 
-			// TODO : Decrese Stok in Product
 			stock := product.Stock - 1
 
 			if _, err := s.productRepository.UpdateStockProduct(stock, product.ID); err != nil {
@@ -186,7 +184,6 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 	}
 
 	if transaction.Status == constant.TransactionStatusPending && claims.Role != constant.UserRoleAdmin.String() && transaction.Type == constant.TransactionTypePurchase {
-		// TODO: send bill via payment gateway
 		resp, err := helper.CreateInvoiceXendit(transaction, *transaction.TransactionDetail, user)
 		if err != nil {
 			return nil, err
@@ -257,8 +254,6 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 		return nil, err
 	}
 
-	// TODO: cancel pending transaction via payment gateway
-
 	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
@@ -308,7 +303,6 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 				return false, err
 			}
 
-			// TODO : Decrese Stok in Product
 			stock := product.Stock - 1
 
 			if _, err := s.productRepository.UpdateStockProduct(stock, product.ID); err != nil {
@@ -318,7 +312,6 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			// Update User Points
 			points := user.Points - product.PricePoints
 
-			// TODO: make sure user points can be updated to 0
 			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return false, err
 			}
