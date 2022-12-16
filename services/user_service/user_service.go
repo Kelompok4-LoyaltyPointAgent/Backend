@@ -39,13 +39,7 @@ func (s *userService) FindByID(id string) (response.UserResponse, error) {
 	if err != nil {
 		return response.UserResponse{}, err
 	}
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) FindByIDByAdmin(id string) (models.User, error) {
@@ -73,13 +67,8 @@ func (s *userService) Create(payload payload.UserPayload) (response.UserResponse
 	if err != nil {
 		return response.UserResponse{}, err
 	}
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) FindAll(filter string) ([]response.UserResponse, error) {
@@ -104,17 +93,7 @@ func (s *userService) FindAll(filter string) ([]response.UserResponse, error) {
 		return []response.UserResponse{}, err
 	}
 
-	var usersResponses []response.UserResponse
-	for _, user := range users {
-		userResponse := response.UserResponse{
-			ID:     user.ID.String(),
-			Name:   user.Name,
-			Email:  user.Email,
-			Points: user.Points,
-		}
-		usersResponses = append(usersResponses, userResponse)
-	}
-	return usersResponses, nil
+	return *response.NewUsersResponse(users), nil
 }
 
 func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (response.UserResponse, error) {
@@ -134,13 +113,7 @@ func (s *userService) UpdateProfile(payload payload.UserPayload, id string) (res
 		return response.UserResponse{}, err
 	}
 
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error) {
@@ -161,13 +134,7 @@ func (s *userService) UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id s
 		return response.UserResponse{}, err
 	}
 
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) Delete(id string) (response.UserResponse, error) {
@@ -175,13 +142,7 @@ func (s *userService) Delete(id string) (response.UserResponse, error) {
 	if err != nil {
 		return response.UserResponse{}, err
 	}
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) FindByEmail(email string) (response.UserResponse, error) {
@@ -189,13 +150,7 @@ func (s *userService) FindByEmail(email string) (response.UserResponse, error) {
 	if err != nil {
 		return response.UserResponse{}, err
 	}
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) Login(payload payload.LoginPayload) (response.LoginResponse, error) {
@@ -245,13 +200,8 @@ func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id s
 	if err != nil {
 		return response.UserResponse{}, err
 	}
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+
+	return *response.NewUserResponse(user), nil
 }
 
 func (s *userService) ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error) {
@@ -276,13 +226,8 @@ func (s *userService) ChangePasswordFromResetPassword(payload payload.ChangePass
 	if err != nil {
 		return response.UserResponse{}, err
 	}
-	userResponse := response.UserResponse{
-		ID:     user.ID.String(),
-		Name:   user.Name,
-		Email:  user.Email,
-		Points: user.Points,
-	}
-	return userResponse, nil
+
+	return *response.NewUserResponse(user), nil
 
 }
 
