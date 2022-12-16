@@ -11,7 +11,7 @@ CREATE TABLE `forgot_passwords` (
   UNIQUE KEY `idx_forgot_passwords_access_key` (`access_key`),
   KEY `idx_forgot_passwords_deleted_at` (`deleted_at`),
   KEY `fk_forgot_passwords_user` (`user_id`),
-  CONSTRAINT `fk_forgot_passwords_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `fk_forgot_passwords_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- +goose Down
