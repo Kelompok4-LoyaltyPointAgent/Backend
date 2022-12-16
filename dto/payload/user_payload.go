@@ -1,14 +1,14 @@
 package payload
 
 type UserPayload struct {
-	Name     string `json:"name" validate:"required"`
+	Name     string `json:"name" validate:"required,min=1,max=100"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 	Points   uint   `json:"points"`
 }
 
 type UserPayloadByAdmin struct {
-	Name   string `json:"name" validate:"required"`
+	Name   string `json:"name" validate:"required,min=1,max=100"`
 	Email  string `json:"email" validate:"required,email"`
 	Points uint   `json:"points"`
 }
