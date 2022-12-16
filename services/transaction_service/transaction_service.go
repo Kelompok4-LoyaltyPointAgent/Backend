@@ -141,11 +141,9 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 			}
 
 			// TODO : Decrese Stok in Product
-			productUpdate := models.Product{
-				Stock: product.Stock - 1,
-			}
+			stock := product.Stock - 1
 
-			if _, err := s.productRepository.Update(productUpdate, product.ID); err != nil {
+			if _, err := s.productRepository.UpdateStockProduct(stock, product.ID); err != nil {
 				return nil, err
 			}
 
@@ -311,11 +309,9 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			}
 
 			// TODO : Decrese Stok in Product
-			productUpdate := models.Product{
-				Stock: product.Stock - 1,
-			}
+			stock := product.Stock - 1
 
-			if _, err := s.productRepository.Update(productUpdate, product.ID); err != nil {
+			if _, err := s.productRepository.UpdateStockProduct(stock, product.ID); err != nil {
 				return false, err
 			}
 
