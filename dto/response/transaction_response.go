@@ -54,6 +54,10 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 		response.InvoiceURL = invoiceURL
 	}
 
+	if *transaction.ProductID != (uuid.UUID)(uuid.Nil) {
+		response.ProductID = *transaction.ProductID
+	}
+
 	if transaction.Product != nil {
 		response.ProductID = *transaction.ProductID
 		response.Product = NewProductResponse(*transaction.Product)
