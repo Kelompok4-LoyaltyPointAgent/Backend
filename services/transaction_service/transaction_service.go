@@ -133,11 +133,10 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 				return nil, errors.New("user has not enough points")
 			}
 
-			updates := models.User{
-				Points: 0,
-			}
+			points := user.Points - product.PricePoints
+
 			// TODO: make sure user points can be updated to 0
-			if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return nil, err
 			}
 
@@ -321,11 +320,10 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			}
 
 			// Update User Points
-			updates := models.User{
-				Points: user.Points + product.PricePoints,
-			}
+			points := user.Points - product.PricePoints
 
-			if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+			// TODO: make sure user points can be updated to 0
+			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return false, err
 			}
 

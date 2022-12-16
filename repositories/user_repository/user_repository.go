@@ -10,6 +10,7 @@ type UserRepository interface {
 	Create(user models.User) (models.User, error)
 	FindAll(query string, args string) ([]models.User, error)
 	Update(user models.User, id string) (models.User, error)
+	UpdateUserPoint(point uint, id string) (models.User, error)
 	Delete(id string) (models.User, error)
 	FindByEmail(email string) (models.User, error)
 }
@@ -75,6 +76,15 @@ func (r *userRepository) Delete(id string) (models.User, error) {
 func (r *userRepository) FindByEmail(email string) (models.User, error) {
 	var user models.User
 	err := r.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (r *userRepository) UpdateUserPoint(point uint, id string) (models.User, error) {
+	var user models.User
+	err := r.db.Model(&user).Where("id = ?", id).Updates(map[string]interface{}{"points": point}).Error
 	if err != nil {
 		return user, err
 	}
