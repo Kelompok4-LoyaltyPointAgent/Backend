@@ -1,8 +1,7 @@
 package helper
 
 import (
-	"os"
-
+	"github.com/kelompok4-loyaltypointagent/backend/config"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 
 	"github.com/xendit/xendit-go"
@@ -13,7 +12,8 @@ import (
 
 //Fitur mengirim uang
 func CreatePayoutXendit(transaction models.Transaction) (xendit.Payout, error) {
-	xendit.Opt.SecretKey = os.Getenv("XENDIT_SECRET")
+	xenditConfig := config.LoadXenditConfig()
+	xendit.Opt.SecretKey = xenditConfig.Secret
 
 	payoutParams := payout.CreateParams{
 		ExternalID: transaction.ID.String(),
@@ -30,7 +30,8 @@ func CreatePayoutXendit(transaction models.Transaction) (xendit.Payout, error) {
 }
 
 func CreateInvoiceXendit(transaction models.Transaction, transactionDetail models.TransactionDetail, user models.User) (xendit.Invoice, error) {
-	xendit.Opt.SecretKey = os.Getenv("XENDIT_SECRET")
+	xenditConfig := config.LoadXenditConfig()
+	xendit.Opt.SecretKey = xenditConfig.Secret
 
 	customer := xendit.InvoiceCustomer{
 		GivenNames:   user.Name,
@@ -55,7 +56,8 @@ func CreateInvoiceXendit(transaction models.Transaction, transactionDetail model
 }
 
 func CreateDisbursementXendit(transaction models.Transaction, transactionDetail models.TransactionDetail, user models.User) (xendit.Disbursement, error) {
-	xendit.Opt.SecretKey = os.Getenv("XENDIT_SECRET")
+	xenditConfig := config.LoadXenditConfig()
+	xendit.Opt.SecretKey = xenditConfig.Secret
 
 	createDisbursementParams := disbursement.CreateParams{
 		ExternalID:        transaction.ID.String(),

@@ -16,7 +16,7 @@ CREATE TABLE `packages` (
   PRIMARY KEY (`id`),
   KEY `idx_packages_deleted_at` (`deleted_at`),
   KEY `fk_packages_product` (`product_id`),
-  CONSTRAINT `fk_packages_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+  CONSTRAINT `fk_packages_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- +goose Down

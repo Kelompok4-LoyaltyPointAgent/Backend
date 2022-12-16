@@ -19,3 +19,7 @@ const (
 func (x TransactionTypeEnum) String() string {
 	return string(x)
 }
+
+func (x TransactionStatusEnum) String() string {
+	return string(x)
+}

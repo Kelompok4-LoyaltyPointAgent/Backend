@@ -18,9 +18,9 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`),
   KEY `idx_products_deleted_at` (`deleted_at`),
   KEY `fk_products_product_picture` (`product_picture_id`),
-  CONSTRAINT `fk_products_product_picture` FOREIGN KEY (`product_picture_id`) REFERENCES `product_pictures` (`id`),
+  CONSTRAINT `fk_products_product_picture` FOREIGN KEY (`product_picture_id`) REFERENCES `product_pictures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   KEY `fk_products_icon` (`product_picture_id`),
-  CONSTRAINT `fk_products_icon` FOREIGN KEY (`product_picture_id`) REFERENCES `product_pictures` (`id`)
+  CONSTRAINT `fk_products_icon` FOREIGN KEY (`product_picture_id`) REFERENCES `product_pictures` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- +goose Down

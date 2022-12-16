@@ -10,7 +10,7 @@ CREATE TABLE `one_time_passwords` (
   PRIMARY KEY (`id`),
   KEY `idx_one_time_passwords_deleted_at` (`deleted_at`),
   KEY `fk_one_time_passwords_user` (`user_id`),
-  CONSTRAINT `fk_one_time_passwords_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `fk_one_time_passwords_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- +goose Down
