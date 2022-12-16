@@ -30,5 +30,5 @@ type ChangePasswordFromResetPasswordPayload struct {
 }
 
 type CheckPasswordPayload struct {
-	CheckPassword string `json:"check_password" validate:"requred,min=8"`
+	CheckPassword string `json:"check_password" validate:"required,min=8"`
 }
