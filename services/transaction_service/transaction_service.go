@@ -134,10 +134,19 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 			}
 
 			updates := models.User{
-				Points: user.Points - product.PricePoints,
+				Points: 0,
 			}
 			// TODO: make sure user points can be updated to 0
 			if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+				return nil, err
+			}
+
+			// TODO : Decrese Stok in Product
+			productUpdate := models.Product{
+				Stock: product.Stock - 1,
+			}
+
+			if _, err := s.productRepository.Update(productUpdate, product.ID); err != nil {
 				return nil, err
 			}
 
@@ -299,6 +308,15 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			// Find Product ID
 			product, err := s.productRepository.FindByID(transaction.ProductID.String())
 			if err != nil {
+				return false, err
+			}
+
+			// TODO : Decrese Stok in Product
+			productUpdate := models.Product{
+				Stock: product.Stock - 1,
+			}
+
+			if _, err := s.productRepository.Update(productUpdate, product.ID); err != nil {
 				return false, err
 			}
 
