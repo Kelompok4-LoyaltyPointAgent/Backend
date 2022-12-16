@@ -7,7 +7,7 @@ type TransactionPayload struct {
 	ProductID string                         `json:"product_id"`
 	Amount    float64                        `json:"amount"`
 	Method    string                         `json:"method"`
-	Number    string                         `json:"number" validate:"required"`
+	Number    string                         `json:"number" validate:"required,min=1,max=20"`
 	Email     string                         `json:"email" validate:"email"`
 	Status    constant.TransactionStatusEnum `json:"status"`
 	Type      constant.TransactionTypeEnum   `json:"type" validate:"required,eq=Redeem|eq=Purchase|eq=Cashout"`
