@@ -18,7 +18,7 @@ func checkRoles(roles []string, userRole string) bool {
 	return false
 }
 
-func AuthorizedRoles(roles []string) echo.MiddlewareFunc {
+func AuthorizedRoles(roles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			claims := helper.GetTokenClaims(c)
