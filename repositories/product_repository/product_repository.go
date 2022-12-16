@@ -11,7 +11,7 @@ type ProductRepository interface {
 	Create(product models.Product) (models.Product, error)
 	Update(productUpdate models.Product, id any) (models.Product, error)
 	UpdateStockProduct(stock uint, id any) (models.Product, error)
-	DeleteByID(id any) error
+	Delete(id any) error
 	SetBooleanRecommended(id any, recommended bool) error
 }
 
@@ -49,7 +49,7 @@ func (r *productRepository) Update(productUpdate models.Product, id any) (models
 	return r.FindByID(id)
 }
 
-func (r *productRepository) DeleteByID(id any) error {
+func (r *productRepository) Delete(id any) error {
 	var product models.Product
 	err := r.db.Where("id = ?", id).Delete(&product).Error
 	return err
