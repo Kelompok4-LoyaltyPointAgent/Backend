@@ -93,7 +93,7 @@ func (s *productRepositorySuite) TestDelete() {
 	s.mock.ExpectBegin()
 	s.mock.ExpectExec(query).WillReturnResult(sqlmock.NewResult(1, 1))
 	s.mock.ExpectCommit()
-	if err := s.repository.DeleteByID(id); err != nil {
+	if err := s.repository.Delete(id); err != nil {
 		log.Println(err)
 	}
 }
