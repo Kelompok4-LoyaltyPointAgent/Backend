@@ -120,12 +120,21 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 			payload.Email = user.Email
 		}
 		if payload.Type == constant.TransactionTypePurchase {
+			if product.Stock > 1 {
+				return nil, errors.New("product has not enough stocks")
+			}
+
 			payload.Method = ""
 			var adminFee float64 = 1000
 			amount = float64(product.Price) + adminFee
 			payload.Status = constant.TransactionStatusPending
 
 		} else if payload.Type == constant.TransactionTypeRedeem {
+
+			if product.Stock > 1 {
+				return nil, errors.New("product has not enough stocks")
+			}
+
 			payload.Method = ""
 			amount = float64(product.PricePoints)
 
