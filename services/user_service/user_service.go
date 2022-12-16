@@ -96,7 +96,7 @@ func (s *userService) FindAll(filter string) ([]response.UserResponse, error) {
 		query = "role = ?"
 		args = constant.UserRoleUser.String()
 	} else {
-		return []response.UserResponse{}, errors.New("Role not found")
+		return []response.UserResponse{}, errors.New("role not found")
 	}
 
 	users, err := s.repository.FindAll(query, args)
@@ -232,7 +232,7 @@ func (s *userService) ChangePassword(payload payload.ChangePasswordPayload, id s
 	}
 
 	if payload.NewPassword != payload.ConfirmPassword {
-		return response.UserResponse{}, errors.New("New Password and Confirm Password not match")
+		return response.UserResponse{}, errors.New("new Password and confirm Password not match")
 	}
 
 	getUser.Password = payload.NewPassword
@@ -263,7 +263,7 @@ func (s *userService) ChangePasswordFromResetPassword(payload payload.ChangePass
 	}
 
 	if payload.NewPassword != payload.ConfirmPassword {
-		return response.UserResponse{}, errors.New("New Password and Confirm Password not match")
+		return response.UserResponse{}, errors.New("new Password and confirm Password not match")
 	}
 
 	getUser.Password = payload.NewPassword

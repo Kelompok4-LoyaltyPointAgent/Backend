@@ -24,7 +24,7 @@ func AuthorizedRoles(roles ...string) echo.MiddlewareFunc {
 			claims := helper.GetTokenClaims(c)
 
 			if !checkRoles(roles, claims.Role) {
-				baseResponse := response.Error(c, "Unauthorized", http.StatusUnauthorized, errors.New("Unauthorized"))
+				baseResponse := response.Error(c, "Unauthorized", http.StatusUnauthorized, errors.New("unauthorized"))
 				return c.JSON(http.StatusUnauthorized, baseResponse)
 			}
 
