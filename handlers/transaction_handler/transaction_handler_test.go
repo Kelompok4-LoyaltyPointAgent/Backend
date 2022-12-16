@@ -59,7 +59,7 @@ func (s *transactionHandlerSuite) TestGetTransactions() {
 		{
 			Name:         "internal server error",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusInternalServerError,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindAllDetail(gomock.Any(), gomock.Any()).Return(&[]response.TransactionResponse{}, errors.New("error"))
@@ -68,7 +68,7 @@ func (s *transactionHandlerSuite) TestGetTransactions() {
 		{
 			Name:         "ok",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindAllDetail(gomock.Any(), gomock.Any()).Return(&[]response.TransactionResponse{}, nil)
@@ -104,7 +104,7 @@ func (s *transactionHandlerSuite) TestGetTransaction() {
 		{
 			Name:         "not found",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusNotFound,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(&response.TransactionResponse{}, errors.New("error"))
@@ -113,7 +113,7 @@ func (s *transactionHandlerSuite) TestGetTransaction() {
 		{
 			Name:         "unauthorized",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusUnauthorized,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(&response.TransactionResponse{}, errors.New("forbidden"))
@@ -122,7 +122,7 @@ func (s *transactionHandlerSuite) TestGetTransaction() {
 		{
 			Name:         "ok",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any(), gomock.Any()).Return(&response.TransactionResponse{}, nil)
@@ -176,7 +176,7 @@ func (s *transactionHandlerSuite) TestCreateTransaction() {
 				Status:    constant.TransactionStatusPending,
 				Type:      constant.TransactionTypePurchase,
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusInternalServerError,
 			ExpectedFunc: func() {
 				s.service.EXPECT().Create(gomock.Any(), gomock.Any()).Return(&response.TransactionResponse{}, errors.New("error"))
@@ -195,7 +195,7 @@ func (s *transactionHandlerSuite) TestCreateTransaction() {
 				Status:    constant.TransactionStatusPending,
 				Type:      constant.TransactionTypePurchase,
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().Create(gomock.Any(), gomock.Any()).Return(&response.TransactionResponse{}, nil)

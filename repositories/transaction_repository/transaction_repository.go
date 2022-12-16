@@ -39,7 +39,7 @@ func (r *transactionRepository) FindAll(query any, args ...any) ([]models.Transa
 	if query != "" {
 		err = r.db.Order("created_at DESC").Where(query, args...).Preload("TransactionDetail").Preload("Product").Preload("User").Find(&transaction).Error
 	} else {
-		err = r.db.Order("created_at DESC").Preload("TransactionDetail").Preload("User").Find(&transaction).Error
+		err = r.db.Order("created_at DESC").Preload("TransactionDetail").Preload("Product").Preload("User").Find(&transaction).Error
 	}
 
 	return transaction, err

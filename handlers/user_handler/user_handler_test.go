@@ -12,6 +12,7 @@ import (
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/services/mocks"
 	"github.com/kelompok4-loyaltypointagent/backend/testhelper"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -39,9 +40,9 @@ func TestUserHandlerSuite(t *testing.T) {
 
 func (s *userHandlerSuite) TestCreateUser() {
 	request := testhelper.Request{
-		Method:      "post",
+		Method:      http.MethodPost,
 		Path:        "/api/v1/users",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -102,9 +103,9 @@ func (s *userHandlerSuite) TestCreateUser() {
 
 func (s *userHandlerSuite) TestLogin() {
 	request := testhelper.Request{
-		Method:      "post",
+		Method:      http.MethodPost,
 		Path:        "/api/v1/login",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -155,9 +156,9 @@ func (s *userHandlerSuite) TestLogin() {
 
 func (s *userHandlerSuite) TestUpdateUser() {
 	request := testhelper.Request{
-		Method:      "put",
+		Method:      http.MethodPut,
 		Path:        "/api/v1/users",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -182,7 +183,7 @@ func (s *userHandlerSuite) TestUpdateUser() {
 				Password: "password",
 				Points:   0,
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusInternalServerError,
 			ExpectedFunc: func() {
 				s.service.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -197,7 +198,7 @@ func (s *userHandlerSuite) TestUpdateUser() {
 				Password: "password",
 				Points:   0,
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().UpdateProfile(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, nil)
@@ -220,9 +221,9 @@ func (s *userHandlerSuite) TestUpdateUser() {
 
 func (s *userHandlerSuite) TestChangePassword() {
 	request := testhelper.Request{
-		Method:      "put",
+		Method:      http.MethodPut,
 		Path:        "/api/v1/users/change-password",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -246,7 +247,7 @@ func (s *userHandlerSuite) TestChangePassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -260,7 +261,7 @@ func (s *userHandlerSuite) TestChangePassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, nil)
@@ -283,9 +284,9 @@ func (s *userHandlerSuite) TestChangePassword() {
 
 func (s *userHandlerSuite) TestChangePasswordFromResetPassword() {
 	request := testhelper.Request{
-		Method:      "put",
+		Method:      http.MethodPut,
 		Path:        "/api/v1/users/reset-password",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -308,7 +309,7 @@ func (s *userHandlerSuite) TestChangePasswordFromResetPassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePasswordFromResetPassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -321,7 +322,7 @@ func (s *userHandlerSuite) TestChangePasswordFromResetPassword() {
 				NewPassword:     "newpassword",
 				ConfirmPassword: "newpassword",
 			},
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().ChangePasswordFromResetPassword(gomock.Any(), gomock.Any()).Return(response.UserResponse{}, nil)
@@ -344,16 +345,16 @@ func (s *userHandlerSuite) TestChangePasswordFromResetPassword() {
 
 func (s *userHandlerSuite) TestFindUserByID() {
 	request := testhelper.Request{
-		Method:      "get",
+		Method:      http.MethodGet,
 		Path:        "/api/v1/users/:id",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
 		{
 			Name:         "bad request",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any()).Return(response.UserResponse{}, errors.New("error"))
@@ -362,7 +363,7 @@ func (s *userHandlerSuite) TestFindUserByID() {
 		{
 			Name:         "ok",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindByID(gomock.Any()).Return(response.UserResponse{}, nil)
@@ -385,16 +386,16 @@ func (s *userHandlerSuite) TestFindUserByID() {
 
 func (s *userHandlerSuite) TestFindAllUser() {
 	request := testhelper.Request{
-		Method:      "get",
+		Method:      http.MethodGet,
 		Path:        "/api/v1/users",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
 		{
 			Name:         "bad request",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusBadRequest,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindAll("").Return([]response.UserResponse{}, errors.New("error"))
@@ -403,7 +404,7 @@ func (s *userHandlerSuite) TestFindAllUser() {
 		{
 			Name:         "ok",
 			Request:      request,
-			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, helper.JWTCustomClaims{}),
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
 			ExpectedCode: http.StatusOK,
 			ExpectedFunc: func() {
 				s.service.EXPECT().FindAll("").Return([]response.UserResponse{}, nil)
@@ -426,9 +427,9 @@ func (s *userHandlerSuite) TestFindAllUser() {
 
 func (s *userHandlerSuite) TestFindUserByIDByAdmin() {
 	request := testhelper.Request{
-		Method:      "get",
+		Method:      http.MethodGet,
 		Path:        "/api/v1/users/:id",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -486,9 +487,9 @@ func (s *userHandlerSuite) TestFindUserByIDByAdmin() {
 
 func (s *userHandlerSuite) TestUpdateUserByAdmin() {
 	request := testhelper.Request{
-		Method:      "put",
+		Method:      http.MethodPut,
 		Path:        "/api/v1/users/:id",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -576,9 +577,9 @@ func (s *userHandlerSuite) TestUpdateUserByAdmin() {
 
 func (s *userHandlerSuite) TestDeleteUserByAdmin() {
 	request := testhelper.Request{
-		Method:      "delete",
+		Method:      http.MethodDelete,
 		Path:        "/api/v1/users/:id",
-		ContentType: "application/json",
+		ContentType: echo.MIMEApplicationJSON,
 	}
 
 	testCases := []testhelper.HTTPTestCase{
@@ -629,6 +630,59 @@ func (s *userHandlerSuite) TestDeleteUserByAdmin() {
 		s.T().Run(testCase.Name, func(t *testing.T) {
 			ctx, rec := testhelper.NewContext(testCase)
 			s.NoError(s.handler.DeleteUserByAdmin(ctx))
+			s.Equal(testCase.ExpectedCode, rec.Code)
+		})
+	}
+}
+
+func (s *userHandlerSuite) TestCheckPassword() {
+	request := testhelper.Request{
+		Method:      http.MethodPost,
+		Path:        "/api/v1/users/check-password",
+		ContentType: echo.MIMEApplicationJSON,
+	}
+
+	testCases := []testhelper.HTTPTestCase{
+		{
+			Name:         "bad request",
+			Request:      request,
+			Body:         "invalid request",
+			ExpectedCode: http.StatusBadRequest,
+		},
+		{
+			Name:    "internal server error",
+			Request: request,
+			Body: payload.CheckPasswordPayload{
+				CheckPassword: "password",
+			},
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
+			ExpectedCode: http.StatusInternalServerError,
+			ExpectedFunc: func() {
+				s.service.EXPECT().CheckPassword(gomock.Any(), gomock.Any()).Return(false, errors.New("error"))
+			},
+		},
+		{
+			Name:    "ok",
+			Request: request,
+			Body: payload.CheckPasswordPayload{
+				CheckPassword: "password",
+			},
+			Token:        jwt.NewWithClaims(jwt.SigningMethodHS256, &helper.JWTCustomClaims{}),
+			ExpectedCode: http.StatusOK,
+			ExpectedFunc: func() {
+				s.service.EXPECT().CheckPassword(gomock.Any(), gomock.Any()).Return(true, nil)
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		if testCase.ExpectedFunc != nil {
+			testCase.ExpectedFunc()
+		}
+
+		s.T().Run(testCase.Name, func(t *testing.T) {
+			ctx, rec := testhelper.NewContext(testCase)
+			s.NoError(s.handler.CheckPassword(ctx))
 			s.Equal(testCase.ExpectedCode, rec.Code)
 		})
 	}

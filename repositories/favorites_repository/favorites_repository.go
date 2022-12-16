@@ -22,10 +22,10 @@ func NewFavoritesRepository(db *gorm.DB) FavoritesRepository {
 func (r *favoritesRepository) FindAll(args ...any) ([]models.Favorites, error) {
 	var favorites []models.Favorites
 	if len(args) == 0 {
-		err := r.db.Preload("Product").Preload("Product.ProductPicture").Find(&favorites).Error
+		err := r.db.Preload("Product").Preload("Product.Icon").Preload("Product.ProductPicture").Find(&favorites).Error
 		return favorites, err
 	} else {
-		err := r.db.Where("user_id = ?", args[0]).Preload("Product").Preload("Product.ProductPicture").Find(&favorites).Error
+		err := r.db.Where("user_id = ?", args[0]).Preload("Product").Preload("Product.Icon").Preload("Product.ProductPicture").Find(&favorites).Error
 		return favorites, err
 	}
 

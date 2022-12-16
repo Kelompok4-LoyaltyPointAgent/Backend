@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/kelompok4-loyaltypointagent/backend/config"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
@@ -45,9 +46,10 @@ func (s *forgotPasswordService) RequestForgotPassword(payload payload.RequestFor
 		return err
 	}
 
+	reactConfig := config.LoadReactAppConfig()
 	if err := helper.SendAccessKey(user.Email, helper.AccessKeyEmailData{
 		AccessKey: accessKey,
-		FormURL:   "http://localhost/reset-password/" + accessKey,
+		FormURL:   reactConfig.BaseURL + "/reset/" + accessKey,
 	}); err != nil {
 		return err
 	}
