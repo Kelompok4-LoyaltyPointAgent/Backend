@@ -54,7 +54,7 @@ func (r *cachedAnalyticsRepository) CheckSalesCount(year int) bool {
 
 func (r *cachedAnalyticsRepository) SetSalesCount(year, count int) error {
 	key := fmt.Sprintf("analytics:sales_count:%d", year)
-	exp := time.Duration(60 * time.Second)
+	exp := time.Duration(30 * time.Second)
 	return r.db.Set(r.db.Context(), key, count, exp).Err()
 }
 
@@ -79,7 +79,7 @@ func (r *cachedAnalyticsRepository) CheckIncome(year int) bool {
 
 func (r *cachedAnalyticsRepository) SetIncome(year int, sum float64) error {
 	key := fmt.Sprintf("analytics:income:%d", year)
-	exp := time.Duration(60 * time.Second)
+	exp := time.Duration(30 * time.Second)
 	return r.db.Set(r.db.Context(), key, sum, exp).Err()
 }
 
@@ -109,7 +109,7 @@ func (r *cachedAnalyticsRepository) CheckTransactionsByMonth(year int) bool {
 
 func (r *cachedAnalyticsRepository) SetTransactionsByMonth(year int, data string) error {
 	key := fmt.Sprintf("analytics:transactions_by_month:%d", year)
-	exp := time.Duration(60 * time.Second)
+	exp := time.Duration(30 * time.Second)
 	return r.db.Set(r.db.Context(), key, data, exp).Err()
 }
 
@@ -139,7 +139,7 @@ func (r *cachedAnalyticsRepository) CheckTransactionsByType(year int) bool {
 
 func (r *cachedAnalyticsRepository) SetTransactionsByType(year int, data string) error {
 	key := fmt.Sprintf("analytics:transactions_by_type:%d", year)
-	exp := time.Duration(60 * time.Second)
+	exp := time.Duration(30 * time.Second)
 	return r.db.Set(r.db.Context(), key, data, exp).Err()
 }
 
@@ -169,6 +169,6 @@ func (r *cachedAnalyticsRepository) CheckRecentTransactions(year int) bool {
 
 func (r *cachedAnalyticsRepository) SetRecentTransactions(year int, data string) error {
 	key := fmt.Sprintf("analytics:recent_transactions:%d", year)
-	exp := time.Duration(60 * time.Second)
+	exp := time.Duration(30 * time.Second)
 	return r.db.Set(r.db.Context(), key, data, exp).Err()
 }
