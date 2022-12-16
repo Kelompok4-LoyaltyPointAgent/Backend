@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/golang-jwt/jwt"
@@ -25,7 +26,7 @@ func AuthorizedRoles(roles []string) echo.MiddlewareFunc {
 			claims := token.Claims.(*helper.JWTCustomClaims)
 
 			if !checkRoles(roles, claims.Role) {
-				baseResponse := response.ConvertErrorToBaseResponse("failed", http.StatusUnauthorized, response.EmptyObj{}, "Unauthorized")
+				baseResponse := response.Error(c, "Unauthorized", http.StatusUnauthorized, errors.New("Unauthorized"))
 				return c.JSON(http.StatusUnauthorized, baseResponse)
 			}
 
