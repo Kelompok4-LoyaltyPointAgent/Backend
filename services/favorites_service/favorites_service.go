@@ -2,6 +2,7 @@ package favorites_service
 
 import (
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
 	"github.com/kelompok4-loyaltypointagent/backend/helper"
@@ -27,7 +28,7 @@ func (s *favoritesService) FindAll(claims *helper.JWTCustomClaims) (*[]response.
 	var args []any
 	var favorites []models.Favorites
 	var err error
-	if claims.Role == "Admin" {
+	if claims.Role == constant.UserRoleAdmin.String() {
 		favorites, err = s.favoritesRepository.FindAll()
 		if err != nil {
 			return nil, err

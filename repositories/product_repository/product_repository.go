@@ -10,7 +10,8 @@ type ProductRepository interface {
 	FindByID(id any) (models.Product, error)
 	Create(product models.Product) (models.Product, error)
 	Update(productUpdate models.Product, id any) (models.Product, error)
-	DeleteByID(id any) error
+	UpdateStockProduct(stock uint, id any) (models.Product, error)
+	Delete(id any) error
 	SetBooleanRecommended(id any, recommended bool) error
 }
 
@@ -48,7 +49,7 @@ func (r *productRepository) Update(productUpdate models.Product, id any) (models
 	return r.FindByID(id)
 }
 
-func (r *productRepository) DeleteByID(id any) error {
+func (r *productRepository) Delete(id any) error {
 	var product models.Product
 	err := r.db.Where("id = ?", id).Delete(&product).Error
 	return err
@@ -58,4 +59,13 @@ func (r *productRepository) SetBooleanRecommended(id any, recommended bool) erro
 	var product models.Product
 	err := r.db.Model(&product).Where("id = ?", id).Update("recommended", recommended).Error
 	return err
+}
+
+func (r *productRepository) UpdateStockProduct(stock uint, id any) (models.Product, error) {
+	var product models.Product
+	err := r.db.Model(&product).Select("stock").Omit("Icon").Omit("ProductPicture").Where("id = ?", id).Updates(map[string]interface{}{"stock": stock}).Error
+	if err != nil {
+		return product, err
+	}
+	return r.FindByID(id)
 }

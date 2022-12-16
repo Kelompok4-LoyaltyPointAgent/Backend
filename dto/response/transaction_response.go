@@ -10,7 +10,7 @@ type TransactionResponse struct {
 	ID                uuid.UUID                      `json:"id"`
 	UserID            uuid.UUID                      `json:"user_id"`
 	User              *UserResponse                  `json:"user,omitempty"`
-	ProductID         uuid.UUID                      `json:"product_id"`
+	ProductID         *uuid.UUID                     `json:"product_id"`
 	Product           *ProductResponse               `json:"product,omitempty"`
 	Amount            float64                        `json:"amount"`
 	Method            string                         `json:"method"`
@@ -46,6 +46,7 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 		Method:            transaction.Method,
 		Status:            transaction.Status,
 		Type:              transaction.Type,
+		ProductID:         transaction.ProductID,
 		TransactionDetail: NewTransactionDetailResponse(transactionDetail),
 		CreatedDate:       transaction.CreatedAt.Format("02 January 2006"),
 	}
@@ -55,7 +56,6 @@ func NewTransactionResponse(transaction models.Transaction, transactionDetail mo
 	}
 
 	if transaction.Product != nil {
-		response.ProductID = *transaction.ProductID
 		response.Product = NewProductResponse(*transaction.Product)
 	}
 

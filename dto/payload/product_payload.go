@@ -3,9 +3,9 @@ package payload
 import "mime/multipart"
 
 type ProductPayload struct {
-	Name           string                `form:"name" validate:"required"`
-	Description    string                `form:"description" validate:"required"`
-	Provider       string                `form:"provider" validate:"required"`
+	Name           string                `form:"name" validate:"required,min=1,max=100"`
+	Description    string                `form:"description" validate:"required,min=1,max=500"`
+	Provider       string                `form:"provider" validate:"required,min=1,max=50"`
 	Price          uint                  `form:"price" validate:"required"`
 	PricePoints    uint                  `form:"price_points" validate:"required"`
 	RewardPoints   uint                  `form:"reward_points" validate:"required"`
@@ -31,5 +31,5 @@ type ProductWithPackagesPayload struct {
 	SocialMedia        float64 `form:"social_media" validate:"required"`
 	Call               int     `form:"call" validate:"required"`
 	SMS                int     `form:"sms" validate:"required"`
-	PackageDescription string  `form:"package_description" validate:"required"`
+	PackageDescription string  `form:"package_description" validate:"required,min=1,max=300"`
 }

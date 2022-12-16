@@ -238,7 +238,7 @@ func (s *productService) DeleteProductWithCredit(id any) error {
 		return err
 	}
 
-	if err := s.productRepository.DeleteByID(id); err != nil {
+	if err := s.productRepository.Delete(id); err != nil {
 		return err
 	}
 
@@ -439,7 +439,7 @@ func (s *productService) DeleteProductWithPackages(id any) error {
 		return err
 	}
 
-	if err := s.productRepository.DeleteByID(id); err != nil {
+	if err := s.productRepository.Delete(id); err != nil {
 		return err
 	}
 

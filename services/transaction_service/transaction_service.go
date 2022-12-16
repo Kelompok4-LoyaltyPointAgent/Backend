@@ -42,7 +42,7 @@ func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filte
 
 	var transactions []models.Transaction
 	var err error
-	if claims.Role == "Admin" {
+	if claims.Role == constant.UserRoleAdmin.String() {
 		transactions, err = s.transactionRepository.FindAll("", "")
 		if err != nil {
 			return nil, err
@@ -73,7 +73,7 @@ func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filte
 func (s *transactionService) FindByID(id any, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error) {
 	var transaction models.Transaction
 	var err error
-	if claims.Role == "Admin" {
+	if claims.Role == constant.UserRoleAdmin.String() {
 		transaction, err = s.transactionRepository.FindByID(id)
 		if err != nil {
 			return nil, err
@@ -94,7 +94,7 @@ func (s *transactionService) FindByID(id any, claims *helper.JWTCustomClaims) (*
 func (s *transactionService) Create(payload payload.TransactionPayload, claims *helper.JWTCustomClaims) (*response.TransactionResponse, error) {
 	var product models.Product
 
-	if claims.Role != "Admin" {
+	if claims.Role != constant.UserRoleAdmin.String() {
 		payload.UserID = claims.ID.String()
 		payload.Status = ""
 	}
@@ -120,12 +120,21 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 			payload.Email = user.Email
 		}
 		if payload.Type == constant.TransactionTypePurchase {
+			if product.Stock < 1 {
+				return nil, errors.New("product has not enough stocks")
+			}
+
 			payload.Method = ""
 			var adminFee float64 = 1000
 			amount = float64(product.Price) + adminFee
 			payload.Status = constant.TransactionStatusPending
 
 		} else if payload.Type == constant.TransactionTypeRedeem {
+
+			if product.Stock < 1 {
+				return nil, errors.New("product has not enough stocks")
+			}
+
 			payload.Method = ""
 			amount = float64(product.PricePoints)
 
@@ -133,11 +142,15 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 				return nil, errors.New("user has not enough points")
 			}
 
-			updates := models.User{
-				Points: user.Points - product.PricePoints,
+			points := user.Points - product.PricePoints
+
+			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
+				return nil, err
 			}
-			// TODO: make sure user points can be updated to 0
-			if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+
+			stock := product.Stock - 1
+
+			if _, err := s.productRepository.UpdateStockProduct(stock, product.ID); err != nil {
 				return nil, err
 			}
 
@@ -179,8 +192,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 		return nil, err
 	}
 
-	if transaction.Status == constant.TransactionStatusPending && claims.Role != "Admin" && transaction.Type == constant.TransactionTypePurchase {
-		// TODO: send bill via payment gateway
+	if transaction.Status == constant.TransactionStatusPending && claims.Role != constant.UserRoleAdmin.String() && transaction.Type == constant.TransactionTypePurchase {
 		resp, err := helper.CreateInvoiceXendit(transaction, *transaction.TransactionDetail, user)
 		if err != nil {
 			return nil, err
@@ -188,7 +200,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 
 		return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, resp.InvoiceURL), nil
 
-	} else if transaction.Status == constant.TransactionStatusPending && claims.Role != "Admin" && transaction.Type == constant.TransactionTypeCashout {
+	} else if transaction.Status == constant.TransactionStatusPending && claims.Role != constant.UserRoleAdmin.String() && transaction.Type == constant.TransactionTypeCashout {
 
 		_, err := helper.CreateDisbursementXendit(transaction, *transaction.TransactionDetail, user)
 		if err != nil {
@@ -251,8 +263,6 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 		return nil, err
 	}
 
-	// TODO: cancel pending transaction via payment gateway
-
 	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
@@ -276,11 +286,11 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 
 		if payload["status"] == constant.XenditStatusCompleted.String() {
 			transaction.Status = constant.TransactionStatusSuccess
-			updateUserPoint := models.User{
-				Points: user.Points - uint(transaction.Amount),
-			}
 
-			if _, err := s.userRepository.Update(updateUserPoint, user.ID.String()); err != nil {
+			// Update User Points
+			points := user.Points - uint(transaction.Amount)
+
+			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return false, err
 			}
 
@@ -302,12 +312,16 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 				return false, err
 			}
 
-			// Update User Points
-			updates := models.User{
-				Points: user.Points + product.PricePoints,
+			stock := product.Stock - 1
+
+			if _, err := s.productRepository.UpdateStockProduct(stock, product.ID); err != nil {
+				return false, err
 			}
 
-			if _, err := s.userRepository.Update(updates, user.ID.String()); err != nil {
+			// Update User Points
+			points := user.Points - product.PricePoints
+
+			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return false, err
 			}
 
