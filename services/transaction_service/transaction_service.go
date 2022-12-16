@@ -120,7 +120,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 			payload.Email = user.Email
 		}
 		if payload.Type == constant.TransactionTypePurchase {
-			if product.Stock > 1 {
+			if product.Stock < 1 {
 				return nil, errors.New("product has not enough stocks")
 			}
 
@@ -131,7 +131,7 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 
 		} else if payload.Type == constant.TransactionTypeRedeem {
 
-			if product.Stock > 1 {
+			if product.Stock < 1 {
 				return nil, errors.New("product has not enough stocks")
 			}
 
@@ -286,11 +286,11 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 
 		if payload["status"] == constant.XenditStatusCompleted.String() {
 			transaction.Status = constant.TransactionStatusSuccess
-			updateUserPoint := models.User{
-				Points: user.Points - uint(transaction.Amount),
-			}
 
-			if _, err := s.userRepository.Update(updateUserPoint, user.ID.String()); err != nil {
+			// Update User Points
+			points := user.Points - uint(transaction.Amount)
+
+			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return false, err
 			}
 
