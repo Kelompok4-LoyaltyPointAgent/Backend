@@ -20,6 +20,7 @@ type TransactionHandler interface {
 	DeleteTransaction(c echo.Context) error
 	CancelTransaction(c echo.Context) error
 	TransactionWebhook(c echo.Context) error
+	GetInvoiceURL(c echo.Context) error
 }
 
 type transactionHandler struct {
@@ -135,4 +136,16 @@ func (h *transactionHandler) TransactionWebhook(c echo.Context) error {
 	}
 
 	return response.Success(c, "success", http.StatusOK, nil)
+}
+
+func (h *transactionHandler) GetInvoiceURL(c echo.Context) error {
+	claims := helper.GetTokenClaims(c)
+
+	url, err := h.service.GetInvoiceURL(c.Param("id"), claims.ID.String())
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, echo.Map{"invoice_url": url})
+
 }
