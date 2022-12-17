@@ -12,3 +12,9 @@ type AnalyticsResponse struct {
 	TransactionsByType  analytics_repository.TransactionsByType  `json:"transactions_by_type"`
 	RecentTransactions  []TransactionResponse                    `json:"recent_transactions"`
 }
+
+type DataForManageStockAdmin struct {
+	TotalProduct   uint `json:"totalProduct"`
+	TotalProvider  uint `json:"totalProvider"`
+	CashoutBalance uint `json:"cashoutBalance"`
+}

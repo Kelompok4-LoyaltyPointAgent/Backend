@@ -14,6 +14,7 @@ import (
 
 type AnalyticsService interface {
 	Analytics() (*response.AnalyticsResponse, error)
+	DataForManageStockAdmin() (*response.DataForManageStockAdmin, error)
 }
 
 type analyticsService struct {
@@ -118,4 +119,14 @@ func (s *analyticsService) Analytics() (*response.AnalyticsResponse, error) {
 	}
 
 	return &analyticsResponse, nil
+}
+
+
+func (s *analyticsService) DataForManageStockAdmin() (*response.DataForManageStockAdmin, error) {
+	totalProduct, err := s.analyticsRepository.ProductCount()
+	if err != nil {
+		return nil, err
+	}
+
+	
 }

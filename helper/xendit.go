@@ -74,3 +74,7 @@ func CreateDisbursementXendit(transaction models.Transaction, transactionDetail 
 
 	return *resp, nil
 }
+
+func GetBalance() (int, error) {
+	
+}
