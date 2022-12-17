@@ -1,10 +1,13 @@
 package helper
 
 import (
+	"log"
+
 	"github.com/kelompok4-loyaltypointagent/backend/config"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 
 	"github.com/xendit/xendit-go"
+	"github.com/xendit/xendit-go/balance"
 	"github.com/xendit/xendit-go/disbursement"
 	"github.com/xendit/xendit-go/invoice"
 	"github.com/xendit/xendit-go/payout"
@@ -77,6 +80,18 @@ func CreateDisbursementXendit(transaction models.Transaction, transactionDetail 
 	return *resp, nil
 }
 
-func GetBalance() (int, error) {
-	
+func GetBalance() (*float64, error) {
+	xenditConfig := config.LoadXenditConfig()
+	xendit.Opt.SecretKey = xenditConfig.Secret
+
+	getData := balance.GetParams{
+		AccountType: "CASH",
+	}
+
+	resp, err := balance.Get(&getData)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &resp.Balance, nil
+
 }

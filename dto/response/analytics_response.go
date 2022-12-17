@@ -16,5 +16,5 @@ type AnalyticsResponse struct {
 type DataForManageStockAdmin struct {
 	TotalProduct   uint `json:"totalProduct"`
 	TotalProvider  uint `json:"totalProvider"`
-	CashoutBalance uint `json:"cashoutBalance"`
+	CashoutBalance float64 `json:"cashoutBalance"`
 }

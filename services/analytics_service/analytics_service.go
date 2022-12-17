@@ -8,6 +8,7 @@ import (
 
 	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_analytics_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
+	"github.com/kelompok4-loyaltypointagent/backend/helper"
 	"github.com/kelompok4-loyaltypointagent/backend/models"
 	"github.com/kelompok4-loyaltypointagent/backend/repositories/analytics_repository"
 )
@@ -121,12 +122,51 @@ func (s *analyticsService) Analytics() (*response.AnalyticsResponse, error) {
 	return &analyticsResponse, nil
 }
 
-
 func (s *analyticsService) DataForManageStockAdmin() (*response.DataForManageStockAdmin, error) {
-	totalProduct, err := s.analyticsRepository.ProductCount()
-	if err != nil {
-		return nil, err
+	var data *response.DataForManageStockAdmin = &response.DataForManageStockAdmin{}
+
+	if s.cachedAnalyticsRepository.CheckDataInStock() {
+		dataRedis, err := s.cachedAnalyticsRepository.GetDataInStock()
+		if err != nil {
+			return nil, err
+		}
+
+		log.Println(*dataRedis)
+
+		err = json.Unmarshal([]byte(*dataRedis), data)
+		if err != nil {
+			log.Println(err.Error())
+			return nil, err
+		}
+
+	} else {
+		totalProduct, err := s.analyticsRepository.ProductCount()
+		if err != nil {
+			return nil, err
+		}
+
+		cashoutBalance, err := helper.GetBalance()
+		if err != nil {
+			return nil, err
+		}
+
+		dataResponse := response.DataForManageStockAdmin{
+			CashoutBalance: *cashoutBalance,
+			TotalProduct:   uint(totalProduct),
+			TotalProvider:  6,
+		}
+
+		data = &dataResponse
+
+		dataMarshal, err := json.Marshal(dataResponse)
+		if err != nil {
+			log.Printf("JSON error: %s", err)
+		}
+
+		if err := s.cachedAnalyticsRepository.SetProductCount(string(dataMarshal)); err != nil {
+			log.Printf("Redis error: %s", err)
+		}
 	}
 
-	
+	return data, nil
 }

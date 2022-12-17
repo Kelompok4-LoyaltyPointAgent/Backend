@@ -94,5 +94,6 @@ func Setup(app *echo.Echo) {
 	feedback.POST("", initialize.FeedbackHandler.Create)
 
 	analytics := v1.Group("/analytics", auth)
+	analytics.GET("/stock", initialize.AnalyticsHandler.DataForManageStockAdmin, middlewares.AuthorizedRoles(constant.UserRoleAdmin.String()))
 	analytics.GET("", initialize.AnalyticsHandler.Analytics, middlewares.AuthorizedRoles(constant.UserRoleAdmin.String()))
 }
