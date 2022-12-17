@@ -2,9 +2,10 @@ package transaction_service
 
 import (
 	"errors"
+	"log"
 
 	"github.com/google/uuid"
-	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_payouturl_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_invoiceurl_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
@@ -23,23 +24,23 @@ type TransactionService interface {
 	Delete(id any) error
 	Cancel(id any) (*response.TransactionResponse, error)
 	CallbackXendit(payload map[string]interface{}) (bool, error)
-	GetPayoutURL(id string, userId string) (*string, error)
+	GetInvoiceURL(id string, userId string) (*string, error)
 }
 
 type transactionService struct {
-	transactionRepository     transaction_repository.TransactionRepository
-	productRepository         product_repository.ProductRepository
-	userRepository            user_repository.UserRepository
-	cachedPayoutURLRepository cached_payouturl_repository.PayoutURLRepository
+	transactionRepository      transaction_repository.TransactionRepository
+	productRepository          product_repository.ProductRepository
+	userRepository             user_repository.UserRepository
+	cachedInvoiceURLRepository cached_invoiceurl_repository.InvoiceURLRepository
 }
 
 func NewTransactionService(
 	transactionRepository transaction_repository.TransactionRepository,
 	productRepository product_repository.ProductRepository,
 	userRepository user_repository.UserRepository,
-	cachedPayoutURL cached_payouturl_repository.PayoutURLRepository,
+	cachedInvoiceURL cached_invoiceurl_repository.InvoiceURLRepository,
 ) TransactionService {
-	return &transactionService{transactionRepository, productRepository, userRepository, cachedPayoutURL}
+	return &transactionService{transactionRepository, productRepository, userRepository, cachedInvoiceURL}
 }
 
 func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filter any) (*[]response.TransactionResponse, error) {
@@ -202,6 +203,11 @@ func (s *transactionService) Create(payload payload.TransactionPayload, claims *
 			return nil, err
 		}
 
+		//Save invoice url in redis
+		if err := s.cachedInvoiceURLRepository.SetInvoiceURL(resp.InvoiceURL, transaction.ID.String()); err != nil {
+			return nil, err
+		}
+
 		return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, resp.InvoiceURL), nil
 
 	} else if transaction.Status == constant.TransactionStatusPending && claims.Role != constant.UserRoleAdmin.String() && transaction.Type == constant.TransactionTypeCashout {
@@ -270,7 +276,7 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
 }
 
-func (s *transactionService) GetPayoutURL(id string, userId string) (*string, error) {
+func (s *transactionService) GetInvoiceURL(id string, userId string) (*string, error) {
 	//Get Transaction ID
 	transaction, err := s.transactionRepository.FindByID(id)
 	if err != nil {
@@ -281,7 +287,7 @@ func (s *transactionService) GetPayoutURL(id string, userId string) (*string, er
 		return nil, errors.New("forbidden")
 	}
 
-	url, err := s.cachedPayoutURLRepository.GetPayoutURL(transaction.ID.String())
+	url, err := s.cachedInvoiceURLRepository.GetInvoiceURL(transaction.ID.String())
 	if err != nil {
 		return nil, err
 	}
@@ -328,6 +334,8 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			transaction.Status = constant.TransactionStatusSuccess
 			transaction.Method = payload["payment_channel"].(string)
 
+			log.Println("MASUKK")
+
 			// Find Product ID
 			product, err := s.productRepository.FindByID(transaction.ProductID.String())
 			if err != nil {
@@ -344,6 +352,11 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			points := user.Points - product.PricePoints
 
 			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
+				return false, err
+			}
+
+			//Delete invoice url
+			if err := s.cachedInvoiceURLRepository.DeleteInvoiceURL(transaction.ID.String()); err != nil {
 				return false, err
 			}
 

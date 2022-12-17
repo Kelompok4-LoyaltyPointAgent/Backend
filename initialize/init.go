@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_analytics_repository"
+	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_invoiceurl_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/db"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/analytics_handler"
 	"github.com/kelompok4-loyaltypointagent/backend/handlers/faq_handler"
@@ -74,6 +75,7 @@ var packagesRepository packages_repository.PackagesRepository
 var transactionRepository transaction_repository.TransactionRepository
 var transactionService transaction_service.TransactionService
 var TransactionHandler transaction_handler.TransactionHandler
+var cachedInvoiceURLRepository cached_invoiceurl_repository.InvoiceURLRepository
 
 // FAQ
 var faqRepository faq_repository.FAQRepository
@@ -121,13 +123,14 @@ func initRepositories() {
 
 	redisDB := redisclient.Init()
 	cachedAnalyticsRepository = cached_analytics_repository.NewCachedAnalyticsRepository(redisDB)
+	cachedInvoiceURLRepository = cached_invoiceurl_repository.NewInvoiceURLRepository(redisDB)
 }
 
 func initServices() {
 	userService = user_service.NewUserService(userRepository)
 	productService = product_service.NewProductService(productRepository, creditRepository, packagesRepository, productPictureRepository)
 	otpService = otp_service.NewOTPService(otpRepository, userRepository)
-	transactionService = transaction_service.NewTransactionService(transactionRepository, productRepository, userRepository)
+	transactionService = transaction_service.NewTransactionService(transactionRepository, productRepository, userRepository, cachedInvoiceURLRepository)
 	faqService = faq_service.NewFAQService(faqRepository)
 	forgotPasswordService = forgot_password_service.NewForgotPasswordService(forgotPasswordRepository, userRepository)
 	favoritesService = favorites_service.NewFavoritesService(favoritesRepository)
