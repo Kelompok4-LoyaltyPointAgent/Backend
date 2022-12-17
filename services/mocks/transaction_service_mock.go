@@ -125,6 +125,21 @@ func (mr *MockTransactionServiceMockRecorder) FindByID(id, claims interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockTransactionService)(nil).FindByID), id, claims)
 }
 
+// GetInvoiceURL mocks base method.
+func (m *MockTransactionService) GetInvoiceURL(id, userId string) (*string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetInvoiceURL", id, userId)
+	ret0, _ := ret[0].(*string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetInvoiceURL indicates an expected call of GetInvoiceURL.
+func (mr *MockTransactionServiceMockRecorder) GetInvoiceURL(id, userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInvoiceURL", reflect.TypeOf((*MockTransactionService)(nil).GetInvoiceURL), id, userId)
+}
+
 // Update mocks base method.
 func (m *MockTransactionService) Update(payload payload.TransactionUpdatePayload, id any) (*response.TransactionResponse, error) {
 	m.ctrl.T.Helper()
