@@ -51,6 +51,36 @@ func (mr *MockUserServiceMockRecorder) ChangePassword(payload, id interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangePassword", reflect.TypeOf((*MockUserService)(nil).ChangePassword), payload, id)
 }
 
+// ChangePasswordFromResetPassword mocks base method.
+func (m *MockUserService) ChangePasswordFromResetPassword(payload payload.ChangePasswordFromResetPasswordPayload, id string) (response.UserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ChangePasswordFromResetPassword", payload, id)
+	ret0, _ := ret[0].(response.UserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ChangePasswordFromResetPassword indicates an expected call of ChangePasswordFromResetPassword.
+func (mr *MockUserServiceMockRecorder) ChangePasswordFromResetPassword(payload, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangePasswordFromResetPassword", reflect.TypeOf((*MockUserService)(nil).ChangePasswordFromResetPassword), payload, id)
+}
+
+// CheckPassword mocks base method.
+func (m *MockUserService) CheckPassword(payload payload.CheckPasswordPayload, id string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckPassword", payload, id)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckPassword indicates an expected call of CheckPassword.
+func (mr *MockUserServiceMockRecorder) CheckPassword(payload, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPassword", reflect.TypeOf((*MockUserService)(nil).CheckPassword), payload, id)
+}
+
 // Create mocks base method.
 func (m *MockUserService) Create(payload payload.UserPayload) (response.UserResponse, error) {
 	m.ctrl.T.Helper()
@@ -82,18 +112,18 @@ func (mr *MockUserServiceMockRecorder) Delete(id interface{}) *gomock.Call {
 }
 
 // FindAll mocks base method.
-func (m *MockUserService) FindAll() ([]response.UserResponse, error) {
+func (m *MockUserService) FindAll(filter string) ([]response.UserResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll")
+	ret := m.ctrl.Call(m, "FindAll", filter)
 	ret0, _ := ret[0].([]response.UserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAll indicates an expected call of FindAll.
-func (mr *MockUserServiceMockRecorder) FindAll() *gomock.Call {
+func (mr *MockUserServiceMockRecorder) FindAll(filter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockUserService)(nil).FindAll))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockUserService)(nil).FindAll), filter)
 }
 
 // FindByEmail mocks base method.
@@ -172,7 +202,7 @@ func (mr *MockUserServiceMockRecorder) UpdateProfile(payload, id interface{}) *g
 }
 
 // UpdateUserByAdmin mocks base method.
-func (m *MockUserService) UpdateUserByAdmin(payload payload.UserPayload, id string) (response.UserResponse, error) {
+func (m *MockUserService) UpdateUserByAdmin(payload payload.UserPayloadByAdmin, id string) (response.UserResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUserByAdmin", payload, id)
 	ret0, _ := ret[0].(response.UserResponse)

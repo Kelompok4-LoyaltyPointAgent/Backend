@@ -1,6 +1,0 @@
-cloudbuild
-terraform
-.env.example
-.gitignore
-Makefile
-README.md

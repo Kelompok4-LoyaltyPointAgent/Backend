@@ -21,3 +21,18 @@ func NewUserResponse(user models.User) *UserResponse {
 		Points: user.Points,
 	}
 }
+
+func NewUsersResponse(users []models.User) *[]UserResponse {
+	var usersResponses []UserResponse
+	for _, user := range users {
+		userResponse := UserResponse{
+			ID:     user.ID.String(),
+			Name:   user.Name,
+			Email:  user.Email,
+			Points: user.Points,
+		}
+		usersResponses = append(usersResponses, userResponse)
+	}
+
+	return &usersResponses
+}

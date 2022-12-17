@@ -16,3 +16,10 @@ variable "env_vars_staging" {
     name  = string
   }))
 }
+
+variable "env_vars_production" {
+  type = list(object({
+    value = string
+    name  = string
+  }))
+}

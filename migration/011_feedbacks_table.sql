@@ -12,7 +12,7 @@ CREATE TABLE `feedbacks` (
   `review` text,
   PRIMARY KEY (`id`),
   KEY `fk_feedbacks_user` (`user_id`),
-  CONSTRAINT `fk_feedbacks_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `fk_feedbacks_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   KEY `idx_feedbacks_deleted_at` (`deleted_at`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

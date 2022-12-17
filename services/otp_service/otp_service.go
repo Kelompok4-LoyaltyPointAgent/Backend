@@ -78,5 +78,10 @@ func (s *otpService) VerifyOTP(payload payload.VerifyOTPPayload) (*response.Veri
 		return nil, errors.New("internal server error")
 	}
 
-	return response.NewVerifyOTPResponse(true), nil
+	token, err := helper.CreateToken(user.ID, user.Role.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return response.NewVerifyOTPResponse(token), nil
 }

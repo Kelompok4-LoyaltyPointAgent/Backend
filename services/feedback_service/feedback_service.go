@@ -11,7 +11,7 @@ import (
 type FeedbackService interface {
 	FindAll() (*[]response.FeedbackResponse, error)
 	FindByID(id any) (*response.FeedbackResponse, error)
-	Create(feedback payload.FeedbackPayload, id string) (models.Feedbacks, error)
+	Create(feedback payload.FeedbackPayload, id string) (*response.FeedbackResponse, error)
 }
 
 type feedbackService struct {
@@ -38,7 +38,7 @@ func (s *feedbackService) FindByID(id any) (*response.FeedbackResponse, error) {
 	return response.NewFeedbackResponse(feedback), nil
 }
 
-func (s *feedbackService) Create(payload payload.FeedbackPayload, id string) (models.Feedbacks, error) {
+func (s *feedbackService) Create(payload payload.FeedbackPayload, id string) (*response.FeedbackResponse, error) {
 	feedback := models.Feedbacks{
 		UserID:               uuid.MustParse(id),
 		IsInformationHelpful: payload.IsInformationHelpful,
@@ -50,7 +50,8 @@ func (s *feedbackService) Create(payload payload.FeedbackPayload, id string) (mo
 
 	feedback, err := s.repository.Create(feedback)
 	if err != nil {
-		return models.Feedbacks{}, err
+		return nil, err
 	}
-	return feedback, nil
+
+	return response.NewFeedbackResponse(feedback), nil
 }

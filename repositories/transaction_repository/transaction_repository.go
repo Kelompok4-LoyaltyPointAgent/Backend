@@ -27,7 +27,7 @@ func NewTransactionRepository(db *gorm.DB) TransactionRepository {
 
 func (r *transactionRepository) FindByID(id any) (models.Transaction, error) {
 	var transaction models.Transaction
-	err := r.db.Where("id = ?", id).Preload("TransactionDetail").First(&transaction).Error
+	err := r.db.Where("id = ?", id).Preload("TransactionDetail").Preload("User").First(&transaction).Error
 	return transaction, err
 }
 
@@ -37,9 +37,9 @@ func (r *transactionRepository) FindAll(query any, args ...any) ([]models.Transa
 	var err error
 
 	if query != "" {
-		err = r.db.Order("created_at DESC").Where(query, args...).Preload("TransactionDetail").Preload("Product").Find(&transaction).Error
+		err = r.db.Order("created_at DESC").Where(query, args...).Preload("TransactionDetail").Preload("Product").Preload("User").Find(&transaction).Error
 	} else {
-		err = r.db.Order("created_at DESC").Preload("TransactionDetail").Find(&transaction).Error
+		err = r.db.Order("created_at DESC").Preload("TransactionDetail").Preload("Product").Preload("User").Find(&transaction).Error
 	}
 
 	return transaction, err

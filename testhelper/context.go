@@ -30,6 +30,7 @@ func NewContext(testCase HTTPTestCase) (echo.Context, *httptest.ResponseRecorder
 		ctx.SetParamNames(testCase.Request.PathParam.Names...)
 		ctx.SetParamValues(testCase.Request.PathParam.Values...)
 	}
+	ctx.Set("token", testCase.Token)
 
 	return ctx, rec
 }

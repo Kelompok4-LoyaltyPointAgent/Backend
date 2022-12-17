@@ -124,7 +124,6 @@ func (h *transactionHandler) CancelTransaction(c echo.Context) error {
 }
 
 func (h *transactionHandler) TransactionWebhook(c echo.Context) error {
-	// TODO: handle payment gateway request
 	var payload map[string]interface{}
 	if err := c.Bind(&payload); err != nil {
 		return response.Error(c, "failed", http.StatusBadRequest, err)

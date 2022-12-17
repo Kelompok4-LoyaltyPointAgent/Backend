@@ -3,8 +3,8 @@ package response
 import "github.com/kelompok4-loyaltypointagent/backend/models"
 
 type FavoritesResponse struct {
-	UserID  string `json:"user_id"`
-	Product *ProductResponse
+	UserID  string           `json:"user_id"`
+	Product *ProductResponse `json:"product"`
 }
 
 func NewFavoritesResponse(favorites models.Favorites) *FavoritesResponse {

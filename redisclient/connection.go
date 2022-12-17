@@ -10,8 +10,7 @@ import (
 func Init() *redis.Client {
 	redisConfig := config.LoadRedisConfig()
 	client := redis.NewClient(&redis.Options{
-		Addr: redisConfig.Addr + ":" + redisConfig.Port,
-		// Username: redisConfig.Username,
+		Addr:     redisConfig.Addr + ":" + redisConfig.Port,
 		Password: redisConfig.Password,
 		DB:       redisConfig.DB,
 	})

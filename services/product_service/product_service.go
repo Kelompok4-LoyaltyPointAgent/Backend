@@ -238,7 +238,7 @@ func (s *productService) DeleteProductWithCredit(id any) error {
 		return err
 	}
 
-	if err := s.productRepository.DeleteByID(id); err != nil {
+	if err := s.productRepository.Delete(id); err != nil {
 		return err
 	}
 
@@ -348,6 +348,7 @@ func (s *productService) CreateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:   payload.SocialMedia,
 		Call:          payload.Call,
 		SMS:           payload.SMS,
+		Description:   payload.PackageDescription,
 	})
 	if err != nil {
 		return nil, err
@@ -424,6 +425,7 @@ func (s *productService) UpdateProductWithPackages(payload payload.ProductWithPa
 		SocialMedia:   payload.SocialMedia,
 		Call:          payload.Call,
 		SMS:           payload.SMS,
+		Description:   payload.PackageDescription,
 	}, id)
 	if err != nil {
 		return nil, err
@@ -437,7 +439,7 @@ func (s *productService) DeleteProductWithPackages(id any) error {
 		return err
 	}
 
-	if err := s.productRepository.DeleteByID(id); err != nil {
+	if err := s.productRepository.Delete(id); err != nil {
 		return err
 	}
 
