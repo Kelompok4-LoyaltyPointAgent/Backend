@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_payouturl_repository"
 	"github.com/kelompok4-loyaltypointagent/backend/constant"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/payload"
 	"github.com/kelompok4-loyaltypointagent/backend/dto/response"
@@ -22,20 +23,23 @@ type TransactionService interface {
 	Delete(id any) error
 	Cancel(id any) (*response.TransactionResponse, error)
 	CallbackXendit(payload map[string]interface{}) (bool, error)
+	GetPayoutURL(id string, userId string) (*string, error)
 }
 
 type transactionService struct {
-	transactionRepository transaction_repository.TransactionRepository
-	productRepository     product_repository.ProductRepository
-	userRepository        user_repository.UserRepository
+	transactionRepository     transaction_repository.TransactionRepository
+	productRepository         product_repository.ProductRepository
+	userRepository            user_repository.UserRepository
+	cachedPayoutURLRepository cached_payouturl_repository.PayoutURLRepository
 }
 
 func NewTransactionService(
 	transactionRepository transaction_repository.TransactionRepository,
 	productRepository product_repository.ProductRepository,
 	userRepository user_repository.UserRepository,
+	cachedPayoutURL cached_payouturl_repository.PayoutURLRepository,
 ) TransactionService {
-	return &transactionService{transactionRepository, productRepository, userRepository}
+	return &transactionService{transactionRepository, productRepository, userRepository, cachedPayoutURL}
 }
 
 func (s *transactionService) FindAllDetail(claims *helper.JWTCustomClaims, filter any) (*[]response.TransactionResponse, error) {
@@ -264,6 +268,24 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 	}
 
 	return response.NewTransactionResponse(transaction, *transaction.TransactionDetail, ""), nil
+}
+
+func (s *transactionService) GetPayoutURL(id string, userId string) (*string, error) {
+	//Get Transaction ID
+	transaction, err := s.transactionRepository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if transaction.UserID.String() != userId {
+		return nil, errors.New("forbidden")
+	}
+
+	url, err := s.cachedPayoutURLRepository.GetPayoutURL(transaction.ID.String())
+	if err != nil {
+		return nil, err
+	}
+	return &url, nil
 }
 
 func (s *transactionService) CallbackXendit(payload map[string]interface{}) (bool, error) {
