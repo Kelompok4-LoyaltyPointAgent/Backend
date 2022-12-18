@@ -23,6 +23,9 @@ type CachedAnalyticsRepository interface {
 	SetTransactionsByType(year int, data string) error
 	CheckRecentTransactions(year int) bool
 	SetRecentTransactions(year int, data string) error
+	GetDataInStock() (*string, error)
+	CheckDataInStock() bool
+	SetProductCount(data string) error
 }
 
 type cachedAnalyticsRepository struct {
@@ -31,6 +34,37 @@ type cachedAnalyticsRepository struct {
 
 func NewCachedAnalyticsRepository(db *redis.Client) CachedAnalyticsRepository {
 	return &cachedAnalyticsRepository{db}
+}
+
+func (r *cachedAnalyticsRepository) GetDataInStock() (*string, error) {
+	key := "analytics:stock_data"
+	var data string
+	if err := r.db.Get(r.db.Context(), key).Scan(&data); err != nil {
+		return nil, err
+	}
+	log.Println("------------")
+	log.Println(data)
+	return &data, nil
+}
+
+func (r *cachedAnalyticsRepository) SetProductCount(data string) error {
+	key := "analytics:stock_data"
+	exp := time.Duration(30 * time.Second)
+	return r.db.Set(r.db.Context(), key, data, exp).Err()
+}
+
+func (r *cachedAnalyticsRepository) CheckDataInStock() bool {
+	key := "analytics:stock_data"
+	result, err := r.db.Exists(r.db.Context(), key).Result()
+	if err != nil {
+		log.Printf("Redis error: %s", err)
+		return false
+	}
+	return result > 0
+}
+
+func (r *cachedAnalyticsRepository) ProductCount() (int, error) {
+	return 0, nil
 }
 
 func (r *cachedAnalyticsRepository) SalesCount(year int) int {
