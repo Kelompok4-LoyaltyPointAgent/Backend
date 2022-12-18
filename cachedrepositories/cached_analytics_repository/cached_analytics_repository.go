@@ -37,7 +37,7 @@ func NewCachedAnalyticsRepository(db *redis.Client) CachedAnalyticsRepository {
 }
 
 func (r *cachedAnalyticsRepository) GetDataInStock() (*string, error) {
-	key := fmt.Sprintf("analytics:stock_data")
+	key := "analytics:stock_data"
 	var data string
 	if err := r.db.Get(r.db.Context(), key).Scan(&data); err != nil {
 		return nil, err
@@ -48,13 +48,13 @@ func (r *cachedAnalyticsRepository) GetDataInStock() (*string, error) {
 }
 
 func (r *cachedAnalyticsRepository) SetProductCount(data string) error {
-	key := fmt.Sprintf("analytics:stock_data")
+	key := "analytics:stock_data"
 	exp := time.Duration(30 * time.Second)
 	return r.db.Set(r.db.Context(), key, data, exp).Err()
 }
 
 func (r *cachedAnalyticsRepository) CheckDataInStock() bool {
-	key := fmt.Sprintf("analytics:stock_data")
+	key := "analytics:stock_data"
 	result, err := r.db.Exists(r.db.Context(), key).Result()
 	if err != nil {
 		log.Printf("Redis error: %s", err)
