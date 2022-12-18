@@ -7,13 +7,13 @@ import (
 )
 
 type TransactionsByMonth []struct {
-	Month int
-	Value int
+	Month int `json:"month"`
+	Value int `json:"value"`
 }
 
 type TransactionsByType []struct {
-	Type  string
-	Value int
+	Type  string `json:"type"`
+	Value int    `json:"value"`
 }
 
 type AnalyticsRepository interface {
