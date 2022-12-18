@@ -22,6 +22,7 @@ type AnalyticsRepository interface {
 	TransactionsByMonth(year int) TransactionsByMonth
 	TransactionsByType(year int) TransactionsByType
 	RecentTransactions(year, limit int) ([]models.Transaction, error)
+	ProductCount() (int, error)
 }
 
 type analyticsRepository struct {
@@ -30,6 +31,13 @@ type analyticsRepository struct {
 
 func NewAnalyticsRepository(db *gorm.DB) AnalyticsRepository {
 	return &analyticsRepository{db}
+}
+
+func (r *analyticsRepository) ProductCount() (int, error) {
+	query := "SELECT COUNT(name) FROM products"
+	count := 0
+	err := r.db.Raw(query).Scan(&count).Error
+	return count, err
 }
 
 func (r *analyticsRepository) SalesCount(year int) int {
