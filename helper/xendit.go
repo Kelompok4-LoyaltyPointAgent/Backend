@@ -43,11 +43,12 @@ func CreateInvoiceXendit(transaction models.Transaction, transactionDetail model
 	}
 
 	data := invoice.CreateParams{
-		ExternalID:  transaction.ID.String(),
-		PayerEmail:  transactionDetail.Email,
-		Amount:      transaction.Amount,
-		Customer:    customer,
-		Description: "Invoice from Halo Pulsa",
+		ExternalID:      transaction.ID.String(),
+		PayerEmail:      transactionDetail.Email,
+		Amount:          transaction.Amount,
+		Customer:        customer,
+		Description:     "Invoice from Halo Pulsa",
+		InvoiceDuration: 3600,
 	}
 
 	resp, err := invoice.Create(&data)
