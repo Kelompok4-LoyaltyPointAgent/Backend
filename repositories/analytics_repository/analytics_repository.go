@@ -70,6 +70,6 @@ func (r *analyticsRepository) TransactionsByType(year int) TransactionsByType {
 
 func (r *analyticsRepository) RecentTransactions(year, limit int) ([]models.Transaction, error) {
 	var transactions []models.Transaction
-	err := r.db.Where("YEAR(created_at) = ?", year).Limit(limit).Order("created_at DESC").Preload("TransactionDetail").Find(&transactions).Error
+	err := r.db.Where("YEAR(created_at) = ?", year).Limit(limit).Order("created_at DESC").Preload("TransactionDetail").Preload("Product").Find(&transactions).Error
 	return transactions, err
 }
