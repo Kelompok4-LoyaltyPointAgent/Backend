@@ -24,12 +24,12 @@ type ProductWithCreditPayload struct {
 
 type ProductWithPackagesPayload struct {
 	ProductPayload
-	ActivePeriod       int     `form:"active_period" validate:"required"`
-	TotalInternet      float64 `form:"total_internet" validate:"required"`
-	MainInternet       float64 `form:"main_internet" validate:"required"`
-	NightInternet      float64 `form:"night_internet" validate:"required"`
-	SocialMedia        float64 `form:"social_media" validate:"required"`
-	Call               int     `form:"call" validate:"required"`
-	SMS                int     `form:"sms" validate:"required"`
+	ActivePeriod       int     `form:"active_period"`
+	TotalInternet      float64 `form:"total_internet"`
+	MainInternet       float64 `form:"main_internet"`
+	NightInternet      float64 `form:"night_internet"`
+	SocialMedia        float64 `form:"social_media"`
+	Call               int     `form:"call"`
+	SMS                int     `form:"sms"`
 	PackageDescription string  `form:"package_description" validate:"required,min=1,max=1000"`
 }
