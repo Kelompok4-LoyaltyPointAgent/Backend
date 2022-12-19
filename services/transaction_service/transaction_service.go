@@ -2,7 +2,6 @@ package transaction_service
 
 import (
 	"errors"
-	"log"
 
 	"github.com/google/uuid"
 	"github.com/kelompok4-loyaltypointagent/backend/cachedrepositories/cached_invoiceurl_repository"
@@ -340,8 +339,6 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 		if payload["status"].(string) == constant.XenditStatusPaid.String() {
 			transaction.Status = constant.TransactionStatusSuccess
 			transaction.Method = payload["payment_channel"].(string)
-
-			log.Println("MASUKK")
 
 			// Find Product ID
 			product, err := s.productRepository.FindByID(transaction.ProductID.String())
