@@ -31,5 +31,5 @@ type ProductWithPackagesPayload struct {
 	SocialMedia        float64 `form:"social_media"`
 	Call               int     `form:"call"`
 	SMS                int     `form:"sms"`
-	PackageDescription string  `form:"package_description" validate:"required,min=1,max=300"`
+	PackageDescription string  `form:"package_description" validate:"required,min=1,max=1000"`
 }
