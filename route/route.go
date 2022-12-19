@@ -82,6 +82,7 @@ func Setup(app *echo.Echo) {
 
 	transaction := v1.Group("/transactions", auth)
 	transaction.GET("", initialize.TransactionHandler.GetTransactions)
+	transaction.GET("/invoice-url/:id", initialize.TransactionHandler.GetInvoiceURL, middlewares.AuthorizedRoles("User"))
 	transaction.POST("", initialize.TransactionHandler.CreateTransaction)
 	transaction.GET("/:id", initialize.TransactionHandler.GetTransaction)
 	transaction.PUT("/:id", initialize.TransactionHandler.UpdateTransaction, middlewares.AuthorizedRoles(constant.UserRoleAdmin.String()))
@@ -94,5 +95,6 @@ func Setup(app *echo.Echo) {
 	feedback.POST("", initialize.FeedbackHandler.Create)
 
 	analytics := v1.Group("/analytics", auth)
+	analytics.GET("/stock", initialize.AnalyticsHandler.DataForManageStockAdmin, middlewares.AuthorizedRoles(constant.UserRoleAdmin.String()))
 	analytics.GET("", initialize.AnalyticsHandler.Analytics, middlewares.AuthorizedRoles(constant.UserRoleAdmin.String()))
 }

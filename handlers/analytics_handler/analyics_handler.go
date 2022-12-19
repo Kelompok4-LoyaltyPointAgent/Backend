@@ -10,6 +10,7 @@ import (
 
 type AnalyticsHandler interface {
 	Analytics(c echo.Context) error
+	DataForManageStockAdmin(c echo.Context) error
 }
 
 type analyticsHandler struct {
@@ -27,4 +28,13 @@ func (h *analyticsHandler) Analytics(c echo.Context) error {
 	}
 
 	return response.Success(c, "success", http.StatusOK, analytics)
+}
+
+func (h *analyticsHandler) DataForManageStockAdmin(c echo.Context) error {
+	data, err := h.service.DataForManageStockAdmin()
+	if err != nil {
+		return response.Error(c, "failed", http.StatusInternalServerError, err)
+	}
+
+	return response.Success(c, "success", http.StatusOK, data)
 }
