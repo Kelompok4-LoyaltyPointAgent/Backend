@@ -129,7 +129,7 @@ func (s *analyticsService) Analytics() (*response.AnalyticsResponse, error) {
 		Income:              income,
 		TransactionsByMonth: transactionsByMonth,
 		TransactionsByType:  transactionsByType,
-		RecentTransactions:  *response.NewTransactionsResponse(transactions),
+		RecentTransactions:  response.NewTransactionsResponse(transactions),
 	}
 
 	return &analyticsResponse, nil
