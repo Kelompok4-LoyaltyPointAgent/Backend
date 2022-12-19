@@ -243,6 +243,7 @@ func (s *transactionService) Update(payload payload.TransactionUpdatePayload, id
 }
 
 func (s *transactionService) Delete(id any) error {
+
 	err := s.transactionRepository.Delete(id)
 	if err != nil {
 		return err
@@ -260,6 +261,12 @@ func (s *transactionService) Cancel(id any) (*response.TransactionResponse, erro
 	transaction, err := s.transactionRepository.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if s.cachedInvoiceURLRepository.CheckInvoiceURL(transaction.ID.String()) {
+		if err := s.cachedInvoiceURLRepository.DeleteInvoiceURL(transaction.ID.String()); err != nil {
+			return nil, err
+		}
 	}
 
 	if transaction.Status == constant.TransactionStatusSuccess {
@@ -362,6 +369,7 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 
 		} else if payload["status"] == constant.XenditStatusExpired {
 			transaction.Status = constant.TransactionStatusFailed
+
 		}
 	}
 
