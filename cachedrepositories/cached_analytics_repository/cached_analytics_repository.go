@@ -188,7 +188,12 @@ func (r *cachedAnalyticsRepository) RecentTransactions(year, limit int) ([]model
 		log.Printf("JSON error: %s", err)
 		return nil, err
 	}
-	return transactions[:limit], nil
+
+	if len(transactions) > limit {
+		return transactions[:limit], nil
+	}
+
+	return transactions, nil
 }
 
 func (r *cachedAnalyticsRepository) CheckRecentTransactions(year int) bool {
