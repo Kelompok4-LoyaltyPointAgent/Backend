@@ -356,7 +356,7 @@ func (s *transactionService) CallbackXendit(payload map[string]interface{}) (boo
 			}
 
 			// Update User Points
-			points := user.Points - product.PricePoints
+			points := user.Points + product.RewardPoints
 
 			if _, err := s.userRepository.UpdateUserPoint(points, user.ID.String()); err != nil {
 				return false, err
