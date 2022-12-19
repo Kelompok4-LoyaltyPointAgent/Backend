@@ -10,11 +10,11 @@ type AnalyticsResponse struct {
 	Income              float64                                  `json:"income"`
 	TransactionsByMonth analytics_repository.TransactionsByMonth `json:"transactions_by_month"`
 	TransactionsByType  analytics_repository.TransactionsByType  `json:"transactions_by_type"`
-	RecentTransactions  []TransactionResponse                    `json:"recent_transactions"`
+	RecentTransactions  *[]TransactionResponse                   `json:"recent_transactions"`
 }
 
 type DataForManageStockAdmin struct {
-	TotalProduct   uint `json:"totalProduct"`
-	TotalProvider  uint `json:"totalProvider"`
+	TotalProduct   uint    `json:"totalProduct"`
+	TotalProvider  uint    `json:"totalProvider"`
 	CashoutBalance float64 `json:"cashoutBalance"`
 }
