@@ -54,10 +54,23 @@ func (s *analyticsService) Analytics() (*response.AnalyticsResponse, error) {
 	}
 
 	var transactionsByMonth analytics_repository.TransactionsByMonth
+	for month := 1; month <= 12; month++ {
+		transactionsByMonth = append(transactionsByMonth, struct {
+			Month int "json:\"month\""
+			Value int "json:\"value\""
+		}{
+			Month: month,
+			Value: 0,
+		})
+	}
+
 	if s.cachedAnalyticsRepository.CheckTransactionsByMonth(year) {
 		transactionsByMonth = s.cachedAnalyticsRepository.TransactionsByMonth(year)
 	} else {
-		transactionsByMonth = s.analyticsRepository.TransactionsByMonth(year)
+		for _, val := range s.analyticsRepository.TransactionsByMonth(year) {
+			idx := val.Month - 1
+			transactionsByMonth[idx].Value = val.Value
+		}
 
 		data, err := json.Marshal(transactionsByMonth)
 		if err != nil {
