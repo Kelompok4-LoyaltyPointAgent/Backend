@@ -20,7 +20,7 @@ func NewFeedbackResponse(feedback models.Feedbacks) *FeedbackResponse {
 		Review:               feedback.Review,
 	}
 
-	if response.User != nil {
+	if feedback.User != nil {
 		response.User = NewUserResponse(*feedback.User)
 	}
 
